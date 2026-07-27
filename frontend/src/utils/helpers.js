@@ -1,5 +1,33 @@
 import { format, formatDistanceToNow, isToday, isYesterday, parseISO } from 'date-fns';
 
+const parseDateInput = (input) => {
+  if (!input) return null;
+  if (input instanceof Date) return isNaN(input.getTime()) ? null : input;
+  if (typeof input === 'string') {
+    let str = input.trim();
+    if (!str) return null;
+    
+    // Replace space between date and time with T if present (SQL datetime format)
+    if (!str.includes('T')) {
+      str = str.replace(' ', 'T');
+    }
+    
+    // Use Date constructor or parseISO natively
+    // If str has 'Z' or offset, parseISO/Date converts UTC -> Local
+    // If str has NO 'Z' or offset, parseISO/Date parses as Local Time directly
+    let parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) return parsed;
+    
+    parsed = parseISO(str);
+    if (!isNaN(parsed.getTime())) return parsed;
+    
+    const fallback = new Date(input);
+    return isNaN(fallback.getTime()) ? null : fallback;
+  }
+  const dateObj = new Date(input);
+  return isNaN(dateObj.getTime()) ? null : dateObj;
+};
+
 /**
  * Format date for display
  * @param {string|Date} date - Date to format
@@ -8,19 +36,22 @@ import { format, formatDistanceToNow, isToday, isYesterday, parseISO } from 'dat
  */
 export const formatDate = (date, formatString = 'MMM dd, yyyy') => {
   if (!date) return '';
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  const dateObj = parseDateInput(date);
+  if (!dateObj) return String(date);
   return format(dateObj, formatString);
 };
 
 /**
  * Format datetime for display
  * @param {string|Date} datetime - Datetime to format
+ * @param {string} formatString - Format string (optional)
  * @returns {string} Formatted datetime string
  */
-export const formatDateTime = (datetime) => {
+export const formatDateTime = (datetime, formatString = 'dd MMM yyyy, hh:mm a') => {
   if (!datetime) return '';
-  const dateObj = typeof datetime === 'string' ? parseISO(datetime) : datetime;
-  return format(dateObj, 'MMM dd, yyyy HH:mm');
+  const dateObj = parseDateInput(datetime);
+  if (!dateObj) return String(datetime);
+  return format(dateObj, formatString);
 };
 
 /**
@@ -30,7 +61,8 @@ export const formatDateTime = (datetime) => {
  */
 export const formatRelativeTime = (date) => {
   if (!date) return '';
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  const dateObj = parseDateInput(date);
+  if (!dateObj) return String(date);
   return formatDistanceToNow(dateObj, { addSuffix: true });
 };
 
@@ -41,17 +73,18 @@ export const formatRelativeTime = (date) => {
  */
 export const getFriendlyDate = (date) => {
   if (!date) return '';
-  const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  
+  const dateObj = parseDateInput(date);
+  if (!dateObj) return String(date);
+
   if (isToday(dateObj)) {
-    return `Today, ${format(dateObj, 'HH:mm')}`;
+    return `Today, ${format(dateObj, 'hh:mm a')}`;
   }
   
   if (isYesterday(dateObj)) {
-    return `Yesterday, ${format(dateObj, 'HH:mm')}`;
+    return `Yesterday, ${format(dateObj, 'hh:mm a')}`;
   }
   
-  return format(dateObj, 'MMM dd, yyyy HH:mm');
+  return format(dateObj, 'dd MMM yyyy, hh:mm a');
 };
 
 /**

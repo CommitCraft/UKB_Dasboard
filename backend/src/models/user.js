@@ -175,8 +175,8 @@ class User {
   }
 
   static async updateLastLogin(id) {
-    const query = 'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?';
-    await db.executeQuery(query, [id]);
+    const query = 'UPDATE users SET last_login = ? WHERE id = ?';
+    await db.executeQuery(query, [new Date(), id]);
   }
 
   static async delete(id) {

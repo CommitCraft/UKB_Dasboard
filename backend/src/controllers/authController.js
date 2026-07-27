@@ -54,12 +54,13 @@ class AuthController {
 
       // Update last login
       await User.updateLastLogin(user.id);
+      const updatedUser = await User.findById(user.id);
 
       // Log successful login
       const loginActivity = await LoginActivity.logLogin(user, true, req);
 
       // Remove password from response
-      const { password_hash, ...userResponse } = user;
+      const { password_hash, ...userResponse } = updatedUser || user;
 
       res.status(200).json({
         success: true,
