@@ -2,21 +2,77 @@ const db = require('../config/db');
 const ActivityLog = require('../models/activityLog');
 
 class MenuController {
-  // Get full hierarchical menu tree (Section -> Menu -> Sub Menu -> Child Menu)
+  // Get hierarchical menu tree (Filtered by assigned user roles for standard users, full tree for super_admin or all=true)
   static async getMenuTree(req, res) {
     try {
-      const query = `
+      const user = req.user;
+      const isSuperAdmin = Array.isArray(user?.roles) && user.roles.includes('super_admin');
+      const showAll = req.query.all === 'true' || isSuperAdmin;
+
+      const queryAll = `
         SELECT * FROM pages
         ORDER BY display_order ASC, name ASC
       `;
-      const pages = await db.executeQuery(query);
+      const allPages = await db.executeQuery(queryAll);
+
+      let visiblePages = [];
+
+      if (showAll) {
+        visiblePages = allPages;
+      } else {
+        const userId = user?.id;
+        const assignedSet = new Set();
+
+        // 1. Get assigned pages from role_pages
+        if (userId) {
+          const assignedQuery = `
+            SELECT DISTINCT p.id
+            FROM pages p
+            JOIN role_pages rp ON p.id = rp.page_id
+            JOIN user_roles ur ON rp.role_id = ur.role_id
+            WHERE ur.user_id = ? AND p.status = 'active'
+          `;
+          const assignedRows = await db.executeQuery(assignedQuery, [userId]);
+          assignedRows.forEach(r => assignedSet.add(r.id));
+
+          // 2. Also check role_pages_order table
+          try {
+            const orderQuery = `
+              SELECT DISTINCT p.id
+              FROM pages p
+              JOIN role_pages_order rpo ON p.id = rpo.page_id
+              JOIN user_roles ur ON rpo.role_id = ur.role_id
+              WHERE ur.user_id = ? AND p.status = 'active'
+            `;
+            const orderRows = await db.executeQuery(orderQuery, [userId]);
+            orderRows.forEach(r => assignedSet.add(r.id));
+          } catch (e) {
+            // Table optional
+          }
+        }
+
+        // Build parent map to ensure parent container nodes remain visible for assigned children
+        const pageById = {};
+        allPages.forEach(p => { pageById[p.id] = p; });
+
+        const allowedSet = new Set();
+        assignedSet.forEach(id => {
+          let curr = pageById[id];
+          while (curr) {
+            allowedSet.add(curr.id);
+            curr = curr.parent_id ? pageById[curr.parent_id] : null;
+          }
+        });
+
+        visiblePages = allPages.filter(p => allowedSet.has(p.id) && p.status === 'active');
+      }
 
       // Build hierarchical tree
       const pageMap = {};
       const sectionsAndRoots = [];
 
       // First pass: create node objects
-      pages.forEach(p => {
+      visiblePages.forEach(p => {
         pageMap[p.id] = {
           ...p,
           children: []
@@ -24,7 +80,7 @@ class MenuController {
       });
 
       // Second pass: link parents and children
-      pages.forEach(p => {
+      visiblePages.forEach(p => {
         const item = pageMap[p.id];
         if (p.parent_id && pageMap[p.parent_id]) {
           pageMap[p.parent_id].children.push(item);
@@ -38,7 +94,7 @@ class MenuController {
         message: 'Menu tree retrieved successfully',
         data: {
           items: sectionsAndRoots,
-          flat: pages
+          flat: visiblePages
         }
       });
     } catch (error) {
@@ -51,65 +107,60 @@ class MenuController {
     }
   }
 
-  // Create menu item (Section / Menu / Sub Menu / Child Menu)
+  // Create menu item
   static async createMenuItem(req, res) {
     try {
-      const {
-        name,
-        url = '',
-        icon = 'Globe',
-        type = 'menu',
-        parent_id = null,
-        display_order = 0,
-        status = 'active',
-        is_external = false
-      } = req.body;
+      const { name, url, icon, type = 'menu', parent_id = null, status = 'active', is_external = false } = req.body;
 
-      if (!name || !name.trim()) {
-        return res.status(400).json({
-          success: false,
-          message: 'Menu item name is required'
-        });
+      if (!name) {
+        return res.status(400).json({ success: false, message: 'Name is required' });
       }
 
-      // Default URL if empty
-      const targetUrl = url.trim() || `/${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+      const countResult = await db.executeQuery('SELECT MAX(display_order) as max_order FROM pages');
+      const maxOrder = (countResult[0]?.max_order || 0) + 1;
 
-      const query = `
-        INSERT INTO pages (name, url, icon, type, parent_id, display_order, status, is_external, created_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      const insertQuery = `
+        INSERT INTO pages (name, url, icon, type, parent_id, status, is_external, display_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
-      const result = await db.executeQuery(query, [
-        name.trim(),
-        targetUrl,
-        icon,
+      const result = await db.executeQuery(insertQuery, [
+        name,
+        url || '',
+        icon || 'Globe',
         type,
-        parent_id ? parseInt(parent_id) : null,
-        parseInt(display_order) || 0,
+        parent_id || null,
         status,
         is_external ? 1 : 0,
-        req.user?.id || null
+        maxOrder
       ]);
 
-      const newItemQuery = `SELECT * FROM pages WHERE id = ?`;
-      const newItems = await db.executeQuery(newItemQuery, [result.insertId]);
+      const newId = result.insertId;
 
-      if (req.user) {
-        await ActivityLog.logUserAction(
-          req.user.id,
-          req.user.username,
-          ActivityLog.ACTIONS.CREATE,
-          ActivityLog.RESOURCES.PAGE,
-          result.insertId,
-          { name, type, parent_id },
-          req
-        );
+      // Auto assign newly created menu item to Super Admin role
+      try {
+        const superAdminRole = await db.executeQuery('SELECT id FROM roles WHERE name = "super_admin" LIMIT 1');
+        if (superAdminRole.length > 0) {
+          const roleId = superAdminRole[0].id;
+          await db.executeQuery('INSERT IGNORE INTO role_pages (role_id, page_id) VALUES (?, ?)', [roleId, newId]);
+        }
+      } catch (e) {
+        console.error('Auto assign super_admin error:', e);
       }
+
+      await ActivityLog.logUserAction(
+        req.user.id,
+        req.user.username,
+        ActivityLog.ACTIONS.CREATE,
+        ActivityLog.RESOURCES.PAGE,
+        newId,
+        { name, url, type, parent_id },
+        req
+      );
 
       res.status(201).json({
         success: true,
         message: 'Menu item created successfully',
-        data: { item: newItems[0] }
+        data: { id: newId, name, url, type, parent_id }
       });
     } catch (error) {
       console.error('Create menu item error:', error);
@@ -125,86 +176,44 @@ class MenuController {
   static async updateMenuItem(req, res) {
     try {
       const { id } = req.params;
-      const {
+      const { name, url, icon, type, parent_id, status, is_external } = req.body;
+
+      const updateQuery = `
+        UPDATE pages
+        SET name = COALESCE(?, name),
+            url = COALESCE(?, url),
+            icon = COALESCE(?, icon),
+            type = COALESCE(?, type),
+            parent_id = ?,
+            status = COALESCE(?, status),
+            is_external = COALESCE(?, is_external)
+        WHERE id = ?
+      `;
+
+      await db.executeQuery(updateQuery, [
         name,
         url,
         icon,
         type,
-        parent_id,
-        display_order,
+        parent_id || null,
         status,
-        is_external
-      } = req.body;
+        is_external !== undefined ? (is_external ? 1 : 0) : null,
+        id
+      ]);
 
-      const existingQuery = `SELECT * FROM pages WHERE id = ?`;
-      const existing = await db.executeQuery(existingQuery, [id]);
-      if (!existing || existing.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'Menu item not found'
-        });
-      }
-
-      const updates = [];
-      const params = [];
-
-      if (name !== undefined) {
-        updates.push('name = ?');
-        params.push(name.trim());
-      }
-      if (url !== undefined) {
-        updates.push('url = ?');
-        params.push(url.trim());
-      }
-      if (icon !== undefined) {
-        updates.push('icon = ?');
-        params.push(icon);
-      }
-      if (type !== undefined) {
-        updates.push('type = ?');
-        params.push(type);
-      }
-      if (parent_id !== undefined) {
-        updates.push('parent_id = ?');
-        params.push(parent_id ? parseInt(parent_id) : null);
-      }
-      if (display_order !== undefined) {
-        updates.push('display_order = ?');
-        params.push(parseInt(display_order) || 0);
-      }
-      if (status !== undefined) {
-        updates.push('status = ?');
-        params.push(status);
-      }
-      if (is_external !== undefined) {
-        updates.push('is_external = ?');
-        params.push(is_external ? 1 : 0);
-      }
-
-      if (updates.length > 0) {
-        const updateQuery = `UPDATE pages SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-        params.push(id);
-        await db.executeQuery(updateQuery, params);
-      }
-
-      const updatedItem = await db.executeQuery(existingQuery, [id]);
-
-      if (req.user) {
-        await ActivityLog.logUserAction(
-          req.user.id,
-          req.user.username,
-          ActivityLog.ACTIONS.UPDATE,
-          ActivityLog.RESOURCES.PAGE,
-          parseInt(id),
-          { name, type, parent_id },
-          req
-        );
-      }
+      await ActivityLog.logUserAction(
+        req.user.id,
+        req.user.username,
+        ActivityLog.ACTIONS.UPDATE,
+        ActivityLog.RESOURCES.PAGE,
+        parseInt(id),
+        { name, url, type, parent_id },
+        req
+      );
 
       res.status(200).json({
         success: true,
-        message: 'Menu item updated successfully',
-        data: { item: updatedItem[0] }
+        message: 'Menu item updated successfully'
       });
     } catch (error) {
       console.error('Update menu item error:', error);
@@ -221,30 +230,27 @@ class MenuController {
     try {
       const { id } = req.params;
 
-      // Check if item has children
-      const childrenQuery = `SELECT COUNT(*) as count FROM pages WHERE parent_id = ?`;
-      const childrenRes = await db.executeQuery(childrenQuery, [id]);
-      if (childrenRes[0].count > 0) {
+      const childCheck = await db.executeQuery('SELECT id FROM pages WHERE parent_id = ? LIMIT 1', [id]);
+      if (childCheck.length > 0) {
         return res.status(400).json({
           success: false,
-          message: 'Cannot delete menu item because it has sub-menu items assigned to it. Please reassign or delete sub-menu items first.'
+          message: 'Cannot delete item because it has sub-menu items assigned to it'
         });
       }
 
-      const deleteQuery = `DELETE FROM pages WHERE id = ?`;
-      await db.executeQuery(deleteQuery, [id]);
+      await db.executeQuery('DELETE FROM role_pages WHERE page_id = ?', [id]);
+      await db.executeQuery('DELETE FROM role_pages_order WHERE page_id = ?', [id]);
+      await db.executeQuery('DELETE FROM pages WHERE id = ?', [id]);
 
-      if (req.user) {
-        await ActivityLog.logUserAction(
-          req.user.id,
-          req.user.username,
-          ActivityLog.ACTIONS.DELETE,
-          ActivityLog.RESOURCES.PAGE,
-          parseInt(id),
-          { id },
-          req
-        );
-      }
+      await ActivityLog.logUserAction(
+        req.user.id,
+        req.user.username,
+        ActivityLog.ACTIONS.DELETE,
+        ActivityLog.RESOURCES.PAGE,
+        parseInt(id),
+        {},
+        req
+      );
 
       res.status(200).json({
         success: true,
@@ -260,33 +266,24 @@ class MenuController {
     }
   }
 
-  // Reorder menu items (Batch reordering)
+  // Reorder items
   static async reorderMenuItems(req, res) {
     try {
       const { items } = req.body; // Array of { id, parent_id, display_order }
       if (!Array.isArray(items)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Items array is required'
-        });
+        return res.status(400).json({ success: false, message: 'Invalid payload' });
       }
 
       for (const item of items) {
-        const query = `
-          UPDATE pages 
-          SET display_order = ?, parent_id = ?, updated_at = CURRENT_TIMESTAMP
-          WHERE id = ?
-        `;
-        await db.executeQuery(query, [
-          parseInt(item.display_order) || 0,
-          item.parent_id ? parseInt(item.parent_id) : null,
-          parseInt(item.id)
-        ]);
+        await db.executeQuery(
+          'UPDATE pages SET display_order = ?, parent_id = ? WHERE id = ?',
+          [item.display_order, item.parent_id || null, item.id]
+        );
       }
 
       res.status(200).json({
         success: true,
-        message: 'Menu items reordered successfully'
+        message: 'Menu order updated successfully'
       });
     } catch (error) {
       console.error('Reorder menu items error:', error);
@@ -298,28 +295,18 @@ class MenuController {
     }
   }
 
-  // Toggle active/inactive status
+  // Toggle status
   static async toggleMenuItemStatus(req, res) {
     try {
       const { id } = req.params;
-      const selectQuery = `SELECT id, status FROM pages WHERE id = ?`;
-      const items = await db.executeQuery(selectQuery, [id]);
-
-      if (!items || items.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'Menu item not found'
-        });
-      }
-
-      const newStatus = items[0].status === 'active' ? 'inactive' : 'active';
-      const updateQuery = `UPDATE pages SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-      await db.executeQuery(updateQuery, [newStatus, id]);
+      await db.executeQuery(
+        "UPDATE pages SET status = IF(status = 'active', 'inactive', 'active') WHERE id = ?",
+        [id]
+      );
 
       res.status(200).json({
         success: true,
-        message: `Menu item status updated to ${newStatus}`,
-        data: { id: parseInt(id), status: newStatus }
+        message: 'Status updated successfully'
       });
     } catch (error) {
       console.error('Toggle status error:', error);

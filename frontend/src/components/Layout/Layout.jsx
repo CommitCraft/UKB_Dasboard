@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -88,6 +89,33 @@ const NavItemTree = ({
         const targetUrl = external
           ? `/external?url=${encodeURIComponent(href)}&title=${encodeURIComponent(page?.name || "")}`
           : href;
+
+        // Render Section Header Label
+        if (page?.type === "section") {
+          return (
+            <li key={pageKey} className="mt-4 mb-1">
+              <div className="px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center justify-between">
+                <span>{page?.name}</span>
+              </div>
+              {hasChildren && (
+                <div className="mt-1">
+                  <NavItemTree
+                    pages={page.children}
+                    level={1}
+                    expandedMenus={expandedMenus}
+                    toggleMenu={toggleMenu}
+                    onClose={onClose}
+                    isActive={isActive}
+                    isExternalPage={isExternalPage}
+                    formatUrl={formatUrl}
+                    getPageIcon={getPageIcon}
+                    location={location}
+                  />
+                </div>
+              )}
+            </li>
+          );
+        }
 
         const isLvl1 = level === 1;
         const isLvl2 = level === 2;
@@ -377,29 +405,16 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       setLoadingPages(true);
 
-      const response = await apiService.get(
-        "/pages/my-pages-hierarchy",
-        {
-          params: {
-            _t: Date.now(),
-          },
+      const response = await apiService.get("/menus/tree", {
+        params: {
+          _t: Date.now(),
         },
-      );
+      });
 
-      const pages =
-        response?.data?.data?.pages || [];
-
-      setMyPages(
-        Array.isArray(pages)
-          ? pages
-          : [],
-      );
+      const items = response?.data?.data?.items || [];
+      setMyPages(Array.isArray(items) ? items : []);
     } catch (error) {
-      console.error(
-        "Failed to load assigned pages:",
-        error,
-      );
-
+      console.error("Failed to load menu tree:", error);
       setMyPages([]);
     } finally {
       setLoadingPages(false);
@@ -428,32 +443,27 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
   }, [fetchMyPages]);
 
+  const allMenuItems = useMemo(() => {
+    if (Array.isArray(myPages) && myPages.length > 0) {
+      const filterActive = (items) => {
+        return items
+          .filter((item) => item.status !== "inactive")
+          .map((item) => ({
+            ...item,
+            children: Array.isArray(item.children) ? filterActive(item.children) : [],
+          }));
+      };
+      return filterActive(myPages);
+    }
 
-  const excludedPages = [
-    "Company Website",
-    "Documentation",
-    "Help Center",
-  ];
-
-  const visibleAssignedPages = myPages.filter(
-    (page) => !excludedPages.includes(page?.name),
-  );
-
-  const allMenuItems = [
-    ...filteredMenuItems.map((item) => ({
+    return filteredMenuItems.map((item) => ({
       id: `static-${item.path}`,
       name: item.name,
       url: item.path,
       icon: item.icon,
       children: [],
-    })),
-    ...visibleAssignedPages.filter((page) => {
-      const pageUrl = formatUrl(page?.url);
-      return !filteredMenuItems.some(
-        (staticItem) => staticItem.path === pageUrl,
-      );
-    }),
-  ];
+    }));
+  }, [myPages, filteredMenuItems]);
 
   return (
     <>

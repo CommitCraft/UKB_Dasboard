@@ -457,7 +457,7 @@ const MenuManagementPage = () => {
   const fetchMenuTree = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await apiService.get(endpoints.menus.tree);
+      const res = await apiService.get(endpoints.menus.tree, { params: { all: 'true' } });
       const items = res.data.data?.items || [];
       const flat = res.data.data?.flat || [];
       setTreeItems(items);
