@@ -12,6 +12,7 @@ import RolesPage from './pages/RolesPage';
 import PagesPage from './pages/PagesPage';
 import IframeTestPage from './pages/IframeTestPage';
 import ExternalPage from './pages/ExternalPage';
+import ActivityLogsPage from './pages/ActivityLogsPage';
 import LoadingSpinner from './components/LoadingSpinner';
 // New Page Add
 
@@ -95,6 +96,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <PagesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/activity"
+                element={
+                  <ProtectedRoute>
+                    <ActivityLogsPage />
                   </ProtectedRoute>
                 }
               />

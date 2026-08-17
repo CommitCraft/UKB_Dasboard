@@ -230,7 +230,12 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: FileText,
       roles: ["Super Admin", "Admin"],
     },
-    
+    {
+      name: "Activity Logs",
+      path: "/activity",
+      icon: Activity,
+      roles: ["Super Admin", "Admin", "Manager"],
+    },
   ];
 
   const roleMapping = {
@@ -410,7 +415,6 @@ const Sidebar = ({ isOpen, onClose }) => {
 
 
   const excludedPages = [
-    "Activity Logs",
     "Company Website",
     "Documentation",
     "Help Center",
