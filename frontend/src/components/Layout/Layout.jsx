@@ -491,7 +491,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         className={`
           fixed left-0 top-0 z-50
           flex h-screen w-64 flex-col
-          overflow-hidden
+          overflow-visible
           border-r border-gray-200
           bg-white
           shadow-sm
@@ -506,7 +506,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         `}
       >
         {/* Header Component */}
-        <SidebarHeader onClose={onClose} />
+        <SidebarHeader onClose={onClose} isOpen={isOpen} />
 
         {/* Scrollable navigation */}
         <nav

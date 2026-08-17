@@ -1,9 +1,10 @@
 import React from 'react';
-import { X, Calendar } from 'lucide-react';
+import { ChevronLeft, Calendar } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const SidebarHeader = ({
   onClose,
+  isOpen = false,
   logoSrc = "https://cdn.enfsolar.com/ID/logo/60779d90f067a.jpg?v=1",
   logoAlt = "Logo"
 }) => {
@@ -41,14 +42,17 @@ const SidebarHeader = ({
         </div>
       </div>
 
-      {/* Mobile close button */}
-      <button
-        onClick={onClose}
-        className="lg:hidden absolute top-3 right-3 p-1.5 rounded-lg bg-gray-100 text-gray-500 hover:text-gray-800 dark:bg-gray-700 dark:text-gray-300 dark:hover:text-white"
-        aria-label="Close sidebar"
-      >
-        <X className="h-5 w-5" />
-      </button>
+      {/* Centered collapse toggle button (rendered ONLY when mobile drawer is open/expanded) */}
+      {isOpen && (
+        <button
+          onClick={onClose}
+          className="lg:hidden absolute -right-3.5 top-1/2 -translate-y-1/2 z-50 flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-md transition-all hover:scale-110 hover:border-[#00629F] hover:text-[#00629F] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:text-white cursor-pointer"
+          aria-label="Collapse sidebar"
+          title="Collapse sidebar"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 };
