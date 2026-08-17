@@ -64,7 +64,11 @@ const ActivityLogsPage = () => {
 
       let rawLogs = [];
       if (response.data && Array.isArray(response.data.data)) {
+        // Flat array response
         rawLogs = response.data.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data.logs)) {
+        // Nested { data: { logs: [], pagination: {} } } response from findAll
+        rawLogs = response.data.data.logs;
       } else if (response.data && Array.isArray(response.data.logs)) {
         rawLogs = response.data.logs;
       }
