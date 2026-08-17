@@ -122,7 +122,17 @@ const LoginPage = () => {
 
           {/* Hero Bottom Footer */}
           <div className="relative z-10 pt-4 border-t border-white/15 flex items-center justify-between text-xs text-sky-200/80">
-            <span>© {new Date().getFullYear()} Aplos Logix Pvt. Ltd.</span>
+            <span>
+              © {new Date().getFullYear()}{' '}
+              <a
+                href="https://www.aploslogix.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-white transition-colors"
+              >
+                Aplos Logix Pvt. Ltd.
+              </a>
+            </span>
             <span>All Rights Reserved</span>
           </div>
         </div>
@@ -238,7 +248,15 @@ const LoginPage = () => {
           {/* Form Bottom Info */}
           <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Protected by Enterprise Authentication & Authorization System • Aplos Logix Pvt. Ltd.
+              Protected by Enterprise Authentication &amp; Authorization System •{' '}
+              <a
+                href="https://www.aploslogix.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#00629F] dark:text-sky-400 hover:underline underline-offset-2 font-medium transition-colors"
+              >
+                Aplos Logix Pvt. Ltd.
+              </a>
             </p>
           </div>
 
