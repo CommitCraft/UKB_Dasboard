@@ -475,71 +475,65 @@ class UserController {
       }
 
       const db = require('../config/db');
+      const isSuperAdmin = Array.isArray(user.roles) && user.roles.includes('super_admin');
 
-      // Get user's pages with role-based hierarchy support
-      if (hierarchy === 'true') {
-        // Get all pages with their role-specific ordering
+      let pages = [];
+      if (isSuperAdmin) {
+        const query = `
+          SELECT p.id as page_id, p.id, p.name, p.url, p.icon, p.type, p.parent_id, p.is_external, p.status, p.display_order
+          FROM pages p
+          WHERE p.status = 'active'
+          ORDER BY p.display_order ASC, p.name ASC
+        `;
+        pages = await db.executeQuery(query);
+      } else {
         const query = `
           SELECT DISTINCT 
             p.id as page_id,
+            p.id,
             p.name,
             p.url,
             p.icon,
+            p.type,
+            p.parent_id,
             p.is_external,
             p.status,
-            rpo.parent_page_id,
-            rpo.display_order
-          FROM pages p
-          JOIN role_pages_order rpo ON p.id = rpo.page_id
-          JOIN user_roles ur ON rpo.role_id = ur.role_id
-          WHERE ur.user_id = ? AND p.status = 'active'
-          ORDER BY rpo.display_order ASC, p.name ASC
-        `;
-        
-        const pages = await db.executeQuery(query, [id]);
-
-        // Build hierarchy tree
-        const pageMap = {};
-        const rootPages = [];
-        
-        // First pass: create map of all pages
-        pages.forEach(page => {
-          pageMap[page.page_id] = { ...page, children: [] };
-        });
-        
-        // Second pass: build tree structure
-        pages.forEach(page => {
-          if (page.parent_page_id === null) {
-            rootPages.push(pageMap[page.page_id]);
-          } else if (pageMap[page.parent_page_id]) {
-            pageMap[page.parent_page_id].children.push(pageMap[page.page_id]);
-          }
-        });
-
-        res.status(200).json({
-          success: true,
-          message: 'User pages retrieved successfully',
-          data: { pages: rootPages }
-        });
-      } else {
-        // Get flat list of pages
-        const query = `
-          SELECT DISTINCT p.id, p.name, p.url, p.icon, p.is_external, p.status
+            p.display_order
           FROM pages p
           JOIN role_pages rp ON p.id = rp.page_id
           JOIN user_roles ur ON rp.role_id = ur.role_id
           WHERE ur.user_id = ? AND p.status = 'active'
-          ORDER BY p.name
+          ORDER BY p.display_order ASC, p.name ASC
         `;
-        
-        const pages = await db.executeQuery(query, [id]);
+        pages = await db.executeQuery(query, [id]);
+      }
 
-        res.status(200).json({
+      if (hierarchy === 'true') {
+        const pageById = {};
+        pages.forEach((p) => { pageById[p.id] = { ...p, children: [] }; });
+
+        const rootPages = [];
+        pages.forEach((p) => {
+          const item = pageById[p.id];
+          if (p.parent_id && pageById[p.parent_id]) {
+            pageById[p.parent_id].children.push(item);
+          } else {
+            rootPages.push(item);
+          }
+        });
+
+        return res.status(200).json({
           success: true,
           message: 'User pages retrieved successfully',
-          data: { pages }
+          data: { pages: rootPages, flat: pages }
         });
       }
+
+      res.status(200).json({
+        success: true,
+        message: 'User pages retrieved successfully',
+        data: { pages }
+      });
     } catch (error) {
       console.error('Get user pages error:', error);
       res.status(500).json({

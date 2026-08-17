@@ -159,7 +159,17 @@ const requireAssignedPage = (targetUrl) => {
       const Page = require('../models/page');
       const userPages = await Page.getPagesByUser(req.user.id);
 
-      const checkUrl = targetUrl || req.baseUrl || req.path;
+      // Determine clean target URL
+      let checkUrl = targetUrl;
+      if (!checkUrl) {
+        if (req.baseUrl.includes('/users')) checkUrl = '/users';
+        else if (req.baseUrl.includes('/roles')) checkUrl = '/roles';
+        else if (req.baseUrl.includes('/pages')) checkUrl = '/pages';
+        else if (req.baseUrl.includes('/menus')) checkUrl = '/menus';
+        else if (req.baseUrl.includes('/activity')) checkUrl = '/activity';
+        else checkUrl = req.baseUrl || req.path;
+      }
+
       const cleanCheckUrl = checkUrl.toLowerCase().trim().replace(/^\/+|\/+$/g, '');
 
       const hasAccess = userPages.some((p) => {

@@ -241,10 +241,9 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
       return url;
     }
     
-    // For internal pages, you might want to construct the full URL
-    // This depends on your application structure
+    // For internal pages, use current origin dynamically
     if (url.startsWith('/')) {
-      return `http://localhost:5173${url}`;
+      return `${window.location.origin}${url}`;
     }
     
     return url;
