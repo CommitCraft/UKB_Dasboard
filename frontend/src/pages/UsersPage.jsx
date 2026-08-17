@@ -490,7 +490,7 @@ const UsersPage = () => {
           </div>
           <button
             onClick={handleAddUser}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 shadow-md font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#00629F] to-[#004774] text-white rounded-xl hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#00629F] transition-all duration-200 shadow-md shadow-[#00629F]/20 font-semibold"
           >
             <Plus className="h-5 w-5" />
             Add User

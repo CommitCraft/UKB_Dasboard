@@ -10,12 +10,46 @@ export default {
         'xs': '475px',
       },
       colors: {
+        // EPACK SriCity Brand Color (#00629F) Palette
+        brand: {
+          DEFAULT: '#00629F',
+          50: '#eef7fc',
+          100: '#d9eef9',
+          200: '#b3def3',
+          300: '#8ccded',
+          400: '#40abdf',
+          500: '#00629F',
+          600: '#00568c',
+          700: '#004774',
+          800: '#00385b',
+          900: '#002943',
+          950: '#001b2d'
+        },
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
+          50: '#eef7fc',
+          100: '#d9eef9',
+          200: '#b3def3',
+          300: '#8ccded',
+          400: '#40abdf',
+          500: '#00629F',
+          600: '#00568c',
+          700: '#004774',
+          800: '#00385b',
+          900: '#002943',
+          950: '#001b2d'
+        },
+        indigo: {
+          50: '#eef7fc',
+          100: '#d9eef9',
+          200: '#b3def3',
+          300: '#8ccded',
+          400: '#40abdf',
+          500: '#00629F',
+          600: '#00629F',
+          700: '#00568c',
+          800: '#004774',
+          900: '#00385b',
+          950: '#001b2d'
         },
         dark: {
           50: '#f8fafc',
@@ -41,7 +75,7 @@ export default {
         },
         slideUp: {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { opacity: '1' },
         },
       }
     },
@@ -49,4 +83,3 @@ export default {
   plugins: [],
   darkMode: 'class',
 }
-
