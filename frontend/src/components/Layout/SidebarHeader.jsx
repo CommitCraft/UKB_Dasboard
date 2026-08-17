@@ -19,24 +19,24 @@ const SidebarHeader = ({
   });
 
   return (
-    <div className="flex flex-col p-4 border-b border-gray-200 dark:border-gray-700 relative">
+    <div className="flex flex-col p-2.5 border-b border-gray-200 dark:border-gray-700 relative">
       <div className="flex flex-col items-center w-full text-center">
         {/* Full width logo container */}
         <div className="w-full flex items-center justify-center px-1">
           <img
             src={logoSrc}
             alt={logoAlt}
-            className="w-full h-auto max-h-16 object-contain"
+            className="w-full h-auto max-h-11 object-contain"
           />
         </div>
 
         {/* Welcome greeting & date */}
-        <div className="mt-3 flex flex-col items-center w-full">
-          <span className="text-sm font-extrabold text-gray-900 dark:text-white">
+        <div className="mt-1.5 flex flex-col items-center w-full">
+          <span className="text-xs font-extrabold text-gray-900 dark:text-white">
             Welcome back, <span className="text-[#00629F] dark:text-sky-400">{user?.username || 'superadmin'}!</span>
           </span>
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mt-1">
-            <Calendar className="h-3.5 w-3.5 text-[#00629F]" />
+          <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+            <Calendar className="h-3 w-3 text-[#00629F]" />
             {formattedDate}
           </span>
         </div>
