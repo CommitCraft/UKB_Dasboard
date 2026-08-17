@@ -108,12 +108,6 @@ const DashboardPage = () => {
   }, [user, fetchDashboardData]);
 
   const currentDate = new Date();
-  const greeting = () => {
-    const hour = currentDate.getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
 
   return (
     <Layout>
@@ -122,24 +116,17 @@ const DashboardPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-              <span className="block sm:inline">{greeting()},</span>{' '}
-              <span className="text-primary-600 dark:text-primary-400">{user?.username}!</span>
+              Welcome back,{' '}
+              <span className="text-[#00629F] dark:text-sky-400">{user?.username || 'superadmin'}!</span>
             </h1>
             <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
-              <span className="hidden sm:inline">
+              <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 flex-shrink-0 text-[#00629F]" />
+              <span>
                 {currentDate.toLocaleDateString('en-US', { 
                   weekday: 'long', 
-                  year: 'numeric', 
                   month: 'long', 
-                  day: 'numeric' 
-                })}
-              </span>
-              <span className="sm:hidden">
-                {currentDate.toLocaleDateString('en-US', { 
-                  weekday: 'short', 
-                  month: 'short', 
-                  day: 'numeric' 
+                  day: 'numeric',
+                  year: 'numeric' 
                 })}
               </span>
             </div>
