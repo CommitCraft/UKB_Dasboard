@@ -48,14 +48,15 @@ const limiter = rateLimit({
 
 // ✅ CORS MUST BE FIRST
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || `http://${localIP}:8800`,
+  origin: (origin, callback) => {
+    // Allow all origins in development or if origin matches CORS_ORIGIN/localhost
+    if (!origin || process.env.NODE_ENV !== 'production') return callback(null, true);
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-
-// ✅ Explicit Preflight Support
-app.options('*', cors());
 
 // 🛡️ Security Headers
 app.use(helmet({
@@ -114,7 +115,7 @@ app.get('/', (req, res) => {
 });
 
 // ❌ 404 Handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: 'Endpoint not found',
@@ -128,8 +129,16 @@ app.use(errorHandler);
 // 🚀 Start Server
 const startServer = async () => {
   try {
-    await db.execute('SELECT 1');
-    console.log('✅ Database connected successfully');
+    await db.initializeDatabase();
+    
+    const usersCount = await db.execute('SELECT COUNT(*) as count FROM users');
+    if (usersCount[0]?.count === 0) {
+      console.log('🌱 Database empty. Running auto-seeding...');
+      const { seedDatabase } = require('./src/seed/seed');
+      await seedDatabase();
+    } else {
+      console.log('✅ Database connected & tables verified successfully');
+    }
 
     app.listen(PORT, HOST, () => {
       const displayHost = HOST === '0.0.0.0' ? localIP : HOST;

@@ -271,7 +271,7 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
 };
 
 const RolesPage = () => {
-  const { isAdmin } = useAuth();
+  useAuth();
   const [roles, setRoles] = useState([]);
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);

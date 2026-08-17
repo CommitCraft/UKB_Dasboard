@@ -97,9 +97,9 @@ const LoginPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl font-extrabold text-gray-900 dark:text-white"
           >
-            Saral Tech Dashboard
+            Aplos Logix Dashboard
           </motion.h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Saral Tech Dashboard</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Aplos Logix Dashboard</p>
         </div>
 
         {/* Login Form */}
@@ -171,7 +171,7 @@ const LoginPage = () => {
           transition={{ delay: 0.5 }}
           className="text-center text-xs text-gray-500 dark:text-gray-400 mt-6"
         >
-          Saral Tech Dashboard v1.0 • Made with ❤️ by Saral Technologies
+          Aplos Logix Dashboard v1.0 • Made with ❤️ by Aplos Logix
         </motion.p>
       </motion.div>
     </div>

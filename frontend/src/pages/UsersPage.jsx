@@ -329,7 +329,7 @@ const UserModal = ({ isOpen, onClose, user, roles, onSave }) => {
 };
 
 const UsersPage = () => {
-  const { user: currentUser, isAdmin } = useAuth();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);

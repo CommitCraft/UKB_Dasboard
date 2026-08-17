@@ -37,6 +37,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { apiService } from "../../utils/api";
+import SidebarHeader from "./SidebarHeader";
 
 /* -------------------------------------------------------------------------- */
 /*                            NavItemTree Component                           */
@@ -198,8 +199,7 @@ const NavItemTree = ({
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const [myPages, setMyPages] = useState([]);
   const [loadingPages, setLoadingPages] = useState(false);
@@ -230,66 +230,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: FileText,
       roles: ["Super Admin", "Admin"],
     },
-    {
-      name: "USW Logs",
-      path: "/uswlogs",
-      icon: Database,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "Complete Log",
-      path: "/cffcompletelog",
-      icon: BarChart3,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "Balancing 1 Data",
-      path: "/cffbalancing1data",
-      icon: BarChart2,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "Reliability Dashboard",
-      path: "/reliabilitydashboard",
-      icon: BarChart2,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "Reliability Spec Master",
-      path: "/reliabilityspecmaster",
-      icon: BarChart2,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "Reliability Lab Test Log",
-      path: "/reliabilitylabtestlog",
-      icon: BarChart2,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "MC6 Log",
-      path: "/mc6_log",
-      icon: Cpu,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "MC8 Log",
-      path: "/mc8_log",
-      icon: Cpu,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "RunOut Log",
-      path: "/runout_log",
-      icon: Activity,
-      roles: ["Super Admin", "Admin"],
-    },
-    {
-      name: "Oven Time Log",
-      path: "/oventimelog",
-      icon: Activity,
-      roles: ["Super Admin", "Admin"],
-    },
+    
   ];
 
   const roleMapping = {
@@ -467,16 +408,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
   }, [fetchMyPages]);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login", {
-        replace: true,
-      });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   const excludedPages = [
     "Activity Logs",
@@ -536,27 +467,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           }
         `}
       >
-         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-           <div className="flex flex-col items-center">
-              <div className="bg-primary-500 rounded-lg flex items-center justify-center">
-                <img
-                  src="https://5.imimg.com/data5/SELLER/Default/2023/5/310440404/HV/ZS/HD/63527002/epack-packing-1000x1000.jpeg"
-                  alt="EPACK Logo"
-                  className="object-contain"
-                />
-              </div>
-              <span className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
-                SriCity Dashboard
-              </span>
-            </div>
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+        {/* Header Component */}
+        <SidebarHeader onClose={onClose} />
 
         {/* Scrollable navigation */}
         <nav
@@ -1039,7 +951,7 @@ const Layout = ({ children }) => {
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
               © {new Date().getFullYear()}{" "}
               <span className="font-semibold text-gray-700 dark:text-gray-300">
-                Saral Tech
+                Aplos Logix
               </span>
               . All rights reserved.
             </p>

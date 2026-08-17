@@ -45,14 +45,14 @@ async function seedDatabase() {
 
     // Display default credentials
     console.log('\n🚀 Default Admin Credentials:');
-    console.log('Email: admin@cmscrm.com');
-    console.log('Password: Admin123!');
+    console.log(`Email: ${process.env.DEFAULT_ADMIN_EMAIL || 'admin@cmscrm.com'}`);
+    console.log(`Password: ${process.env.DEFAULT_ADMIN_PASS || 'Admin123!'}`);
     console.log('\n🔧 Manager Credentials:');
-    console.log('Email: manager@cmscrm.com');
-    console.log('Password: Manager123!');
+    console.log(`Email: ${process.env.DEFAULT_MANAGER_EMAIL || 'manager@cmscrm.com'}`);
+    console.log(`Password: ${process.env.DEFAULT_MANAGER_PASS || 'Manager123!'}`);
     console.log('\n👤 User Credentials:');
-    console.log('Email: user@cmscrm.com');
-    console.log('Password: User123!');
+    console.log(`Email: ${process.env.DEFAULT_USER_EMAIL || 'user@cmscrm.com'}`);
+    console.log(`Password: ${process.env.DEFAULT_USER_PASS || 'User123!'}`);
 
   } catch (error) {
     console.error('❌ Seeding failed:', error);
@@ -177,26 +177,26 @@ async function createDefaultUsers() {
   const users = [
     {
       username: 'superadmin',
-      email: 'superadmin@cmscrm.com',
-      password: 'SuperAdmin123!',
+      email: process.env.DEFAULT_SUPERADMIN_EMAIL || 'superadmin@cmscrm.com',
+      password: process.env.DEFAULT_SUPERADMIN_PASS || 'SuperAdmin123!',
       status: 'active'
     },
     {
       username: 'admin',
-      email: 'admin@cmscrm.com',
-      password: 'Admin123!',
+      email: process.env.DEFAULT_ADMIN_EMAIL || 'admin@cmscrm.com',
+      password: process.env.DEFAULT_ADMIN_PASS || 'Admin123!',
       status: 'active'
     },
     {
       username: 'manager',
-      email: 'manager@cmscrm.com',
-      password: 'Manager123!',
+      email: process.env.DEFAULT_MANAGER_EMAIL || 'manager@cmscrm.com',
+      password: process.env.DEFAULT_MANAGER_PASS || 'Manager123!',
       status: 'active'
     },
     {
       username: 'user',
-      email: 'user@cmscrm.com',
-      password: 'User123!',
+      email: process.env.DEFAULT_USER_EMAIL || 'user@cmscrm.com',
+      password: process.env.DEFAULT_USER_PASS || 'User123!',
       status: 'active'
     },
     {

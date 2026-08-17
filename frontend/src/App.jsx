@@ -11,19 +11,11 @@ import UsersPage from './pages/UsersPage';
 import RolesPage from './pages/RolesPage';
 import PagesPage from './pages/PagesPage';
 import IframeTestPage from './pages/IframeTestPage';
-import LoadingSpinner from './components/LoadingSpinner';
-import Cff_Complete_Log from './pages/complete_log/CffCompleteLog';
-import WMCompleteLog from './pages/complete_log/WMCompleteLog';
 import ExternalPage from './pages/ExternalPage';
-import UswLogs from './pages/complete_log/UswLogs';
-import MC6Log from './pages/complete_log/MC6Log';
-import MC8Log from './pages/complete_log/MC8Log';
-import RunOut from './pages/complete_log/RunOut';
-import OvenLog from './pages/complete_log/OvenLog';
-import CffBalancing1Data from './pages/complete_log/CffBalancing1Data';
-import ReliabilitySpecMaster from './pages/ReliabilitySpecMaster';
-import ReliabilityLabTestLog from './pages/ReliabilityLabTestLog';
-import ReliabilityDashboard from './pages/ReliabilityDashboard';
+import LoadingSpinner from './components/LoadingSpinner';
+// New Page Add
+
+
 
 
 // Protected Route Component
@@ -106,75 +98,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/cffcompletelog"
-                element={
-                  <ProtectedRoute>
-                    <Cff_Complete_Log />
-                  </ProtectedRoute>} />
-
-                  <Route path='/cffbalancing1data'
-                  element={
-                    <ProtectedRoute>
-                      <CffBalancing1Data/>
-                    </ProtectedRoute>
-                  }/>
-
-                  <Route path='/reliabilitydashboard'
-                  element={
-                    <ProtectedRoute>
-                     <ReliabilityDashboard/>
-                    </ProtectedRoute>
-                  }/>
-
-                  <Route path='/reliabilityspecmaster'
-                  element={
-                    <ProtectedRoute>
-                      <ReliabilitySpecMaster/>
-                    </ProtectedRoute>
-                  }/>
-                  <Route path='/reliabilitylabtestlog'
-                  element={
-                    <ProtectedRoute>
-                      <ReliabilityLabTestLog/>
-                    </ProtectedRoute>
-                  }/>
-
-              <Route path="/uswlogs"
-                element={
-                  <ProtectedRoute>
-                    <UswLogs />
-                  </ProtectedRoute>} />
-
-              <Route path="/wmcompletelog"
-                element={
-                  <ProtectedRoute>
-                    <WMCompleteLog />
-                  </ProtectedRoute>} />
-
-                  <Route path="/mc6_log"
-                element={
-                  <ProtectedRoute>
-                    <MC6Log/>
-                  </ProtectedRoute>} />
-
-                  <Route path="/mc8_log"
-                element={
-                  <ProtectedRoute>
-                    <MC8Log/>
-                  </ProtectedRoute>} />
-
-                  <Route path="/runout_log"
-                element={
-                  <ProtectedRoute>
-                    <RunOut/>
-                  </ProtectedRoute>} />
-
-                  <Route path="/oventimelog"
-                element={
-                  <ProtectedRoute>
-                   <OvenLog/>
-                  </ProtectedRoute>} />
-                  
                   
               <Route
                 path="/iframe-test"

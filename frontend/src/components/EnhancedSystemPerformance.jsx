@@ -322,12 +322,6 @@ const SystemPerformance = () => {
     return <Activity className="h-4 w-4 text-gray-500" />;
   };
 
-  const getStatusColor = (value, thresholds) => {
-    if (value > thresholds.critical) return 'text-red-600 dark:text-red-400';
-    if (value > thresholds.warning) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-green-600 dark:text-green-400';
-  };
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
       {/* Header */}
