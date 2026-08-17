@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const PageController = require('../controllers/pageController');
-const { auth, requireAdmin, requireAssignedPages } = require('../middleware/auth');
+const { auth, requireAdmin, requireAssignedPage } = require('../middleware/auth');
 const { checkPermission } = require('../middleware/rbac');
 const { activityLogger, responseTimeLogger, logFileUpload } = require('../middleware/activityLogger');
 const {
@@ -31,16 +31,14 @@ router.get('/my-pages-hierarchy',
 
 // Get all pages (simple list for dropdowns) - Users with assigned pages can view
 router.get('/simple',
-  requireAssignedPages,
-  checkPermission('view', 'page'),
   activityLogger('view', 'page'),
   PageController.getAllSimple
 );
 
-// Get all pages with pagination - Users with assigned pages can view
+// Get all pages with pagination - Requires specific '/pages' assigned permission
 router.get('/',
   paginationValidation,
-  requireAssignedPages,
+  requireAssignedPage('/pages'),
   checkPermission('view', 'page'),
   activityLogger('view', 'page'),
   PageController.getPages
@@ -61,39 +59,39 @@ router.get('/access/:pageUrl',
   PageController.checkPageAccess
 );
 
-// Get page by ID - Users with assigned pages can view
+// Get page by ID - Requires specific '/pages' assigned permission
 router.get('/:id',
   pageIdValidation,
-  requireAssignedPages,
+  requireAssignedPage('/pages'),
   checkPermission('view', 'page'),
   activityLogger('view', 'page'),
   PageController.getPageById
 );
 
-// Create new page - Users with assigned pages can create
+// Create new page - Requires specific '/pages' assigned permission
 router.post('/',
   createPageValidation,
-  requireAssignedPages,
+  requireAssignedPage('/pages'),
   checkPermission('create', 'page'),
   logFileUpload,
   activityLogger('create', 'page'),
   PageController.createPage
 );
 
-// Update page - Users with assigned pages can update
+// Update page - Requires specific '/pages' assigned permission
 router.put('/:id',
   updatePageValidation,
-  requireAssignedPages,
+  requireAssignedPage('/pages'),
   checkPermission('update', 'page'),
   logFileUpload,
   activityLogger('update', 'page'),
   PageController.updatePage
 );
 
-// Delete page - Users with assigned pages can delete
+// Delete page - Requires specific '/pages' assigned permission
 router.delete('/:id',
   pageIdValidation,
-  requireAssignedPages,
+  requireAssignedPage('/pages'),
   checkPermission('delete', 'page'),
   activityLogger('delete', 'page'),
   PageController.deletePage

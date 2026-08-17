@@ -140,60 +140,50 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-// Check if user has assigned pages (allows access to users with pages but not CRUD operations)
-const requireAssignedPages = async (req, res, next) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication required.'
+// Check if user has access to a specific page or resource URL
+const requireAssignedPage = (targetUrl) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required.'
+        });
+      }
+
+      // Super admin always has access
+      if (req.user.roles.includes('super_admin')) {
+        return next();
+      }
+
+      const Page = require('../models/page');
+      const userPages = await Page.getPagesByUser(req.user.id);
+
+      const checkUrl = targetUrl || req.baseUrl || req.path;
+      const cleanCheckUrl = checkUrl.toLowerCase().trim().replace(/^\/+|\/+$/g, '');
+
+      const hasAccess = userPages.some((p) => {
+        if (!p.url) return false;
+        const cleanPageUrl = p.url.toLowerCase().trim().replace(/^\/+|\/+$/g, '');
+        return cleanPageUrl === cleanCheckUrl;
       });
+
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied. You do not have permission to access this page.`
+        });
+      }
+
+      next();
+    } catch (error) {
+      console.error('requireAssignedPage error:', error);
+      res.status(500).json({ success: false, message: 'Permission check error' });
     }
-
-    console.log(`requireAssignedPages check for user: ${req.user.username} (ID: ${req.user.id}), roles: ${req.user.roles?.join(', ') || 'None'}`);
-
-    // Super admin always has access
-    if (req.user.roles.includes('super_admin')) {
-      console.log('Access granted: User is super admin');
-      return next();
-    }
-
-    // Admin also has access
-    if (req.user.roles.includes('admin')) {
-      console.log('Access granted: User is admin');
-      return next();
-    }
-
-    // Check if user has any assigned pages
-    const Page = require('../models/page');
-    const userPages = await Page.getPagesByUser(req.user.id);
-    console.log(`User has ${userPages?.length || 0} assigned pages`);
-    
-    // Allow all users with assigned pages to perform CRUD operations
-    console.log('Access granted: User has assigned pages');
-    return next();
-    
-    // Original logic (commented out for testing)
-    /*
-    if (!userPages || userPages.length === 0) {
-      console.log('Access denied: No pages assigned');
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. No pages assigned to your account.'
-      });
-    }
-
-    console.log('Access granted: User has assigned pages');
-    next();
-    */
-  } catch (error) {
-    console.error('Assigned pages check error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error checking assigned pages.'
-    });
-  }
+  };
 };
+
+const requireAssignedPages = requireAssignedPage();
 
 // Generate JWT token
 const generateToken = (user) => {
@@ -251,6 +241,7 @@ module.exports = {
   optionalAuth,
   requireAdmin,
   requireAssignedPages,
+  requireAssignedPage,
   generateToken,
   verifyToken,
   decodeToken,

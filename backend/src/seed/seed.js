@@ -118,6 +118,12 @@ async function createDefaultPages() {
       is_external: false
     },
     {
+      name: 'Menu Management',
+      url: '/menus',
+      icon: 'FolderTree',
+      is_external: false
+    },
+    {
       name: 'Activity Logs',
       url: '/activity',
       icon: null,

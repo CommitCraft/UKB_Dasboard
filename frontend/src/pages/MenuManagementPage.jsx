@@ -105,7 +105,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
     if (item) {
       // Find matching page by URL
       const matchedPage = availablePages.find(
-        (p) => p.url?.toLowerCase() === item.url?.toLowerCase()
+        (p) => p.url?.toLowerCase().trim() === item.url?.toLowerCase().trim()
       );
 
       setFormData({
@@ -231,7 +231,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <FolderTree className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            <FolderTree className="h-5 w-5 text-[#00629F]" />
             {item ? 'Edit Menu Item' : parentItem ? `Add Item under "${parentItem.name}"` : 'Add New Menu Item'}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
@@ -253,7 +253,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                   onClick={() => setFormData((prev) => ({ ...prev, type: tKey, parent_id: '' }))}
                   className={`p-3 rounded-xl border text-xs font-semibold text-left transition-all ${
                     formData.type === tKey
-                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 shadow-sm ring-2 ring-indigo-500/20'
+                      ? 'border-[#00629F] bg-indigo-50 dark:bg-indigo-900/40 text-[#00629F] dark:text-indigo-300 shadow-sm ring-2 ring-[#00629F]/20'
                       : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                   }`}
                 >
@@ -263,27 +263,51 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
             </div>
           </div>
 
-          {/* Select Page from Page Management (Only for non-section & non-external) */}
+          {/* Select Target Page / URL Route from Page Management (Only for non-section & non-external) */}
           {formData.type !== 'section' && !formData.is_external && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Select Page (from Page Management) <span className="text-red-500">*</span>
+                Select Page / URL Route (from Page Management) <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.selected_page_id}
                 onChange={(e) => handlePageSelect(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
+                  errors.url ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
+                }`}
               >
-                <option value="">-- Select Created Page --</option>
+                <option value="">-- Select Page from Page Management --</option>
                 {activePages.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name} ({p.url})
                   </option>
                 ))}
               </select>
-              <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
-                Selecting a page will automatically assign its URL route and icon.
-              </p>
+              {formData.url && (
+                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 font-mono">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300 font-sans">Configured Route:</span> {formData.url}
+                </p>
+              )}
+              {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
+            </div>
+          )}
+
+          {/* External URL Route (only shown if is_external checked) */}
+          {formData.type !== 'section' && formData.is_external && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                External URL Route <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.url}
+                onChange={(e) => setFormData((prev) => ({ ...prev, url: e.target.value }))}
+                placeholder="https://example.com"
+                className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
+                  errors.url ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
+                }`}
+              />
+              {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
             </div>
           )}
 
@@ -297,7 +321,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="e.g. Dashboard, Users, MAIN NAVIGATION"
-              className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 ${
+              className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
                 errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
               }`}
             />
@@ -313,7 +337,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
               <select
                 value={formData.parent_id}
                 onChange={(e) => setFormData((prev) => ({ ...prev, parent_id: e.target.value }))}
-                className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
               >
                 <option value="">No Parent (Root Level Item)</option>
                 {parentOptions.map((p) => (
@@ -325,35 +349,13 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
             </div>
           )}
 
-          {/* URL Route Field (Read-only for Page Management selections, editable for External URLs) */}
-          {formData.type !== 'section' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                URL Route {formData.is_external ? <span className="text-red-500">*</span> : <span className="text-xs text-gray-400 font-normal">(Auto-assigned from Page Management)</span>}
-              </label>
-              <input
-                type="text"
-                value={formData.url}
-                readOnly={!formData.is_external}
-                onChange={(e) => setFormData((prev) => ({ ...prev, url: e.target.value }))}
-                placeholder={formData.is_external ? 'https://example.com' : 'Select a page above to set route'}
-                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm transition-all ${
-                  formData.is_external
-                    ? 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500'
-                    : 'bg-gray-100 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed font-mono'
-                } ${errors.url ? 'border-red-500' : ''}`}
-              />
-              {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
-            </div>
-          )}
-
           {/* Icon Selector Grid */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Menu Icon
               </label>
-              <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1">
+              <span className="text-xs text-[#00629F] dark:text-indigo-400 font-semibold flex items-center gap-1">
                 Selected: {formData.icon}
               </span>
             </div>
@@ -368,7 +370,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                     onClick={() => setFormData((prev) => ({ ...prev, icon: item.name }))}
                     className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
                       isSelected
-                        ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm ring-2 ring-indigo-500/20'
+                        ? 'bg-indigo-100 dark:bg-indigo-900/40 border-[#00629F] text-[#00629F] dark:text-indigo-300 font-bold shadow-sm ring-2 ring-[#00629F]/20'
                         : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
                     }`}
                   >
@@ -394,7 +396,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                     selected_page_id: e.target.checked ? '' : prev.selected_page_id
                   }))
                 }
-                className="rounded text-indigo-600 focus:ring-indigo-500"
+                className="rounded text-[#00629F] focus:ring-[#00629F]"
               />
               External URL
             </label>
@@ -427,7 +429,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 flex items-center shadow-md shadow-indigo-600/20"
+              className="px-5 py-2 text-xs font-semibold text-white bg-[#00629F] hover:bg-[#00558c] rounded-xl disabled:opacity-50 flex items-center shadow-md shadow-[#00629F]/20"
             >
               {loading && <LoadingSpinner size="sm" className="mr-2" />}
               {item ? 'Save Changes' : 'Create Item'}
@@ -595,7 +597,7 @@ const MenuManagementPage = () => {
                   )}
 
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
+                    <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-[#00629F] dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
                       {renderMenuIcon(node.icon)}
                     </div>
                     <span className={`text-sm ${level === 1 ? 'font-bold text-gray-900 dark:text-white' : level === 2 ? 'font-semibold text-gray-800 dark:text-gray-200' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
@@ -617,7 +619,7 @@ const MenuManagementPage = () => {
                 {node.url ? (
                   <span className="flex items-center gap-1">
                     {node.url}
-                    {node.is_external && <ExternalLink className="h-3 w-3 text-indigo-500 inline" />}
+                    {node.is_external && <ExternalLink className="h-3 w-3 text-[#00629F] inline" />}
                   </span>
                 ) : (
                   <span className="text-gray-400 italic">None (Section Header)</span>
@@ -657,7 +659,7 @@ const MenuManagementPage = () => {
                         setParentForNewChild(node);
                         setIsModalOpen(true);
                       }}
-                      className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                      className="p-1.5 text-[#00629F] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
                       title="Add Child Sub-Menu"
                     >
                       <Plus className="h-4 w-4" />
@@ -691,7 +693,7 @@ const MenuManagementPage = () => {
                       setParentForNewChild(null);
                       setIsModalOpen(true);
                     }}
-                    className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                    className="p-1.5 text-[#00629F] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
                     title="Edit Item"
                   >
                     <Edit className="h-4 w-4" />
@@ -757,14 +759,14 @@ const MenuManagementPage = () => {
                 placeholder="Search menu items by name or route..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
               />
             </div>
 
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
             >
               <option value="">All Item Levels</option>
               <option value="section">Section Labels</option>
@@ -802,7 +804,7 @@ const MenuManagementPage = () => {
               <p className="text-gray-500 dark:text-gray-400 font-medium">No menu items found.</p>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="mt-4 inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
+                className="mt-4 inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-[#00629F] text-white shadow-md shadow-[#00629F]/20"
               >
                 <Plus className="h-4 w-4 mr-1.5" />
                 Add Your First Menu Item

@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const RoleController = require('../controllers/roleController');
-const { auth, requireAdmin, requireAssignedPages } = require('../middleware/auth');
+const { auth, requireAdmin, requireAssignedPage } = require('../middleware/auth');
 const { checkPermission } = require('../middleware/rbac');
 const { activityLogger, responseTimeLogger } = require('../middleware/activityLogger');
 const {
   createRoleValidation,
   updateRoleValidation,
   roleIdValidation,
-  assignPagesValidation,
   paginationValidation
 } = require('../middleware/validation');
 
@@ -23,10 +22,10 @@ router.get('/simple',
   RoleController.getAllSimple
 );
 
-// Get all roles with pagination - Users with assigned pages can view
+// Get all roles with pagination - Requires specific '/roles' assigned permission
 router.get('/',
   paginationValidation,
-  requireAssignedPages,
+  requireAssignedPage('/roles'),
   checkPermission('view', 'role'),
   activityLogger('view', 'role'),
   RoleController.getRoles
@@ -40,85 +39,40 @@ router.get('/stats',
   RoleController.getStats
 );
 
-// Get role by ID - Users with assigned pages can view
+// Get role by ID - Requires specific '/roles' assigned permission
 router.get('/:id',
   roleIdValidation,
-  requireAssignedPages,
+  requireAssignedPage('/roles'),
   checkPermission('view', 'role'),
   activityLogger('view', 'role'),
   RoleController.getRoleById
 );
 
-// Create new role - Users with assigned pages can create
+// Create new role - Requires specific '/roles' assigned permission
 router.post('/',
   createRoleValidation,
-  requireAssignedPages,
+  requireAssignedPage('/roles'),
   checkPermission('create', 'role'),
   activityLogger('create', 'role'),
   RoleController.createRole
 );
 
-// Update role - Users with assigned pages can update
+// Update role - Requires specific '/roles' assigned permission
 router.put('/:id',
   updateRoleValidation,
-  requireAssignedPages,
+  requireAssignedPage('/roles'),
   checkPermission('update', 'role'),
   activityLogger('update', 'role'),
   RoleController.updateRole
 );
 
-// Delete role - Users with assigned pages can delete
+// Delete role - Requires specific '/roles' assigned permission
 router.delete('/:id',
   roleIdValidation,
-  requireAssignedPages,
+  requireAssignedPage('/roles'),
   checkPermission('delete', 'role'),
   activityLogger('delete', 'role'),
   RoleController.deleteRole
-);
-
-// Get role pages
-router.get('/:id/pages',
-  roleIdValidation,
-  requireAssignedPages,
-  checkPermission('view', 'role'),
-  activityLogger('view', 'role_pages'),
-  RoleController.getRolePages
-);
-
-// Assign pages to role - Users with assigned pages can assign pages
-router.post('/assign-pages',
-  assignPagesValidation,
-  requireAssignedPages,
-  checkPermission('update', 'role'),
-  activityLogger('page_assign', 'role'),
-  RoleController.assignPages
-);
-
-// Get role page hierarchy
-router.get('/:id/page-hierarchy',
-  roleIdValidation,
-  requireAssignedPages,
-  checkPermission('view', 'role'),
-  activityLogger('view', 'role_page_hierarchy'),
-  RoleController.getRolePageHierarchy
-);
-
-// Get role page order (flat list with order info)
-router.get('/:id/page-order',
-  roleIdValidation,
-  requireAssignedPages,
-  checkPermission('view', 'role'),
-  activityLogger('view', 'role_page_order'),
-  RoleController.getRolePageOrder
-);
-
-// Update role page order
-router.put('/:id/page-order',
-  roleIdValidation,
-  requireAssignedPages,
-  checkPermission('update', 'role'),
-  activityLogger('update', 'role_page_order'),
-  RoleController.updateRolePageOrder
 );
 
 module.exports = router;
