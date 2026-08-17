@@ -17,14 +17,17 @@ import {
   BarChart3,
   ChevronDown,
   ChevronRight,
+  Clock,
   Cpu,
   Database,
   ExternalLink,
   FileText,
   Globe,
+  Home,
   LayoutDashboard,
   LogOut,
   Menu,
+  Monitor,
   Moon,
   Settings,
   Shield,
@@ -309,6 +312,28 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const getPageIcon = (page) => {
+    if (page?.icon) {
+      const iconMap = {
+        LayoutDashboard,
+        Users,
+        Shield,
+        FileText,
+        Activity,
+        Settings,
+        Globe,
+        Database,
+        Cpu,
+        BarChart2,
+        Clock,
+        User,
+        Monitor,
+        Home,
+      };
+      if (iconMap[page.icon]) {
+        return iconMap[page.icon];
+      }
+    }
+
     const path = formatUrl(page?.url).toLowerCase();
     const name = page?.name?.toLowerCase() || "";
 
@@ -341,6 +366,13 @@ const Sidebar = ({ isOpen, onClose }) => {
       name.includes("pages")
     ) {
       return FileText;
+    }
+
+    if (
+      path.includes("activity") ||
+      name.includes("activity")
+    ) {
+      return Activity;
     }
 
     if (
@@ -931,8 +963,21 @@ const Header = ({ onMenuClick }) => {
 /* -------------------------------------------------------------------------- */
 
 const Layout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Check if rendered inside an iframe (like ZoomableIframeModal preview) or standalone mode
+  const isIframe =
+    typeof window !== "undefined" &&
+    (window.self !== window.top ||
+      new URLSearchParams(window.location.search).get("standalone") === "true");
+
+  if (isIframe) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-4 overflow-y-auto">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">

@@ -65,10 +65,10 @@ class PageController {
         return res.status(400).json(handleValidationError(errors));
       }
 
-      const { name, url, is_external = false, status = 'active' } = req.body;
+      const { name, url, is_external = false, status = 'active', icon = null } = req.body;
       const createdBy = req.user.id;
       
-      let iconPath = null;
+      let iconPath = icon || null;
 
       // Handle file upload if present
       if (req.files && req.files.icon) {
@@ -144,10 +144,10 @@ class PageController {
       }
 
       const { id } = req.params;
-      const { name, url, is_external, status } = req.body;
+      const { name, url, is_external, status, icon } = req.body;
 
       // Debug logging
-      console.log('📝 Update page request:', { id, name, url, is_external, status });
+      console.log('📝 Update page request:', { id, name, url, is_external, status, icon });
 
       const existingPage = await Page.findById(id);
       if (!existingPage) {
@@ -162,6 +162,7 @@ class PageController {
       if (url !== undefined) updateData.url = url;
       if (is_external !== undefined) updateData.is_external = is_external;
       if (status !== undefined) updateData.status = status;
+      if (icon !== undefined) updateData.icon = icon;
 
       console.log('💾 Update data to be saved:', updateData);
 
