@@ -227,12 +227,12 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <FileText className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             {page ? 'Edit Page' : 'Add New Page'}
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer">
             ✕
           </button>
         </div>

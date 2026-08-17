@@ -263,14 +263,14 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
     <div className={modalSize}>
       <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl ${contentSize} flex flex-col overflow-hidden`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
+        <div className="flex items-center justify-between px-5 py-2.5 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
           <div className="flex items-center space-x-3">
-            <Monitor className="h-6 w-6 text-primary-600" />
+            <Monitor className="h-5 w-5 text-primary-600" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
                 Assigned Pages
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 {user?.username} - {pages.length} page{pages.length !== 1 ? 's' : ''} assigned
               </p>
             </div>

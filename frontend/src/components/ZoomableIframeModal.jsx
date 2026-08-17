@@ -147,9 +147,9 @@ const ZoomableIframeModal = ({
     >
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full h-full flex flex-col overflow-hidden">
         {/* Header with controls */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
+        <div className="flex items-center justify-between px-5 py-2.5 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
           <div className="flex items-center space-x-3">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
               {title || "Iframe Viewer"}
             </h3>
             {/* {url && (
