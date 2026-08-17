@@ -32,7 +32,10 @@ import {
   Award,
   UserCheck,
   Key,
-  Star
+  Star,
+  CheckSquare,
+  Square,
+  ListPlus
 } from 'lucide-react';
 import Layout from '../components/Layout/Layout';
 import { apiService, endpoints } from '../utils/api';
@@ -85,6 +88,7 @@ const TYPE_CONFIG = {
 };
 
 const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePages, onSave }) => {
+  const [modalMode, setModalMode] = useState('single'); // 'single' or 'multi'
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -95,15 +99,21 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
     is_external: false,
     selected_page_id: ''
   });
+
+  // Multi-select batch add state
+  const [batchTargetParent, setBatchTargetParent] = useState('');
+  const [batchTargetType, setBatchTargetType] = useState('submenu');
+  const [selectedBatchPages, setSelectedBatchPages] = useState([]);
+  const [batchSearchTerm, setBatchSearchTerm] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Active pages only from Page Management
   const activePages = availablePages.filter((p) => p.status === 'active');
 
   useEffect(() => {
     if (item) {
-      // Find matching page by URL
+      setModalMode('single');
       const matchedPage = availablePages.find(
         (p) => p.url?.toLowerCase().trim() === item.url?.toLowerCase().trim()
       );
@@ -113,12 +123,13 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
         url: item.url || '',
         icon: item.icon || 'Globe',
         type: item.type || 'menu',
-        parent_id: item.parent_id || '',
+        parent_id: item.parent_id ? String(item.parent_id) : '',
         status: item.status || 'active',
         is_external: Boolean(item.is_external),
         selected_page_id: matchedPage ? String(matchedPage.id) : ''
       });
     } else if (parentItem) {
+      setModalMode('single');
       let childType = 'submenu';
       if (parentItem.type === 'section') childType = 'menu';
       else if (parentItem.type === 'menu') childType = 'submenu';
@@ -129,12 +140,16 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
         url: '',
         icon: 'Globe',
         type: childType,
-        parent_id: parentItem.id,
+        parent_id: String(parentItem.id),
         status: 'active',
         is_external: false,
         selected_page_id: ''
       });
+
+      setBatchTargetParent(String(parentItem.id));
+      setBatchTargetType(childType);
     } else {
+      setModalMode('single');
       setFormData({
         name: '',
         url: '',
@@ -145,7 +160,11 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
         is_external: false,
         selected_page_id: ''
       });
+      setBatchTargetParent('');
+      setBatchTargetType('submenu');
     }
+    setSelectedBatchPages([]);
+    setBatchSearchTerm('');
     setErrors({});
   }, [item, parentItem, isOpen, availablePages]);
 
@@ -170,11 +189,36 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
     }
   };
 
+  const toggleBatchPageSelect = (page) => {
+    const pageId = String(page.id);
+    setSelectedBatchPages((prev) => {
+      const exists = prev.some((p) => String(p.id) === pageId);
+      if (exists) {
+        return prev.filter((p) => String(p.id) !== pageId);
+      }
+      return [...prev, page];
+    });
+  };
+
+  const handleSelectAllBatch = () => {
+    if (selectedBatchPages.length === activePages.length) {
+      setSelectedBatchPages([]);
+    } else {
+      setSelectedBatchPages(activePages);
+    }
+  };
+
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Menu item name is required';
-    if (formData.type !== 'section' && !formData.url.trim()) {
-      errs.url = 'Please select a page from Page Management or enter an external URL';
+    if (modalMode === 'single') {
+      if (!formData.name.trim()) errs.name = 'Menu item name is required';
+      if (formData.type !== 'section' && !formData.url.trim()) {
+        errs.url = 'Please select a page from Page Management or enter an external URL';
+      }
+    } else {
+      if (selectedBatchPages.length === 0) {
+        errs.batch = 'Please select at least one page from the checklist to add as Sub/Child Menus';
+      }
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -186,29 +230,51 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
 
     setLoading(true);
     try {
-      const payload = {
-        name: formData.name.trim(),
-        url: formData.type === 'section' ? '' : formData.url.trim(),
-        icon: formData.icon,
-        type: formData.type,
-        parent_id: formData.parent_id ? parseInt(formData.parent_id) : null,
-        status: formData.status,
-        is_external: formData.is_external
-      };
+      if (modalMode === 'single') {
+        const payload = {
+          name: formData.name.trim(),
+          url: formData.type === 'section' ? '' : formData.url.trim(),
+          icon: formData.icon,
+          type: formData.type,
+          parent_id: formData.parent_id ? parseInt(formData.parent_id) : null,
+          status: formData.status,
+          is_external: formData.is_external
+        };
 
-      if (item) {
-        await apiService.put(endpoints.menus.update(item.id), payload);
-        toast.success('Menu item updated successfully');
+        if (item) {
+          await apiService.put(endpoints.menus.update(item.id), payload);
+          toast.success('Menu item updated successfully');
+        } else {
+          await apiService.post(endpoints.menus.create, payload);
+          toast.success('Menu item created successfully');
+        }
       } else {
-        await apiService.post(endpoints.menus.create, payload);
-        toast.success('Menu item created successfully');
+        // Multi-Select Batch Add Mode
+        const parentId = batchTargetParent ? parseInt(batchTargetParent) : null;
+        let createdCount = 0;
+
+        for (const pageItem of selectedBatchPages) {
+          const payload = {
+            name: pageItem.name,
+            url: pageItem.url,
+            icon: pageItem.icon || 'Globe',
+            type: batchTargetType,
+            parent_id: parentId,
+            status: 'active',
+            is_external: Boolean(pageItem.is_external)
+          };
+          await apiService.post(endpoints.menus.create, payload);
+          createdCount++;
+        }
+
+        toast.success(`Successfully added ${createdCount} ${TYPE_CONFIG[batchTargetType]?.label || 'items'} under parent`);
       }
 
       window.dispatchEvent(new CustomEvent('permissions-updated'));
       onSave();
       onClose();
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to save menu item';
+      const msg = err.response?.data?.message || 'Failed to save menu items';
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -219,203 +285,346 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
 
   const parentOptions = flatItems.filter((i) => {
     if (item && i.id === item.id) return false;
-    if (formData.type === 'section') return false;
-    if (formData.type === 'menu') return i.type === 'section';
-    if (formData.type === 'submenu') return i.type === 'menu';
-    if (formData.type === 'child') return i.type === 'submenu';
     return true;
   });
 
+  const filteredBatchPages = activePages.filter((p) =>
+    p.name.toLowerCase().includes(batchSearchTerm.toLowerCase()) ||
+    p.url.toLowerCase().includes(batchSearchTerm.toLowerCase())
+  );
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <FolderTree className="h-5 w-5 text-[#00629F]" />
-            {item ? 'Edit Menu Item' : parentItem ? `Add Item under "${parentItem.name}"` : 'Add New Menu Item'}
+            {item ? 'Edit Menu Item' : parentItem ? `Add Items under "${parentItem.name}"` : 'Add Menu Items'}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Hierarchy Type Selector */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Item Level Hierarchy
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.keys(TYPE_CONFIG).map((tKey) => (
-                <button
-                  key={tKey}
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, type: tKey, parent_id: '' }))}
-                  className={`p-3 rounded-xl border text-xs font-semibold text-left transition-all ${
-                    formData.type === tKey
-                      ? 'border-[#00629F] bg-indigo-50 dark:bg-indigo-900/40 text-[#00629F] dark:text-indigo-300 shadow-sm ring-2 ring-[#00629F]/20'
-                      : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                  }`}
-                >
-                  {TYPE_CONFIG[tKey].label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Select Target Page / URL Route from Page Management (Only for non-section & non-external) */}
-          {formData.type !== 'section' && !formData.is_external && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Select Page / URL Route (from Page Management) <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={formData.selected_page_id}
-                onChange={(e) => handlePageSelect(e.target.value)}
-                className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
-                  errors.url ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <option value="">-- Select Page from Page Management --</option>
-                {activePages.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.url})
-                  </option>
-                ))}
-              </select>
-              {formData.url && (
-                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 font-mono">
-                  <span className="font-semibold text-gray-700 dark:text-gray-300 font-sans">Configured Route:</span> {formData.url}
-                </p>
-              )}
-              {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
-            </div>
-          )}
-
-          {/* External URL Route (only shown if is_external checked) */}
-          {formData.type !== 'section' && formData.is_external && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                External URL Route <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.url}
-                onChange={(e) => setFormData((prev) => ({ ...prev, url: e.target.value }))}
-                placeholder="https://example.com"
-                className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
-                  errors.url ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                }`}
-              />
-              {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
-            </div>
-          )}
-
-          {/* Item Name / Label */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Menu Name / Display Label <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g. Dashboard, Users, MAIN NAVIGATION"
-              className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
-                errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
+        {/* Mode Selector Tabs (Single Item vs Multi-Select Batch) */}
+        {!item && (
+          <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 px-6 pt-3">
+            <button
+              type="button"
+              onClick={() => setModalMode('single')}
+              className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
+                modalMode === 'single'
+                  ? 'border-[#00629F] text-[#00629F] font-bold'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
               }`}
-            />
-            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+            >
+              <Plus className="h-4 w-4" />
+              Single Item Creation
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setModalMode('multi')}
+              className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 ${
+                modalMode === 'multi'
+                  ? 'border-[#00629F] text-[#00629F] font-bold'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
+              }`}
+            >
+              <ListPlus className="h-4 w-4 text-[#00629F]" />
+              Multi-Select Batch Add (Add Multiple Sub/Child Menus)
+            </button>
           </div>
+        )}
 
-          {/* Parent Item Selector */}
-          {formData.type !== 'section' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Parent Menu Item
-              </label>
-              <select
-                value={formData.parent_id}
-                onChange={(e) => setFormData((prev) => ({ ...prev, parent_id: e.target.value }))}
-                className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
-              >
-                <option value="">No Parent (Root Level Item)</option>
-                {parentOptions.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    [{p.type.toUpperCase()}] {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {modalMode === 'single' ? (
+            <>
+              {/* Hierarchy Type Selector */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Item Level Hierarchy
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.keys(TYPE_CONFIG).map((tKey) => (
+                    <button
+                      key={tKey}
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, type: tKey }))}
+                      className={`p-3 rounded-xl border text-xs font-semibold text-left transition-all ${
+                        formData.type === tKey
+                          ? 'border-[#00629F] bg-indigo-50 dark:bg-indigo-900/40 text-[#00629F] dark:text-indigo-300 shadow-sm ring-2 ring-[#00629F]/20'
+                          : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                    >
+                      {TYPE_CONFIG[tKey].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* Icon Selector Grid */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Menu Icon
-              </label>
-              <span className="text-xs text-[#00629F] dark:text-indigo-400 font-semibold flex items-center gap-1">
-                Selected: {formData.icon}
-              </span>
-            </div>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 max-h-36 overflow-y-auto">
-              {ICON_LIST.map((item) => {
-                const IconComponent = item.icon;
-                const isSelected = formData.icon === item.name;
-                return (
-                  <button
-                    key={item.name}
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, icon: item.name }))}
-                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
-                      isSelected
-                        ? 'bg-indigo-100 dark:bg-indigo-900/40 border-[#00629F] text-[#00629F] dark:text-indigo-300 font-bold shadow-sm ring-2 ring-[#00629F]/20'
-                        : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+              {/* Select Target Page / URL Route from Page Management */}
+              {formData.type !== 'section' && !formData.is_external && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Select Page / URL Route (from Page Management) <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.selected_page_id}
+                    onChange={(e) => handlePageSelect(e.target.value)}
+                    className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
+                      errors.url ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
                     }`}
                   >
-                    <IconComponent className="h-4 w-4 mb-1" />
-                    <span className="text-[10px] truncate max-w-full text-center">{item.label}</span>
+                    <option value="">-- Select Page from Page Management --</option>
+                    {activePages.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.url})
+                      </option>
+                    ))}
+                  </select>
+                  {formData.url && (
+                    <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 font-mono">
+                      <span className="font-semibold text-gray-700 dark:text-gray-300 font-sans">Configured Route:</span> {formData.url}
+                    </p>
+                  )}
+                  {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
+                </div>
+              )}
+
+              {/* External URL Route (only shown if is_external checked) */}
+              {formData.type !== 'section' && formData.is_external && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    External URL Route <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.url}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, url: e.target.value }))}
+                    placeholder="https://example.com"
+                    className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
+                      errors.url ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  />
+                  {errors.url && <p className="mt-1 text-xs text-red-500">{errors.url}</p>}
+                </div>
+              )}
+
+              {/* Item Name / Label */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Menu Name / Display Label <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  placeholder="e.g. Master, User Management, Product List"
+                  className={`w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F] ${
+                    errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
+                  }`}
+                />
+                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+              </div>
+
+              {/* Parent Item Selector */}
+              {formData.type !== 'section' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Parent Menu Item
+                  </label>
+                  <select
+                    value={formData.parent_id}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, parent_id: e.target.value }))}
+                    className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
+                  >
+                    <option value="">No Parent (Root Level Item)</option>
+                    {parentOptions.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        [{p.type.toUpperCase()}] {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Icon Selector Grid */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Menu Icon
+                  </label>
+                  <span className="text-xs text-[#00629F] dark:text-indigo-400 font-semibold flex items-center gap-1">
+                    Selected: {formData.icon}
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 max-h-36 overflow-y-auto">
+                  {ICON_LIST.map((item) => {
+                    const IconComponent = item.icon;
+                    const isSelected = formData.icon === item.name;
+                    return (
+                      <button
+                        key={item.name}
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, icon: item.name }))}
+                        className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
+                          isSelected
+                            ? 'bg-indigo-100 dark:bg-indigo-900/40 border-[#00629F] text-[#00629F] dark:text-indigo-300 font-bold shadow-sm ring-2 ring-[#00629F]/20'
+                            : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        <IconComponent className="h-4 w-4 mb-1" />
+                        <span className="text-[10px] truncate max-w-full text-center">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* External Link & Status Toggles */}
+              <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-700 dark:text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_external}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        is_external: e.target.checked,
+                        url: e.target.checked ? prev.url : '',
+                        selected_page_id: e.target.checked ? '' : prev.selected_page_id
+                      }))
+                    }
+                    className="rounded text-[#00629F] focus:ring-[#00629F]"
+                  />
+                  External URL
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Status:</span>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, status: prev.status === 'active' ? 'inactive' : 'active' }))}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+                      formData.status === 'active'
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300'
+                        : 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-400'
+                    }`}
+                  >
+                    {formData.status === 'active' ? 'Active' : 'Disabled'}
                   </button>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Multi-Select Batch Add Mode */
+            <div className="space-y-4">
+              <div className="p-3 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 rounded-xl text-xs text-indigo-900 dark:text-indigo-200">
+                <p className="font-semibold mb-1">Multi-Select Sub/Child Menus Mode:</p>
+                <p>Select multiple pages from Page Management below. They will be added as independent Sub Menus or Child Menus under the selected parent menu.</p>
+              </div>
 
-          {/* External Link & Status Toggles */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={formData.is_external}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    is_external: e.target.checked,
-                    url: e.target.checked ? prev.url : '',
-                    selected_page_id: e.target.checked ? '' : prev.selected_page_id
-                  }))
-                }
-                className="rounded text-[#00629F] focus:ring-[#00629F]"
-              />
-              External URL
-            </label>
+              {/* Target Parent Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Target Parent Menu <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={batchTargetParent}
+                  onChange={(e) => setBatchTargetParent(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
+                >
+                  <option value="">No Parent (Root Level Items)</option>
+                  {flatItems.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      [{p.type.toUpperCase()}] {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Status:</span>
-              <button
-                type="button"
-                onClick={() => setFormData((prev) => ({ ...prev, status: prev.status === 'active' ? 'inactive' : 'active' }))}
-                className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
-                  formData.status === 'active'
-                    ? 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300'
-                    : 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-400'
-                }`}
-              >
-                {formData.status === 'active' ? 'Active' : 'Disabled'}
-              </button>
+              {/* Target Level Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Assigned Item Level Type
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['menu', 'submenu', 'child'].map((tKey) => (
+                    <button
+                      key={tKey}
+                      type="button"
+                      onClick={() => setBatchTargetType(tKey)}
+                      className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition-all ${
+                        batchTargetType === tKey
+                          ? 'border-[#00629F] bg-indigo-50 dark:bg-indigo-900/40 text-[#00629F] dark:text-indigo-300 shadow-sm ring-2 ring-[#00629F]/20'
+                          : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                    >
+                      {TYPE_CONFIG[tKey]?.label || tKey}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Checklist Header */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Select Pages ({selectedBatchPages.length} selected)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleSelectAllBatch}
+                    className="text-xs text-[#00629F] font-semibold hover:underline"
+                  >
+                    {selectedBatchPages.length === activePages.length ? 'Deselect All' : 'Select All'}
+                  </button>
+                </div>
+
+                {/* Filter input */}
+                <div className="relative mb-2">
+                  <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search pages to add..."
+                    value={batchSearchTerm}
+                    onChange={(e) => setBatchSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Checklist Container */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                  {filteredBatchPages.map((page) => {
+                    const isChecked = selectedBatchPages.some((p) => String(p.id) === String(page.id));
+                    return (
+                      <label
+                        key={page.id}
+                        onClick={() => toggleBatchPageSelect(page)}
+                        className={`flex items-center justify-between p-2.5 rounded-xl border cursor-pointer transition-all ${
+                          isChecked
+                            ? 'bg-indigo-50 dark:bg-indigo-900/40 border-[#00629F] text-[#00629F] dark:text-indigo-300 font-semibold'
+                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          {isChecked ? (
+                            <CheckSquare className="h-4 w-4 text-[#00629F] shrink-0" />
+                          ) : (
+                            <Square className="h-4 w-4 text-gray-400 shrink-0" />
+                          )}
+                          <span className="text-xs truncate">{page.name}</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-gray-400 shrink-0 ml-1">{page.url}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                {errors.batch && <p className="mt-1 text-xs text-red-500">{errors.batch}</p>}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
@@ -432,7 +641,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
               className="px-5 py-2 text-xs font-semibold text-white bg-[#00629F] hover:bg-[#00558c] rounded-xl disabled:opacity-50 flex items-center shadow-md shadow-[#00629F]/20"
             >
               {loading && <LoadingSpinner size="sm" className="mr-2" />}
-              {item ? 'Save Changes' : 'Create Item'}
+              {modalMode === 'single' ? (item ? 'Save Changes' : 'Create Item') : `Add ${selectedBatchPages.length} Selected Items`}
             </button>
           </div>
         </form>
@@ -659,7 +868,7 @@ const MenuManagementPage = () => {
                         setParentForNewChild(node);
                         setIsModalOpen(true);
                       }}
-                      className="p-1.5 text-[#00629F] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                      className="p-1.5 text-[#00629F] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors flex items-center gap-1"
                       title="Add Child Sub-Menu"
                     >
                       <Plus className="h-4 w-4" />
@@ -730,7 +939,7 @@ const MenuManagementPage = () => {
               Menu Management
             </h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Configure 3-Level Sidebar Hierarchy (**Section Label → Menu → Sub Menu → Child Menu**).
+              Configure 4-Level Sidebar Hierarchy (**Section Label → Menu → Multiple Sub Menus → Multiple Child Menus**).
             </p>
           </div>
 
