@@ -35,7 +35,8 @@ import {
   Star,
   CheckSquare,
   Square,
-  ListPlus
+  ListPlus,
+  Tag
 } from 'lucide-react';
 import Layout from '../components/Layout/Layout';
 import { apiService, endpoints } from '../utils/api';
@@ -88,7 +89,7 @@ const TYPE_CONFIG = {
 };
 
 const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePages, onSave }) => {
-  const [modalMode, setModalMode] = useState('single'); // 'single' or 'multi'
+  const [modalMode, setModalMode] = useState('single');
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -97,14 +98,15 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
     parent_id: '',
     status: 'active',
     is_external: false,
-    selected_page_id: ''
+    selected_page_id: '',
+    badge_label: ''
   });
 
-  // Multi-select batch add state
   const [batchTargetParent, setBatchTargetParent] = useState('');
   const [batchTargetType, setBatchTargetType] = useState('submenu');
   const [selectedBatchPages, setSelectedBatchPages] = useState([]);
   const [batchSearchTerm, setBatchSearchTerm] = useState('');
+  const [batchBadgeLabel, setBatchBadgeLabel] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -126,7 +128,8 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
         parent_id: item.parent_id ? String(item.parent_id) : '',
         status: item.status || 'active',
         is_external: Boolean(item.is_external),
-        selected_page_id: matchedPage ? String(matchedPage.id) : ''
+        selected_page_id: matchedPage ? String(matchedPage.id) : '',
+        badge_label: item.badge_label || ''
       });
     } else if (parentItem) {
       setModalMode('single');
@@ -143,7 +146,8 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
         parent_id: String(parentItem.id),
         status: 'active',
         is_external: false,
-        selected_page_id: ''
+        selected_page_id: '',
+        badge_label: ''
       });
 
       setBatchTargetParent(String(parentItem.id));
@@ -158,13 +162,15 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
         parent_id: '',
         status: 'active',
         is_external: false,
-        selected_page_id: ''
+        selected_page_id: '',
+        badge_label: ''
       });
       setBatchTargetParent('');
       setBatchTargetType('submenu');
     }
     setSelectedBatchPages([]);
     setBatchSearchTerm('');
+    setBatchBadgeLabel('');
     setErrors({});
   }, [item, parentItem, isOpen, availablePages]);
 
@@ -238,7 +244,8 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
           type: formData.type,
           parent_id: formData.parent_id ? parseInt(formData.parent_id) : null,
           status: formData.status,
-          is_external: formData.is_external
+          is_external: formData.is_external,
+          badge_label: formData.badge_label.trim() || null
         };
 
         if (item) {
@@ -249,7 +256,6 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
           toast.success('Menu item created successfully');
         }
       } else {
-        // Multi-Select Batch Add Mode
         const parentId = batchTargetParent ? parseInt(batchTargetParent) : null;
         let createdCount = 0;
 
@@ -261,7 +267,8 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
             type: batchTargetType,
             parent_id: parentId,
             status: 'active',
-            is_external: Boolean(pageItem.is_external)
+            is_external: Boolean(pageItem.is_external),
+            badge_label: batchBadgeLabel.trim() || null
           };
           await apiService.post(endpoints.menus.create, payload);
           createdCount++;
@@ -306,7 +313,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
           </button>
         </div>
 
-        {/* Mode Selector Tabs (Single Item vs Multi-Select Batch) */}
+        {/* Mode Selector Tabs */}
         {!item && (
           <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 px-6 pt-3">
             <button
@@ -332,7 +339,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
               }`}
             >
               <ListPlus className="h-4 w-4 text-[#00629F]" />
-              Multi-Select Batch Add (Add Multiple Sub/Child Menus)
+              Multi-Select Batch Add
             </button>
           </div>
         )}
@@ -392,7 +399,7 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                 </div>
               )}
 
-              {/* External URL Route (only shown if is_external checked) */}
+              {/* External URL Route */}
               {formData.type !== 'section' && formData.is_external && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -428,26 +435,39 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                 {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
               </div>
 
+              {/* Custom Display Badge Tag / Label */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-1.5">
+                  <Tag className="h-3.5 w-3.5 text-[#00629F]" />
+                  Custom Display Tag / Badge Label <span className="text-xs text-gray-400 font-normal">(Optional, e.g. NEW, HOT, PRO, BETA)</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.badge_label}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, badge_label: e.target.value }))}
+                  placeholder="e.g. NEW, HOT, PRO, LABEL"
+                  className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
+                />
+              </div>
+
               {/* Parent Item Selector */}
-              {formData.type !== 'section' && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Parent Menu Item
-                  </label>
-                  <select
-                    value={formData.parent_id}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, parent_id: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
-                  >
-                    <option value="">No Parent (Root Level Item)</option>
-                    {parentOptions.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        [{p.type.toUpperCase()}] {p.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Parent Menu Item
+                </label>
+                <select
+                  value={formData.parent_id}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, parent_id: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"
+                >
+                  <option value="">No Parent (Root Level Item)</option>
+                  {parentOptions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      [{p.type.toUpperCase()}] {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Icon Selector Grid */}
               <div>
@@ -565,6 +585,20 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Custom Badge Tag for Batch Add */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Optional Badge Tag for Batch Items (e.g. NEW, HOT, PRO)
+                </label>
+                <input
+                  type="text"
+                  value={batchBadgeLabel}
+                  onChange={(e) => setBatchBadgeLabel(e.target.value)}
+                  placeholder="e.g. NEW, HOT, PRO"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white"
+                />
               </div>
 
               {/* Checklist Header */}
@@ -809,9 +843,16 @@ const MenuManagementPage = () => {
                     <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-[#00629F] dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
                       {renderMenuIcon(node.icon)}
                     </div>
-                    <span className={`text-sm ${level === 1 ? 'font-bold text-gray-900 dark:text-white' : level === 2 ? 'font-semibold text-gray-800 dark:text-gray-200' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
-                      {node.name}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm ${level === 1 ? 'font-bold text-gray-900 dark:text-white' : level === 2 ? 'font-semibold text-gray-800 dark:text-gray-200' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
+                        {node.name}
+                      </span>
+                      {node.badge_label && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#00629F]/10 text-[#00629F] dark:bg-[#00629F]/30 dark:text-sky-300 border border-[#00629F]/20 uppercase tracking-wide">
+                          {node.badge_label}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </td>
@@ -869,7 +910,7 @@ const MenuManagementPage = () => {
                         setIsModalOpen(true);
                       }}
                       className="p-1.5 text-[#00629F] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors flex items-center gap-1"
-                      title="Add Child Sub-Menu"
+                      title="Add Sub-Menu / Child Menu"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -939,7 +980,7 @@ const MenuManagementPage = () => {
               Menu Management
             </h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Configure 4-Level Sidebar Hierarchy (**Section Label → Menu → Multiple Sub Menus → Multiple Child Menus**).
+              Configure 4-Level Sidebar Hierarchy (**Section Label → Menu → Sub Menu → Child Menu**) with Custom Display Labels/Badges.
             </p>
           </div>
 
@@ -965,7 +1006,7 @@ const MenuManagementPage = () => {
               <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search menu items by name or route..."
+                placeholder="Search menu items by name, badge, or route..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00629F]"

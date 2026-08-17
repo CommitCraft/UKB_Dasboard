@@ -110,7 +110,7 @@ class MenuController {
   // Create menu item
   static async createMenuItem(req, res) {
     try {
-      const { name, url, icon, type = 'menu', parent_id = null, status = 'active', is_external = false } = req.body;
+      const { name, url, icon, type = 'menu', parent_id = null, status = 'active', is_external = false, badge_label = null } = req.body;
 
       if (!name) {
         return res.status(400).json({ success: false, message: 'Name is required' });
@@ -120,8 +120,8 @@ class MenuController {
       const maxOrder = (countResult[0]?.max_order || 0) + 1;
 
       const insertQuery = `
-        INSERT INTO pages (name, url, icon, type, parent_id, status, is_external, display_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO pages (name, url, icon, type, parent_id, status, is_external, badge_label, display_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const result = await db.executeQuery(insertQuery, [
         name,
@@ -131,6 +131,7 @@ class MenuController {
         parent_id || null,
         status,
         is_external ? 1 : 0,
+        badge_label || null,
         maxOrder
       ]);
 
@@ -153,14 +154,14 @@ class MenuController {
         ActivityLog.ACTIONS.CREATE,
         ActivityLog.RESOURCES.PAGE,
         newId,
-        { name, url, type, parent_id },
+        { name, url, type, parent_id, badge_label },
         req
       );
 
       res.status(201).json({
         success: true,
         message: 'Menu item created successfully',
-        data: { id: newId, name, url, type, parent_id }
+        data: { id: newId, name, url, type, parent_id, badge_label }
       });
     } catch (error) {
       console.error('Create menu item error:', error);
@@ -176,7 +177,7 @@ class MenuController {
   static async updateMenuItem(req, res) {
     try {
       const { id } = req.params;
-      const { name, url, icon, type, parent_id, status, is_external } = req.body;
+      const { name, url, icon, type, parent_id, status, is_external, badge_label } = req.body;
 
       const updateQuery = `
         UPDATE pages
@@ -186,7 +187,8 @@ class MenuController {
             type = COALESCE(?, type),
             parent_id = ?,
             status = COALESCE(?, status),
-            is_external = COALESCE(?, is_external)
+            is_external = COALESCE(?, is_external),
+            badge_label = ?
         WHERE id = ?
       `;
 
@@ -198,6 +200,7 @@ class MenuController {
         parent_id || null,
         status,
         is_external !== undefined ? (is_external ? 1 : 0) : null,
+        badge_label || null,
         id
       ]);
 

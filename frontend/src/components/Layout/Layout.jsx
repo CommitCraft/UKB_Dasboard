@@ -154,6 +154,15 @@ const NavItemTree = ({
               <Link to={targetUrl} onClick={onClose} className={linkStyle}>
                 <PageIcon className={`${iconStyle} ${pageActive && isLvl1 ? "text-white" : ""}`} />
                 <span className="min-w-0 truncate">{page?.name}</span>
+                {page?.badge_label && (
+                  <span className={`ml-auto px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide shrink-0 ${
+                    pageActive && isLvl1
+                      ? "bg-white/20 text-white"
+                      : "bg-[#00629F]/15 text-[#00629F] dark:bg-indigo-900/50 dark:text-indigo-300"
+                  }`}>
+                    {page.badge_label}
+                  </span>
+                )}
               </Link>
 
               {hasChildren && (

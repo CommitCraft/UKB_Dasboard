@@ -191,6 +191,9 @@ const createTables = async () => {
     try {
       await pool.execute('ALTER TABLE pages ADD COLUMN display_order INT DEFAULT 0');
     } catch (e) {}
+    try {
+      await pool.execute('ALTER TABLE pages ADD COLUMN badge_label VARCHAR(50) NULL');
+    } catch (e) {}
     console.log('✅ Created pages table');
 
     // User Roles junction table
