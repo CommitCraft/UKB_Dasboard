@@ -214,7 +214,7 @@ const NavItemTree = ({
 /*                                  Sidebar                                   */
 /* -------------------------------------------------------------------------- */
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -477,7 +477,6 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -617,7 +616,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 type="button"
                 onClick={() => {
                   setIsProfileOpen(false);
-                  setIsModalOpen(true);
+                  if (onOpenProfileSettings) onOpenProfileSettings();
                 }}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
               >
@@ -637,12 +636,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           )}
         </div>
-
-        {/* Profile Settings Modal */}
-        <ProfileSettingsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
       </aside>
     </>
   );
@@ -955,6 +948,7 @@ const Header = ({ onMenuClick }) => {
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Check if rendered inside an iframe (like ZoomableIframeModal preview) or standalone mode
   const isIframe =
@@ -975,6 +969,7 @@ const Layout = ({ children }) => {
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        onOpenProfileSettings={() => setIsProfileModalOpen(true)}
       />
 
       <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden lg:pl-64">
@@ -1012,6 +1007,12 @@ const Layout = ({ children }) => {
           </div>
         </footer>
       </div>
+
+      {/* Root Level Profile Settings Modal (Outside Sidebar) */}
+      <ProfileSettingsModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
     </div>
   );
 };
