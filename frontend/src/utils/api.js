@@ -83,6 +83,17 @@ export const endpoints = {
     delete: (id) => `/pages/${id}`,
     access: (pageUrl) => `/pages/access/${pageUrl}`
   },
+
+  // Menus Management
+  menus: {
+    tree: '/menus/tree',
+    list: '/menus',
+    create: '/menus',
+    update: (id) => `/menus/${id}`,
+    delete: (id) => `/menus/${id}`,
+    reorder: '/menus/reorder',
+    toggleStatus: (id) => `/menus/${id}/toggle-status`
+  },
   
   // Statistics
   stats: {

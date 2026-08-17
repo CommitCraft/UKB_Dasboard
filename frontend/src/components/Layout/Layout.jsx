@@ -22,6 +22,7 @@ import {
   Database,
   ExternalLink,
   FileText,
+  FolderTree,
   Globe,
   Home,
   LayoutDashboard,
@@ -61,22 +62,16 @@ const NavItemTree = ({
   if (!Array.isArray(pages) || pages.length === 0) return null;
 
   return (
-    <ul
-      className={
-        level === 1 ? "space-y-2" : level === 2 ? "space-y-1.5" : "space-y-1"
-      }
-    >
+    <ul className={level === 1 ? "space-y-1.5" : level === 2 ? "space-y-1 mt-1" : "space-y-1 mt-1"}>
       {pages.map((page, pageIndex) => {
         const external = isExternalPage(page);
         const href = formatUrl(page?.url);
 
         const pageActive = external
-          ? location.pathname === "/external" &&
-            new URLSearchParams(location.search).get("url") === href
+          ? location.pathname === "/external" && new URLSearchParams(location.search).get("url") === href
           : isActive(href);
 
-        const hasChildren =
-          Array.isArray(page?.children) && page.children.length > 0;
+        const hasChildren = Array.isArray(page?.children) && page.children.length > 0;
 
         const pageKey =
           page?.id ??
@@ -84,68 +79,52 @@ const NavItemTree = ({
 
         const expanded = Boolean(expandedMenus[pageKey]);
         const PageIcon =
-          page?.icon &&
-          (typeof page.icon === "function" || typeof page.icon === "object")
+          page?.icon && (typeof page.icon === "function" || typeof page.icon === "object")
             ? page.icon
             : external
             ? ExternalLink
             : getPageIcon(page) || Globe;
 
         const targetUrl = external
-          ? `/external?url=${encodeURIComponent(
-              href,
-            )}&title=${encodeURIComponent(page?.name || "")}`
+          ? `/external?url=${encodeURIComponent(href)}&title=${encodeURIComponent(page?.name || "")}`
           : href;
 
-        // Level 1 = Menu, Level 2 = Submenu, Level 3+ = Child Menu
         const isLvl1 = level === 1;
         const isLvl2 = level === 2;
 
         const linkStyle = isLvl1
-          ? `flex min-w-0 flex-1 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+          ? `group flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 ${
               pageActive
-                ? "scale-[1.02] bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md"
-                : "text-gray-700 hover:translate-x-1 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20 scale-[1.01]"
+                : "text-gray-700 hover:translate-x-1 hover:bg-gray-100/80 dark:text-gray-200 dark:hover:bg-gray-700/60"
             }`
           : isLvl2
-          ? `flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
+          ? `group flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-200 ${
               pageActive
-                ? "scale-[1.01] bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-sm"
-                : "text-gray-600 hover:translate-x-1 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold border-l-2 border-indigo-600"
+                : "text-gray-600 hover:translate-x-1 hover:bg-gray-100/60 dark:text-gray-300 dark:hover:bg-gray-700/40"
             }`
-          : `flex min-w-0 flex-1 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 ${
+          : `group flex min-w-0 flex-1 items-center gap-2 rounded-md px-2.5 py-1.5 text-xs transition-all duration-200 ${
               pageActive
-                ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-xs font-semibold"
-                : "text-gray-500 hover:translate-x-1 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                ? "text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/50 dark:bg-indigo-900/30"
+                : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:translate-x-1"
             }`;
 
-        const iconStyle = isLvl1
-          ? "h-5 w-5 shrink-0"
-          : isLvl2
-          ? "h-4 w-4 shrink-0"
-          : "h-3.5 w-3.5 shrink-0";
+        const iconStyle = isLvl1 ? "h-5 w-5 shrink-0" : isLvl2 ? "h-4 w-4 shrink-0" : "h-3.5 w-3.5 shrink-0";
 
         const btnStyle = isLvl1
-          ? "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-all duration-200"
-          : isLvl2
-          ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-200"
-          : "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200";
+          ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-all duration-200"
+          : "flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-all duration-200";
 
         const subTreeWrapper = isLvl1
-          ? "ml-3.5 mt-2 border-l-2 border-primary-200/70 pl-2.5 dark:border-gray-700"
-          : isLvl2
-          ? "ml-3 mt-1.5 border-l-2 border-dashed border-gray-300 pl-2.5 dark:border-gray-600"
-          : "ml-2.5 mt-1 border-l border-dotted border-gray-300 pl-2 dark:border-gray-600";
+          ? "ml-4 pl-3 border-l-2 border-indigo-100 dark:border-gray-700"
+          : "ml-4 pl-3 border-l border-dashed border-gray-300 dark:border-gray-700";
 
         return (
           <li key={pageKey}>
             <div className="flex items-center gap-1">
               <Link to={targetUrl} onClick={onClose} className={linkStyle}>
-                <PageIcon
-                  className={`${iconStyle} ${
-                    pageActive ? "text-white" : ""
-                  }`}
-                />
+                <PageIcon className={`${iconStyle} ${pageActive && isLvl1 ? "text-white" : ""}`} />
                 <span className="min-w-0 truncate">{page?.name}</span>
               </Link>
 
@@ -154,27 +133,25 @@ const NavItemTree = ({
                   type="button"
                   onClick={() => toggleMenu(pageKey)}
                   className={`${btnStyle} ${
-                    pageActive
-                      ? "bg-primary-600 text-white hover:bg-primary-700"
-                      : "text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                    pageActive && isLvl1
+                      ? "bg-indigo-700 text-white"
+                      : "text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                   }`}
                   aria-expanded={expanded}
-                  aria-label={
-                    expanded ? `Collapse ${page?.name}` : `Expand ${page?.name}`
-                  }
+                  aria-label={expanded ? `Collapse ${page?.name}` : `Expand ${page?.name}`}
                 >
-                  {expanded ? (
-                    <ChevronDown className="h-4 w-4 shrink-0" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 shrink-0" />
-                  )}
+                  <ChevronRight className={`h-4 w-4 shrink-0 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`} />
                 </button>
               )}
             </div>
 
-            {/* Render Submenu (Level 2) / Child Menu (Level 3+) */}
-            {hasChildren && expanded && (
-              <div className={subTreeWrapper}>
+            {/* Render Submenu (Level 2) / Child Menu (Level 3+) with smooth animation */}
+            {hasChildren && (
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expanded ? "max-h-[1000px] opacity-100 mt-1" : "max-h-0 opacity-0"
+                } ${subTreeWrapper}`}
+              >
                 <NavItemTree
                   pages={page.children}
                   level={level + 1}
@@ -231,6 +208,12 @@ const Sidebar = ({ isOpen, onClose }) => {
       name: "Pages",
       path: "/pages",
       icon: FileText,
+      roles: ["Super Admin", "Admin"],
+    },
+    {
+      name: "Menu Management",
+      path: "/menus",
+      icon: FolderTree,
       roles: ["Super Admin", "Admin"],
     },
     {

@@ -6,8 +6,6 @@ import {
   Trash2,
   Users,
   FileText,
-  CheckSquare,
-  Square,
   Search,
   Settings,
   ChevronLeft,
@@ -27,13 +25,13 @@ import {
   Terminal,
   Feather,
   Target,
-  Eye
+  Eye,
+  CheckCircle2
 } from "lucide-react";
 import Layout from "../components/Layout/Layout";
 import { apiService, endpoints } from "../utils/api";
 import { formatDateTime } from "../utils/helpers";
 import LoadingSpinner from "../components/LoadingSpinner";
-import PageArrangement from "../components/PageArrangement";
 import toast from "react-hot-toast";
 
 // Role Icons Dictionary
@@ -64,7 +62,7 @@ const renderRoleIcon = (iconName) => {
   if (!iconName) {
     return <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
   }
-  const matched = ROLE_ICON_OPTIONS.find(opt => opt.name === iconName);
+  const matched = ROLE_ICON_OPTIONS.find((opt) => opt.name === iconName);
   if (matched) {
     const IconComp = matched.icon;
     return <IconComp className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
@@ -78,81 +76,28 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
     description: "",
     icon: "Shield",
     page_ids: [],
-    pagesWithOrder: [],
   });
   const [loading, setLoading] = useState(false);
-  const [loadingOrder, setLoadingOrder] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const loadRolePageOrder = async () => {
-      if (role && role.id) {
-        setLoadingOrder(true);
-        try {
-          const response = await apiService.get(endpoints.roles.pageOrder(role.id));
-          let pageOrder = response.data.data?.pages || response.data.pages || [];
-          
-          if ((!pageOrder || pageOrder.length === 0) && role.page_ids && role.page_ids.length > 0 && pages && pages.length > 0) {
-            pageOrder = pages
-              .filter(p => role.page_ids.includes(p.id) || role.page_ids.includes(String(p.id)) || role.page_ids.includes(Number(p.id)))
-              .map((p, idx) => ({
-                page_id: p.id,
-                name: p.name,
-                url: p.url,
-                icon: p.icon,
-                parent_page_id: null,
-                display_order: idx
-              }));
-          }
-          
-          setFormData({
-            name: role.name || "",
-            description: role.description || "",
-            icon: role.icon || "Shield",
-            page_ids: role.page_ids || [],
-            pagesWithOrder: pageOrder,
-          });
-        } catch (error) {
-          console.error('Failed to load role page order:', error);
-          let fallbackOrder = [];
-          if (role.page_ids && role.page_ids.length > 0 && pages && pages.length > 0) {
-            fallbackOrder = pages
-              .filter(p => role.page_ids.includes(p.id) || role.page_ids.includes(String(p.id)) || role.page_ids.includes(Number(p.id)))
-              .map((p, idx) => ({
-                page_id: p.id,
-                name: p.name,
-                url: p.url,
-                icon: p.icon,
-                parent_page_id: null,
-                display_order: idx
-              }));
-          }
-          setFormData({
-            name: role.name || "",
-            description: role.description || "",
-            icon: role.icon || "Shield",
-            page_ids: role.page_ids || [],
-            pagesWithOrder: fallbackOrder,
-          });
-        } finally {
-          setLoadingOrder(false);
-        }
-      } else {
-        setFormData({
-          name: "",
-          description: "",
-          icon: "Shield",
-          page_ids: [],
-          pagesWithOrder: [],
-        });
-      }
-      setErrors({});
-    };
-    
-    if (isOpen) {
-      loadRolePageOrder();
+    if (role && role.id) {
+      setFormData({
+        name: role.name || "",
+        description: role.description || "",
+        icon: role.icon || "Shield",
+        page_ids: role.page_ids ? role.page_ids.map((id) => parseInt(id)) : [],
+      });
+    } else {
+      setFormData({
+        name: "",
+        description: "",
+        icon: "Shield",
+        page_ids: [],
+      });
     }
-  }, [role, isOpen, pages]);
+    setErrors({});
+  }, [role, isOpen]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -177,10 +122,10 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
     setLoading(true);
     try {
       const submitData = {
-        name: formData.name,
-        description: formData.description,
+        name: formData.name.trim(),
+        description: formData.description.trim(),
         icon: formData.icon,
-        pagesWithOrder: formData.pagesWithOrder,
+        pages: formData.page_ids,
       };
 
       if (role) {
@@ -191,6 +136,7 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
         toast.success("Role created successfully");
       }
 
+      window.dispatchEvent(new CustomEvent("permissions-updated"));
       onSave();
       onClose();
     } catch (error) {
@@ -209,18 +155,11 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
     }
   };
 
-  const handlePageOrderChange = (orderedPages) => {
-    setFormData((prev) => ({
-      ...prev,
-      pagesWithOrder: orderedPages,
-    }));
-  };
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
@@ -231,18 +170,18 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Role Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Role Name
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Role Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
+              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
                 errors.name
                   ? "border-red-300 dark:border-red-600"
                   : "border-gray-300 dark:border-gray-600"
@@ -250,7 +189,7 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
               placeholder="Enter role name (e.g. Sales Manager)"
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                 {errors.name}
               </p>
             )}
@@ -276,12 +215,12 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
                   <button
                     key={item.name}
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, icon: item.name }))}
+                    onClick={() => setFormData((prev) => ({ ...prev, icon: item.name }))}
                     title={item.label}
                     className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
                       isSelected
-                        ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm ring-2 ring-indigo-500/20'
-                        : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                        ? "bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm ring-2 ring-indigo-500/20"
+                        : "border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800"
                     }`}
                   >
                     <IconComponent className="h-5 w-5 mb-1" />
@@ -294,15 +233,15 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Description <span className="text-red-500">*</span>
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               rows={2}
-              className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
+              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
                 errors.description
                   ? "border-red-300 dark:border-red-600"
                   : "border-gray-300 dark:border-gray-600"
@@ -310,30 +249,64 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
               placeholder="Enter role description"
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                 {errors.description}
               </p>
             )}
           </div>
 
-          {/* Page Permissions with Arrangement */}
+          {/* Page Permissions Checkboxes */}
           <div>
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Page Permissions & Menu Structure
-            </h4>
-            {loadingOrder ? (
-              <div className="flex items-center justify-center py-8">
-                <LoadingSpinner size="md" />
-                <span className="ml-2 text-gray-600 dark:text-gray-400">Loading page order...</span>
-              </div>
-            ) : (
-              <PageArrangement
-                pages={pages}
-                value={formData.pagesWithOrder}
-                initialPagesWithOrder={formData.pagesWithOrder}
-                onChange={handlePageOrderChange}
-              />
-            )}
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Assigned Page Permissions ({formData.page_ids.length} selected)
+              </h4>
+              <button
+                type="button"
+                onClick={() => {
+                  const allIds = pages.map((p) => parseInt(p.id));
+                  setFormData((prev) => ({
+                    ...prev,
+                    page_ids: prev.page_ids.length === pages.length ? [] : allIds,
+                  }));
+                }}
+                className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              >
+                {formData.page_ids.length === pages.length ? "Deselect All" : "Select All"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-52 overflow-y-auto p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
+              {pages.map((p) => {
+                const checked = formData.page_ids.includes(parseInt(p.id)) || formData.page_ids.includes(String(p.id));
+                return (
+                  <label
+                    key={p.id}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                      checked
+                        ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-300 dark:border-indigo-700 text-indigo-900 dark:text-indigo-200 font-medium"
+                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) => {
+                        const pageIdNum = parseInt(p.id);
+                        setFormData((prev) => ({
+                          ...prev,
+                          page_ids: e.target.checked
+                            ? [...prev.page_ids, pageIdNum]
+                            : prev.page_ids.filter((id) => parseInt(id) !== pageIdNum),
+                        }));
+                      }}
+                      className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                    />
+                    <span className="text-xs truncate">{p.name}</span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
           {/* Buttons */}
@@ -395,21 +368,7 @@ const RolesPage = () => {
     try {
       const response = await apiService.get(endpoints.pages.list);
       const allPages = response.data.data?.pages || [];
-
-      const unwantedPages = [
-        "activity logs",
-        "company website",
-        "documentation",
-        "help center",
-      ];
-      const filteredPages = allPages.filter(
-        (page) =>
-          !unwantedPages.some((unwanted) =>
-            page.name?.toLowerCase().includes(unwanted.toLowerCase())
-          )
-      );
-
-      setPages(filteredPages);
+      setPages(allPages);
     } catch (error) {
       console.error("Error fetching pages:", error);
       setPages([]);
@@ -514,7 +473,7 @@ const RolesPage = () => {
               Roles Management
             </h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Configure roles, role icons, and assign page permissions.
+              Create roles, select role icons, and assign page permissions.
             </p>
           </div>
 
@@ -635,20 +594,20 @@ const RolesPage = () => {
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/30">
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Showing page <span className="font-semibold text-gray-900 dark:text-white">{currentPage}</span> of{' '}
+                Showing page <span className="font-semibold text-gray-900 dark:text-white">{currentPage}</span> of{" "}
                 <span className="font-semibold text-gray-900 dark:text-white">{totalPages}</span> ({filteredRoles.length} roles)
               </span>
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                   className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
                 >

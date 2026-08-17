@@ -167,15 +167,30 @@ const createTables = async () => {
         name VARCHAR(100) NOT NULL,
         url VARCHAR(255) NOT NULL,
         icon VARCHAR(255) NULL,
+        type ENUM('section', 'menu', 'submenu', 'child') DEFAULT 'menu',
+        parent_id INT NULL,
+        display_order INT DEFAULT 0,
         is_external BOOLEAN DEFAULT FALSE,
         status ENUM('active', 'inactive') DEFAULT 'active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         created_by INT NULL,
         INDEX idx_name (name),
-        INDEX idx_status (status)
+        INDEX idx_status (status),
+        INDEX idx_type (type),
+        INDEX idx_parent_id (parent_id),
+        INDEX idx_display_order (display_order)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
+    try {
+      await pool.execute("ALTER TABLE pages ADD COLUMN type ENUM('section', 'menu', 'submenu', 'child') DEFAULT 'menu'");
+    } catch (e) {}
+    try {
+      await pool.execute('ALTER TABLE pages ADD COLUMN parent_id INT NULL');
+    } catch (e) {}
+    try {
+      await pool.execute('ALTER TABLE pages ADD COLUMN display_order INT DEFAULT 0');
+    } catch (e) {}
     console.log('✅ Created pages table');
 
     // User Roles junction table
