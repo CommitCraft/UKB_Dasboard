@@ -180,8 +180,13 @@ class Role {
   }
 
   static async assignPages(roleId, pageIds, assignedBy = null) {
-    // Remove existing page assignments
+    // Remove existing page assignments from both role_pages and role_pages_order
     await db.executeQuery('DELETE FROM role_pages WHERE role_id = ?', [roleId]);
+    try {
+      await db.executeQuery('DELETE FROM role_pages_order WHERE role_id = ?', [roleId]);
+    } catch (e) {
+      // Table optional
+    }
     
     // Assign new pages
     if (pageIds && pageIds.length > 0) {
