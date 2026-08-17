@@ -90,13 +90,18 @@ const errorHandler = (err, req, res, next) => {
     };
   }
 
-  // Include request info for debugging
+  // Include request info for debugging (sanitized — no headers or sensitive body fields)
   if (process.env.NODE_ENV === 'development') {
+    const safeBody = { ...req.body };
+    delete safeBody.password;
+    delete safeBody.password_hash;
+    delete safeBody.current_password;
+    delete safeBody.new_password;
+    delete safeBody.token;
     response.request = {
       method: req.method,
       url: req.originalUrl,
-      headers: req.headers,
-      body: req.body,
+      body: safeBody,
       params: req.params,
       query: req.query
     };

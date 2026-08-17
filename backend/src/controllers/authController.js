@@ -59,17 +59,23 @@ class AuthController {
       // Log successful login
       const loginActivity = await LoginActivity.logLogin(user, true, req);
 
-      // Remove password from response
-      const { password_hash, ...userResponse } = updatedUser || user;
+      // Build safe user DTO — never expose password_hash, created_by, internal IDs
+      const safeUser = {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        roles: updatedUser.roles || [],
+        status: updatedUser.status,
+        last_login: updatedUser.last_login
+      };
 
       res.status(200).json({
         success: true,
         message: 'Login successful',
         data: {
-          user: userResponse,
+          user: safeUser,
           token: token,
-          expires_in: process.env.JWT_EXPIRES_IN || '2d',
-          login_activity_id: loginActivity.id
+          expires_in: process.env.JWT_EXPIRES_IN || '8h'
         }
       });
     } catch (error) {

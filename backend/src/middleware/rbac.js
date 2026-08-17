@@ -148,33 +148,26 @@ const checkPermission = (action, resource) => {
       }
     }
 
-    // If no role-based permission, check if user has assigned pages for CRUD operations
     if (!hasPermission) {
       try {
         const userPages = await Page.getPagesByUser(req.user.id);
-        console.log(`User ${req.user.id} has ${userPages?.length || 0} assigned pages`);
         if (userPages && userPages.length > 0) {
-          // Users with assigned pages can perform CRUD operations on users, roles, and pages
           if (['user', 'role', 'page'].includes(resource)) {
-            console.log(`Granting ${action}_${resource} permission to user with assigned pages`);
             hasPermission = true;
           }
         }
       } catch (error) {
-        console.error('Error checking user pages for permission:', error);
+        console.error('Error checking user pages for permission:', error.message);
       }
     }
 
     if (!hasPermission) {
-      console.log(`Access denied for ${req.user.username}: Required permission ${requiredPermission}, roles: ${userRoles.join(', ')}`);
       return res.status(403).json({
         success: false,
-        message: `Access denied. Required permission: ${requiredPermission}`,
-        requiredPermission
+        message: 'Access denied. Insufficient permissions.'
       });
     }
 
-    console.log(`Access granted for ${req.user.username}: ${requiredPermission}`);
     next();
   };
 };

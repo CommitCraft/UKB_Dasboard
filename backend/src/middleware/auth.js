@@ -22,7 +22,10 @@ const auth = async (req, res, next) => {
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+        issuer: process.env.JWT_ISSUER || 'aploslogix-mes-backend',
+        audience: process.env.JWT_AUDIENCE || 'aploslogix-mes-frontend'
+      });
       
       // Get user from database to ensure they still exist and are active
       const user = await User.findById(decoded.id);
@@ -95,7 +98,10 @@ const optionalAuth = async (req, res, next) => {
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+        issuer: process.env.JWT_ISSUER || 'aploslogix-mes-backend',
+        audience: process.env.JWT_AUDIENCE || 'aploslogix-mes-frontend'
+      });
       const user = await User.findById(decoded.id);
       
       if (user && user.status === 'active') {
@@ -205,9 +211,9 @@ const generateToken = (user) => {
   };
 
   const options = {
-    expiresIn: process.env.JWT_EXPIRES_IN || '2d',
-    issuer: 'cmscrm-backend',
-    audience: 'cmscrm-frontend'
+    expiresIn: process.env.JWT_EXPIRES_IN || '8h',
+    issuer: process.env.JWT_ISSUER || 'aploslogix-mes-backend',
+    audience: process.env.JWT_AUDIENCE || 'aploslogix-mes-frontend'
   };
 
   return jwt.sign(payload, process.env.JWT_SECRET, options);
@@ -216,7 +222,10 @@ const generateToken = (user) => {
 // Verify token without middleware
 const verifyToken = (token) => {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET);
+    return jwt.verify(token, process.env.JWT_SECRET, {
+      issuer: process.env.JWT_ISSUER || 'aploslogix-mes-backend',
+      audience: process.env.JWT_AUDIENCE || 'aploslogix-mes-frontend'
+    });
   } catch (error) {
     return null;
   }
@@ -231,10 +240,16 @@ const decodeToken = (token) => {
   }
 };
 
-// Refresh token logic
+// Refresh token — MUST verify existing token signature before issuing new one
 const refreshToken = async (token) => {
   try {
-    const decoded = jwt.decode(token);
+    // Verify with ignoreExpiration so we can reissue for recently-expired tokens
+    // But we STILL verify the signature to prevent forged tokens
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      issuer: process.env.JWT_ISSUER || 'aploslogix-mes-backend',
+      audience: process.env.JWT_AUDIENCE || 'aploslogix-mes-frontend',
+      ignoreExpiration: true
+    });
     if (!decoded) return null;
 
     const user = await User.findById(decoded.id);

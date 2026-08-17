@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const systemController = require('../controllers/systemController');
-const { auth } = require('../middleware/auth');
+const { auth, requireAdmin } = require('../middleware/auth');
 
-// All system routes require authentication
+// All system routes require authentication AND admin role
 router.use(auth);
+router.use(requireAdmin);
 
 // Enhanced system performance routes
 router.get('/performance', systemController.getSystemPerformance);
@@ -19,4 +20,4 @@ router.get('/memory', systemController.getMemoryMetrics);
 router.get('/network', systemController.getNetworkStats);
 router.get('/process-stats', systemController.getProcessStats);
 
-module.exports = router;
+module.exports = router;
