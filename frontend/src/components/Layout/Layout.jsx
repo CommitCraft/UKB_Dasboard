@@ -474,6 +474,38 @@ const Sidebar = ({ isOpen, onClose }) => {
     }));
   }, [myPages, filteredMenuItems]);
 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    setIsProfileOpen(false);
+    try {
+      await logout();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const userRole = user?.roles?.[0]
+    ? typeof user.roles[0] === "string"
+      ? user.roles[0].replaceAll("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())
+      : user.roles[0]?.name || "User"
+    : "User";
+
   return (
     <>
       {/* Mobile overlay */}
@@ -537,6 +569,80 @@ const Sidebar = ({ isOpen, onClose }) => {
             />
           )}
         </nav>
+
+        {/* User Profile Card & Dropdown at bottom of Sidebar */}
+        <div className="shrink-0 p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/80 relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsProfileOpen((prev) => !prev)}
+            className="flex w-full items-center gap-3 p-2 rounded-xl hover:bg-white dark:hover:bg-gray-700/60 transition-all border border-transparent hover:border-gray-200 dark:hover:border-gray-600 text-left cursor-pointer"
+            aria-expanded={isProfileOpen}
+            aria-label="User menu"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#00629F] to-[#004774] text-white shadow-md">
+              <User className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                {user?.username || "User"}
+              </p>
+              <p className="truncate text-[11px] font-medium text-gray-500 dark:text-gray-400">
+                {user?.email || userRole}
+              </p>
+            </div>
+            <ChevronRight className={`h-4 w-4 text-gray-400 shrink-0 transition-transform duration-200 ${isProfileOpen ? "-rotate-90" : "rotate-0"}`} />
+          </button>
+
+          {/* Profile Card Popup Dropdown */}
+          {isProfileOpen && (
+            <div className="absolute bottom-full left-3 right-3 mb-2 rounded-2xl border border-gray-200 bg-white p-3 shadow-2xl transition-all dark:border-gray-700 dark:bg-gray-800 z-50">
+              <div className="flex items-center gap-3 p-2">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#00629F] to-[#004774] text-white shadow-sm">
+                  <User className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                    {user?.username || "User"}
+                  </p>
+                  <p className="truncate text-[11px] text-gray-500 dark:text-gray-400">
+                    {user?.email || userRole}
+                  </p>
+                </div>
+              </div>
+
+              <div className="my-2 border-t border-gray-100 dark:border-gray-700" />
+
+              {/* Profile Settings Item */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsProfileOpen(false);
+                  setIsModalOpen(true);
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+              >
+                <Settings className="h-4 w-4 text-[#00629F]" />
+                <span>Profile Settings</span>
+              </button>
+
+              {/* Log Out Item */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 cursor-pointer"
+              >
+                <LogOut className="h-4 w-4 text-red-500" />
+                <span>Log Out</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Profile Settings Modal */}
+        <ProfileSettingsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </aside>
     </>
   );
@@ -808,155 +914,38 @@ const ProfileSettingsModal = ({ isOpen, onClose }) => {
 /* -------------------------------------------------------------------------- */
 
 const Header = ({ onMenuClick }) => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleLogout = async () => {
-    setIsProfileOpen(false);
-    try {
-      await logout();
-      navigate("/login", { replace: true });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
-  const userRole = user?.roles?.[0]
-    ? typeof user.roles[0] === "string"
-      ? user.roles[0].replaceAll("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())
-      : user.roles[0]?.name || "User"
-    : "User";
-
   return (
-    <>
-      <header className="shrink-0 border-b border-gray-200 bg-white px-4 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 lg:px-6">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-4">
-            <button
-              type="button"
-              onClick={onMenuClick}
-              className="shrink-0 rounded-xl p-2 text-gray-500 transition-all hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 lg:hidden"
-              aria-label="Open menu"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-
-            <div className="min-w-0">
-              <h1 className="truncate text-lg font-bold text-gray-900 dark:text-white sm:text-xl">
-                Welcome back,{" "}
-                <span className="text-primary-600 dark:text-primary-400">
-                  {user?.username || "User"}
-                </span>
-                !
-              </h1>
-
-              <p className="mt-0.5 truncate text-xs font-medium text-gray-500 dark:text-gray-400">
-                {new Date().toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="rounded-xl bg-gray-100 p-2.5 shadow-sm transition-all hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-              title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            >
-              {theme === "light" ? (
-                <Moon className="h-5 w-5 text-gray-600" />
-              ) : (
-                <Sun className="h-5 w-5 text-yellow-500" />
-              )}
-            </button>
-
-            {/* Profile Dropdown Container */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsProfileOpen((prev) => !prev)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-md transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-                aria-expanded={isProfileOpen}
-                aria-label="User menu"
-              >
-                <User className="h-6 w-6 text-white" />
-              </button>
-
-              {/* Profile Card Dropdown */}
-              {isProfileOpen && (
-                <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-gray-200 bg-white p-3 shadow-2xl transition-all dark:border-gray-700 dark:bg-gray-800 z-50">
-                  {/* User Overview */}
-                  <div className="flex items-center gap-3 p-2">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-sm">
-                      <User className="h-6 w-6" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold text-gray-900 dark:text-white">
-                        {user?.username || "User"}
-                      </p>
-                      <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                        {user?.email || userRole}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="my-2 border-t border-gray-100 dark:border-gray-700" />
-
-                  {/* Profile Settings Item */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsProfileOpen(false);
-                      setIsModalOpen(true);
-                    }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                  >
-                    <Settings className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                    <span>Profile Settings</span>
-                  </button>
-
-                  {/* Log Out Item (Below Profile Settings) */}
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-                  >
-                    <LogOut className="h-4 w-4 text-red-500" />
-                    <span>Log Out</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+    <header className="shrink-0 border-b border-gray-200 bg-white px-4 py-3 shadow-sm dark:border-gray-700 dark:bg-gray-800 lg:px-6">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-4">
+          <button
+            type="button"
+            onClick={onMenuClick}
+            className="shrink-0 rounded-xl p-2 text-gray-500 transition-all hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 lg:hidden cursor-pointer"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
         </div>
-      </header>
 
-      {/* Profile Settings Modal */}
-      <ProfileSettingsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </>
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="rounded-xl bg-gray-100 p-2.5 shadow-sm transition-all hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          >
+            {theme === "light" ? (
+              <Moon className="h-5 w-5 text-gray-600" />
+            ) : (
+              <Sun className="h-5 w-5 text-yellow-500" />
+            )}
+          </button>
+        </div>
+      </div>
+    </header>
   );
 };
 
