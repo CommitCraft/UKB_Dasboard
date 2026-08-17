@@ -146,12 +146,18 @@ const createTables = async () => {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(50) UNIQUE NOT NULL,
         description TEXT NULL,
+        icon VARCHAR(255) NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         created_by INT NULL,
         INDEX idx_name (name)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
+    try {
+      await pool.execute('ALTER TABLE roles ADD COLUMN icon VARCHAR(255) NULL');
+    } catch (e) {
+      // Column might already exist
+    }
     console.log('✅ Created roles table');
 
     // Pages table (base table, no foreign keys)

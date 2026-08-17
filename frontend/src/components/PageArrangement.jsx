@@ -1,43 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GripVertical, ChevronRight, ChevronDown, Trash2, Plus } from 'lucide-react';
 
-const PageArrangement = ({ pages, value = [], onChange }) => {
-  const [pagesWithOrder, setPagesWithOrder] = useState(value || []);
+const PageArrangement = ({ pages, value, initialPagesWithOrder, pagesWithOrder: propsPagesWithOrder, onChange }) => {
+  const currentVal = value || initialPagesWithOrder || propsPagesWithOrder || [];
+  const [pagesWithOrder, setPagesWithOrder] = useState(currentVal);
   const [expandedPages, setExpandedPages] = useState(new Set());
   const isInternalUpdate = useRef(false);
-  const prevValueRef = useRef(null); // Initialize with null, not value
-
-  // Log on mount and when value changes
-  useEffect(() => {
-    console.log('🎨 PageArrangement mounted/updated, value prop:', value, 'Length:', value?.length);
-    console.log('🎨 Current pagesWithOrder state:', pagesWithOrder, 'Length:', pagesWithOrder?.length);
-  });
+  const prevValueRef = useRef(null);
 
   useEffect(() => {
-    // Only update if value actually changed and it's not from our own onChange
-    const valueChanged = prevValueRef.current === null || JSON.stringify(prevValueRef.current) !== JSON.stringify(value);
-    
-    console.log('🔄 PageArrangement value effect triggered');
-    console.log('   - isInternalUpdate:', isInternalUpdate.current);
-    console.log('   - valueChanged:', valueChanged);
-    console.log('   - value length:', value?.length);
-    console.log('   - prevValueRef:', prevValueRef.current);
+    const val = value || initialPagesWithOrder || propsPagesWithOrder || [];
+    const valueChanged = prevValueRef.current === null || JSON.stringify(prevValueRef.current) !== JSON.stringify(val);
     
     if (!isInternalUpdate.current && valueChanged) {
-      console.log('📦 PageArrangement value changed externally:', value);
-      if (value && value.length > 0) {
-        console.log('✅ Setting pagesWithOrder with', value.length, 'pages');
-        setPagesWithOrder(value);
-      } else {
-        console.log('⚠️ Value is empty, resetting to empty array');
-        setPagesWithOrder([]);
-      }
-      prevValueRef.current = value;
+      setPagesWithOrder(val);
+      prevValueRef.current = val;
     }
     
-    // Reset the flag after processing
     isInternalUpdate.current = false;
-  }, [value]);
+  }, [value, initialPagesWithOrder, propsPagesWithOrder]);
 
   const getAvailablePages = () => {
     const selectedPageIds = pagesWithOrder.map(p => p.page_id);

@@ -69,10 +69,10 @@ class RoleController {
         return res.status(400).json(handleValidationError(errors));
       }
 
-      const { name, description, pages = [], pagesWithOrder = [] } = req.body;
+      const { name, description, icon = 'Shield', pages = [], pagesWithOrder = [] } = req.body;
       const createdBy = req.user.id;
 
-      const roleData = { name, description, created_by: createdBy };
+      const roleData = { name, description, icon, created_by: createdBy };
       const newRole = await Role.create(roleData);
 
       // Assign pages with order if provided, otherwise use simple assignment
@@ -122,7 +122,7 @@ class RoleController {
       }
 
       const { id } = req.params;
-      const { name, description, pages, pagesWithOrder } = req.body;
+      const { name, description, icon, pages, pagesWithOrder } = req.body;
       const updatedBy = req.user.id;
 
       const existingRole = await Role.findById(id);
@@ -137,6 +137,7 @@ class RoleController {
       const updateData = {};
       if (name !== undefined) updateData.name = name;
       if (description !== undefined) updateData.description = description;
+      if (icon !== undefined) updateData.icon = icon;
 
       let updatedRole = existingRole;
       if (Object.keys(updateData).length > 0) {

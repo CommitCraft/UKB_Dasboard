@@ -10,19 +10,73 @@ import {
   Square,
   Search,
   Settings,
+  ChevronLeft,
+  ChevronRight,
+  Lock,
+  Crown,
+  Award,
+  UserCheck,
+  Key,
+  Star,
+  Sliders,
+  Database,
+  Activity,
+  Globe,
+  BarChart2,
+  Briefcase,
+  Terminal,
+  Feather,
+  Target,
+  Eye
 } from "lucide-react";
 import Layout from "../components/Layout/Layout";
-import { useAuth } from "../context/AuthContext";
 import { apiService, endpoints } from "../utils/api";
 import { formatDateTime } from "../utils/helpers";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PageArrangement from "../components/PageArrangement";
 import toast from "react-hot-toast";
 
+// Role Icons Dictionary
+const ROLE_ICON_OPTIONS = [
+  { name: 'Shield', icon: Shield, label: 'Shield' },
+  { name: 'Lock', icon: Lock, label: 'Security' },
+  { name: 'Crown', icon: Crown, label: 'Admin / Super' },
+  { name: 'Award', icon: Award, label: 'Manager' },
+  { name: 'UserCheck', icon: UserCheck, label: 'User Access' },
+  { name: 'Key', icon: Key, label: 'Permissions' },
+  { name: 'Users', icon: Users, label: 'Team' },
+  { name: 'Star', icon: Star, label: 'Special' },
+  { name: 'Settings', icon: Settings, label: 'Settings' },
+  { name: 'Sliders', icon: Sliders, label: 'Control' },
+  { name: 'FileText', icon: FileText, label: 'Content' },
+  { name: 'Database', icon: Database, label: 'Database' },
+  { name: 'Activity', icon: Activity, label: 'Audit' },
+  { name: 'Globe', icon: Globe, label: 'Public' },
+  { name: 'BarChart2', icon: BarChart2, label: 'Reports' },
+  { name: 'Briefcase', icon: Briefcase, label: 'Business' },
+  { name: 'Terminal', icon: Terminal, label: 'Developer' },
+  { name: 'Feather', icon: Feather, label: 'Editor' },
+  { name: 'Target', icon: Target, label: 'Supervisor' },
+  { name: 'Eye', icon: Eye, label: 'Viewer' },
+];
+
+const renderRoleIcon = (iconName) => {
+  if (!iconName) {
+    return <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
+  }
+  const matched = ROLE_ICON_OPTIONS.find(opt => opt.name === iconName);
+  if (matched) {
+    const IconComp = matched.icon;
+    return <IconComp className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
+  }
+  return <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
+};
+
 const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    icon: "Shield",
     page_ids: [],
     pagesWithOrder: [],
   });
@@ -36,34 +90,58 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
         setLoadingOrder(true);
         try {
           const response = await apiService.get(endpoints.roles.pageOrder(role.id));
-          console.log('📥 Role page order response:', response.data);
-          const pageOrder = response.data.data?.pages || response.data.pages || [];
-          console.log('📊 Parsed page order:', pageOrder, 'Length:', pageOrder.length);
+          let pageOrder = response.data.data?.pages || response.data.pages || [];
           
-          const newFormData = {
-            name: role.name || "",
-            description: role.description || "",
-            page_ids: role.page_ids || [],
-            pagesWithOrder: pageOrder,
-          };
-          console.log('📝 Setting formData with pagesWithOrder:', newFormData.pagesWithOrder.length, 'pages');
-          setFormData(newFormData);
-        } catch (error) {
-          console.error('❌ Failed to load role page order:', error);
+          if ((!pageOrder || pageOrder.length === 0) && role.page_ids && role.page_ids.length > 0 && pages && pages.length > 0) {
+            pageOrder = pages
+              .filter(p => role.page_ids.includes(p.id) || role.page_ids.includes(String(p.id)) || role.page_ids.includes(Number(p.id)))
+              .map((p, idx) => ({
+                page_id: p.id,
+                name: p.name,
+                url: p.url,
+                icon: p.icon,
+                parent_page_id: null,
+                display_order: idx
+              }));
+          }
+          
           setFormData({
             name: role.name || "",
             description: role.description || "",
+            icon: role.icon || "Shield",
             page_ids: role.page_ids || [],
-            pagesWithOrder: [],
+            pagesWithOrder: pageOrder,
+          });
+        } catch (error) {
+          console.error('Failed to load role page order:', error);
+          let fallbackOrder = [];
+          if (role.page_ids && role.page_ids.length > 0 && pages && pages.length > 0) {
+            fallbackOrder = pages
+              .filter(p => role.page_ids.includes(p.id) || role.page_ids.includes(String(p.id)) || role.page_ids.includes(Number(p.id)))
+              .map((p, idx) => ({
+                page_id: p.id,
+                name: p.name,
+                url: p.url,
+                icon: p.icon,
+                parent_page_id: null,
+                display_order: idx
+              }));
+          }
+          setFormData({
+            name: role.name || "",
+            description: role.description || "",
+            icon: role.icon || "Shield",
+            page_ids: role.page_ids || [],
+            pagesWithOrder: fallbackOrder,
           });
         } finally {
           setLoadingOrder(false);
         }
       } else {
-        console.log('🆕 Creating new role, resetting formData');
         setFormData({
           name: "",
           description: "",
+          icon: "Shield",
           page_ids: [],
           pagesWithOrder: [],
         });
@@ -72,10 +150,9 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
     };
     
     if (isOpen) {
-      console.log('🔓 Modal opened for role:', role?.id || 'new');
       loadRolePageOrder();
     }
-  }, [role, isOpen]);
+  }, [role, isOpen, pages]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -99,60 +176,26 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
 
     setLoading(true);
     try {
-      // Prepare data with correct field names for backend
       const submitData = {
         name: formData.name,
         description: formData.description,
-        pagesWithOrder: formData.pagesWithOrder, // Send page ordering info
+        icon: formData.icon,
+        pagesWithOrder: formData.pagesWithOrder,
       };
 
       if (role) {
         await apiService.put(`${endpoints.roles.list}/${role.id}`, submitData);
-        toast.success("Role updated successfully", {
-          style: {
-            background: "#1f2937",
-            color: "#e5e7eb",
-            border: "1px solid #374151",
-          },
-          iconTheme: {
-            primary: "#3b82f6", // blue accent
-            secondary: "#1f2937",
-          },
-        });
+        toast.success("Role updated successfully");
       } else {
         await apiService.post(endpoints.roles.list, submitData);
-        toast.success("Role created successfully", {
-          style: {
-            background: "#1f2937",
-            color: "#e5e7eb",
-            border: "1px solid #374151",
-          },
-          iconTheme: {
-            primary: "#3b82f6", // blue accent
-            secondary: "#1f2937",
-          },
-        });
+        toast.success("Role created successfully");
       }
 
-      // Call onSave first, then close modal after a short delay
       onSave();
-      setTimeout(() => {
-        onClose();
-      }, 50);
+      onClose();
     } catch (error) {
       const message = error.response?.data?.message || "Failed to save role";
-      // toast.error(message);
-      toast.error(message, {
-        style: {
-          background: "#1f2937",
-          color: "#f87171", // red text for error
-          border: "1px solid #4b5563",
-        },
-        iconTheme: {
-          primary: "#f87171",
-          secondary: "#1f2937",
-        },
-      });
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -166,15 +209,26 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
     }
   };
 
+  const handlePageOrderChange = (orderedPages) => {
+    setFormData((prev) => ({
+      ...prev,
+      pagesWithOrder: orderedPages,
+    }));
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             {role ? "Edit Role" : "Add New Role"}
           </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+            ✕
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -188,18 +242,54 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white ${
+              className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
                 errors.name
                   ? "border-red-300 dark:border-red-600"
                   : "border-gray-300 dark:border-gray-600"
               }`}
-              placeholder="Enter role name"
+              placeholder="Enter role name (e.g. Sales Manager)"
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                 {errors.name}
               </p>
             )}
+          </div>
+
+          {/* Role Icon Picker */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Select Role Icon
+              </label>
+              {formData.icon && (
+                <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1">
+                  Selected: {formData.icon}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 max-h-36 overflow-y-auto">
+              {ROLE_ICON_OPTIONS.map((item) => {
+                const IconComponent = item.icon;
+                const isSelected = formData.icon === item.name;
+                return (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, icon: item.name }))}
+                    title={item.label}
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
+                      isSelected
+                        ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm ring-2 ring-indigo-500/20'
+                        : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    <IconComponent className="h-5 w-5 mb-1" />
+                    <span className="text-[10px] truncate max-w-full text-center">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Description */}
@@ -211,8 +301,8 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              rows={3}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white ${
+              rows={2}
+              className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
                 errors.description
                   ? "border-red-300 dark:border-red-600"
                   : "border-gray-300 dark:border-gray-600"
@@ -238,30 +328,30 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
               </div>
             ) : (
               <PageArrangement
-                key={role?.id || 'new'}
                 pages={pages}
                 value={formData.pagesWithOrder}
-                onChange={(pagesWithOrder) => setFormData(prev => ({ ...prev, pagesWithOrder }))}
+                initialPagesWithOrder={formData.pagesWithOrder}
+                onChange={handlePageOrderChange}
               />
             )}
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end space-x-3 pt-4">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100 dark:border-gray-700">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 flex items-center shadow-md shadow-indigo-600/20"
             >
               {loading && <LoadingSpinner size="sm" className="mr-2" />}
-              {role ? "Update" : "Create"}
+              {role ? "Update Role" : "Create Role"}
             </button>
           </div>
         </form>
@@ -271,7 +361,6 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
 };
 
 const RolesPage = () => {
-  useAuth();
   const [roles, setRoles] = useState([]);
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -279,35 +368,24 @@ const RolesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const rolesPerPage = 10;
+
   const fetchRoles = useCallback(async () => {
     try {
       setLoading(true);
 
-      // Add cache-busting parameter to ensure fresh data
       const response = await apiService.get(endpoints.roles.list, {
         params: { _t: Date.now() },
         headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
       });
 
-      // The backend returns: { success, message, data: { roles: [...], pagination: {...} } }
       const newRoles = response.data.data?.roles || [];
-
       setRoles(newRoles);
     } catch (error) {
       console.error("Error fetching roles:", error);
-      toast.error("Failed to fetch roles", {
-        style: {
-          background: "#1f2937", // dark gray
-          color: "#fca5a5", // soft red text for contrast
-          border: "1px solid #4b5563",
-          borderRadius: "8px",
-        },
-        iconTheme: {
-          primary: "#ef4444", // bright red icon
-          secondary: "#1f2937", // matches dark bg
-        },
-      });
-      setRoles([]); // Ensure roles is always an array
+      toast.error("Failed to fetch roles");
+      setRoles([]);
     } finally {
       setLoading(false);
     }
@@ -316,10 +394,8 @@ const RolesPage = () => {
   const fetchPages = useCallback(async () => {
     try {
       const response = await apiService.get(endpoints.pages.list);
-      // The backend returns: { success, message, data: { pages: [...], pagination: {...} } }
       const allPages = response.data.data?.pages || [];
 
-      // Filter out unwanted pages
       const unwantedPages = [
         "activity logs",
         "company website",
@@ -336,7 +412,7 @@ const RolesPage = () => {
       setPages(filteredPages);
     } catch (error) {
       console.error("Error fetching pages:", error);
-      setPages([]); // Ensure pages is always an array
+      setPages([]);
     }
   }, []);
 
@@ -373,17 +449,6 @@ const RolesPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedRole(null);
-  };
-
-  const handleModalSave = () => {
-    fetchRoles();
-    // Let the app (e.g., sidebar) know permissions may have changed
-    window.dispatchEvent(new Event("permissions-updated"));
-  };
-
   const filteredRoles = useMemo(() => {
     return Array.isArray(roles)
       ? roles.filter(
@@ -394,15 +459,19 @@ const RolesPage = () => {
       : [];
   }, [roles, searchTerm]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredRoles.length / rolesPerPage));
+  const paginatedRoles = filteredRoles.slice(
+    (currentPage - 1) * rolesPerPage,
+    currentPage * rolesPerPage
+  );
+
   const getAssignedPagesDisplay = (pageIds, rolePages) => {
-    // Try rolePages first (page names array)
     if (rolePages && Array.isArray(rolePages) && rolePages.length > 0) {
       return rolePages.length <= 3
         ? rolePages.join(", ")
         : `${rolePages.slice(0, 3).join(", ")} +${rolePages.length - 3} more`;
     }
 
-    // Try pageIds with available pages
     if (
       pageIds &&
       Array.isArray(pageIds) &&
@@ -436,266 +505,168 @@ const RolesPage = () => {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <Shield className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20">
+                <Shield className="h-6 w-6" />
+              </div>
               Roles Management
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Configure roles and assign page permissions
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Configure roles, role icons, and assign page permissions.
             </p>
           </div>
-          <div>
-            <button
-              onClick={handleAddRole}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 shadow-md font-medium"
-            >
-              <Plus className="h-5 w-5" />
-              Add Role
-            </button>
+
+          <button
+            onClick={handleAddRole}
+            className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 transition-all duration-200"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Role
+          </button>
+        </div>
+
+        {/* Toolbar */}
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
+          <div className="relative">
+            <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search roles by name or description..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            />
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-4">
-            <div className="flex-1 relative">
-              <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search roles by name or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white transition-shadow"
-              />
+        {/* Table */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60 overflow-hidden">
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <LoadingSpinner size="lg" />
             </div>
-            {searchTerm && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-700">
-                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                  {filteredRoles.length} result
-                  {filteredRoles.length !== 1 ? "s" : ""}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/30 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    <th className="py-4 px-6">Role & Icon</th>
+                    <th className="py-4 px-6">Assigned Pages</th>
+                    <th className="py-4 px-6">Users</th>
+                    <th className="py-4 px-6">Created</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700/60 text-sm">
+                  {paginatedRoles.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-16 text-center">
+                        <Shield className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-500 dark:text-gray-400">No roles found matching criteria.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedRoles.map((role) => (
+                      <tr key={role.id} className="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center border border-indigo-100 dark:border-indigo-800/50">
+                              {renderRoleIcon(role.icon)}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-900 dark:text-white">
+                                {role.name}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {role.description}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
 
-        {/* Roles Grid */}
-<div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-  {loading ? (
-    <div className="flex items-center justify-center py-12">
-      <LoadingSpinner size="lg" />
-    </div>
-  ) : (
-    <>
-      {filteredRoles.length === 0 ? (
-        <div className="text-center py-12">
-          <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            No roles found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {searchTerm
-              ? "Try adjusting your search criteria."
-              : "Get started by creating your first role."}
-          </p>
-          {!searchTerm && (
-            <button
-              onClick={handleAddRole}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 font-medium"
-            >
-              <Plus className="h-4 w-4" />
-              Add Your First Role
-            </button>
+                        <td className="py-4 px-6 text-gray-700 dark:text-gray-300">
+                          {getAssignedPagesDisplay(role.page_ids, role.pages)}
+                          <span className="ml-1 text-xs text-gray-400">
+                            ({getPageCount(role.page_ids, role.pages)})
+                          </span>
+                        </td>
+
+                        <td className="py-4 px-6 text-gray-700 dark:text-gray-300">
+                          <div className="flex items-center gap-1.5">
+                            <Users className="h-4 w-4 text-gray-400" />
+                            <span className="font-medium">{role.user_count || 0}</span>
+                          </div>
+                        </td>
+
+                        <td className="py-4 px-6 text-xs text-gray-500 dark:text-gray-400">
+                          {role.created_at ? formatDateTime(role.created_at) : "Unknown"}
+                        </td>
+
+                        <td className="py-4 px-6 text-right space-x-2">
+                          <button
+                            onClick={() => handleEditRole(role)}
+                            className="p-1.5 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all"
+                            title="Edit Role"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteRole(role.id)}
+                            className="p-1.5 rounded-lg text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-all"
+                            title="Delete Role"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination Footer */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/30">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Showing page <span className="font-semibold text-gray-900 dark:text-white">{currentPage}</span> of{' '}
+                <span className="font-semibold text-gray-900 dark:text-white">{totalPages}</span> ({filteredRoles.length} roles)
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           )}
         </div>
-      ) : (
-        /* Roles Table */
-<div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-  {loading ? (
-    <div className="flex items-center justify-center py-12">
-      <LoadingSpinner size="lg" />
-    </div>
-  ) : filteredRoles.length === 0 ? (
-    <div className="text-center py-12">
-      <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-        No roles found
-      </h3>
-      <p className="text-gray-600 dark:text-gray-400">
-        {searchTerm
-          ? "Try adjusting your search criteria."
-          : "Create your first role to get started."}
-      </p>
-    </div>
-  ) : (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead className="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              Role
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              Assigned Pages
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              Users
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              Created
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-
-        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          {filteredRoles.map((role) => (
-            <tr
-              key={role.id}
-              className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
-            >
-              {/* Role Info */}
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
-                    <Shield className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {role.name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {role.description}
-                    </p>
-                  </div>
-                </div>
-              </td>
-
-              {/* Pages */}
-              <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                {getAssignedPagesDisplay(role.page_ids, role.pages)}
-                <span className="ml-2 text-xs text-gray-500">
-                  ({getPageCount(role.page_ids, role.pages)})
-                </span>
-              </td>
-
-              {/* Users */}
-              <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  {role.user_count || 0}
-                </div>
-              </td>
-
-              {/* Created */}
-              <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                {role.created_at
-                  ? formatDateTime(role.created_at)
-                  : "Unknown"}
-              </td>
-
-              {/* Actions */}
-              <td className="px-6 py-4 text-right">
-                <div className="flex justify-end gap-2">
-                  <button
-                    onClick={() => handleEditRole(role)}
-                    className="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-md transition"
-                    title="Edit"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-
-                  <button
-                    onClick={() => handleDeleteRole(role.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition"
-                    title="Delete"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )}
-</div>
-
-
-      )}
-    </>
-  )}
-</div>
-
-
-        {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl shadow-lg border border-blue-200 dark:border-blue-700/50 p-6 hover:shadow-xl transition-shadow duration-200">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center shadow-md">
-                <Shield className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                  Total Roles
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {roles.length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl shadow-lg border border-green-200 dark:border-green-700/50 p-6 hover:shadow-xl transition-shadow duration-200">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center shadow-md">
-                <FileText className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                  Available Pages
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {pages.length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl shadow-lg border border-purple-200 dark:border-purple-700/50 p-6 hover:shadow-xl transition-shadow duration-200">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center shadow-md">
-                <Settings className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                  Active Permissions
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {roles.reduce(
-                    (total, role) => total + (role.page_ids || []).length,
-                    0
-                  )}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Role Modal */}
-        <RoleModal
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          role={selectedRole}
-          pages={pages}
-          onSave={handleModalSave}
-        />
       </div>
+
+      <RoleModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        role={selectedRole}
+        pages={pages}
+        onSave={fetchRoles}
+      />
     </Layout>
   );
 };

@@ -38,7 +38,7 @@ const ActivityLogsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalLogs, setTotalLogs] = useState(0);
-  const limit = 15;
+  const limit = 10;
 
   // Selected Log Modal
   const [selectedLog, setSelectedLog] = useState(null);

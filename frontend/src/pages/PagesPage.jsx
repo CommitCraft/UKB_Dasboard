@@ -46,7 +46,9 @@ import {
   Layers,
   Briefcase,
   ClipboardList,
-  CheckSquare
+  CheckSquare,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Layout from '../components/Layout/Layout';
 import { useAuth } from '../context/AuthContext';
@@ -466,10 +468,17 @@ const PagesPage = () => {
     setIsModalOpen(true);
   };
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const filteredPages = pages.filter(page =>
     page.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     page.url.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const totalPages = Math.max(1, Math.ceil(filteredPages.length / itemsPerPage));
+  const paginatedPages = filteredPages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <Layout>
@@ -505,7 +514,10 @@ const PagesPage = () => {
               type="text"
               placeholder="Search pages by name or URL..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             />
           </div>
@@ -530,7 +542,7 @@ const PagesPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700/60 text-sm">
-                  {filteredPages.length === 0 ? (
+                  {paginatedPages.length === 0 ? (
                     <tr>
                       <td colSpan="5" className="px-6 py-16 text-center">
                         <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
@@ -538,7 +550,7 @@ const PagesPage = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredPages.map((page) => (
+                    paginatedPages.map((page) => (
                       <tr key={page.id} className="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
@@ -605,6 +617,33 @@ const PagesPage = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Pagination Footer */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/30">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Showing page <span className="font-semibold text-gray-900 dark:text-white">{currentPage}</span> of{' '}
+                <span className="font-semibold text-gray-900 dark:text-white">{totalPages}</span> ({filteredPages.length} pages)
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           )}
         </div>

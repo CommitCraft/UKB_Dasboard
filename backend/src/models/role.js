@@ -2,14 +2,14 @@ const db = require('../config/db');
 
 class Role {
   static async create(roleData) {
-    const { name, description = null, created_by = null } = roleData;
+    const { name, description = null, icon = null, created_by = null } = roleData;
     
     const query = `
-      INSERT INTO roles (name, description, created_by)
-      VALUES (?, ?, ?)
+      INSERT INTO roles (name, description, icon, created_by)
+      VALUES (?, ?, ?, ?)
     `;
     
-    const result = await db.executeQuery(query, [name, description, created_by]);
+    const result = await db.executeQuery(query, [name, description, icon, created_by]);
     return { id: result.insertId, ...roleData };
   }
 
@@ -70,7 +70,7 @@ class Role {
     }
 
     const query = `
-      SELECT r.id, r.name, r.description, r.created_at, r.updated_at,
+      SELECT r.id, r.name, r.description, r.icon, r.created_at, r.updated_at,
              COUNT(DISTINCT ur.user_id) as user_count,
              COUNT(DISTINCT rp.page_id) as page_count,
              GROUP_CONCAT(DISTINCT p.name ORDER BY p.name) as assigned_pages,
@@ -122,7 +122,7 @@ class Role {
   }
 
   static async update(id, roleData) {
-    const { name, description } = roleData;
+    const { name, description, icon } = roleData;
     
     let query = 'UPDATE roles SET updated_at = CURRENT_TIMESTAMP';
     const params = [];
@@ -135,6 +135,11 @@ class Role {
     if (description !== undefined) {
       query += ', description = ?';
       params.push(description);
+    }
+
+    if (icon !== undefined) {
+      query += ', icon = ?';
+      params.push(icon);
     }
 
     query += ' WHERE id = ?';
