@@ -3,6 +3,8 @@
 // ================================================================
 // This file is the authoritative PM2 process definition.
 // Paths are resolved absolutely based on project location.
+// Both backend and frontend run as headless Node.js daemon processes.
+// No interactive cmd.exe terminal windows are opened.
 // ================================================================
 
 const path = require('path');
@@ -53,13 +55,12 @@ module.exports = {
       listen_timeout: 8000,
     },
 
-    // ─── FRONTEND (Vite dev server — LAN accessible) ──────────
+    // ─── FRONTEND (Vite server running as headless Node process) ──
     {
       name: "aplos_logix-frontend-dev",
       cwd: path.join(PROJECT_ROOT, "frontend"),
-      script: "C:\\Windows\\System32\\cmd.exe",
-      args: "/c npm run dev -- --host 0.0.0.0 --port 8800",
-      interpreter: "none",
+      script: "dev-server.js",
+      interpreter: "node",
 
       instances: 1,
       exec_mode: "fork",
@@ -86,7 +87,7 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,
 
-      // ── Watcher (disabled — Vite has its own HMR) ───────────
+      // ── Watcher (disabled — Vite handles HMR internally) ───
       watch: false,
       ignore_watch: ["node_modules", "dist", "logs"],
 

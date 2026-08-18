@@ -2406,3 +2406,158 @@
 2026-05-24 12:15 +05:30: Terminate batch job (Y/N)? 
 2026-08-18 15:34:34 +05:30: ^C
 2026-08-18 15:34:34 +05:30: Terminate batch job (Y/N)? 
+2026-08-18 15:40:31 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:40:31 +05:30: MZ�
+2026-08-18 15:40:31 +05:30:   
+2026-08-18 15:40:31 +05:30: 
+2026-08-18 15:40:31 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:40:31 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:40:31 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:40:31 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:31 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:31 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:31 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:40:31 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:40:31 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:31 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:31 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:36 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:40:36 +05:30: MZ�
+2026-08-18 15:40:36 +05:30:   
+2026-08-18 15:40:36 +05:30: 
+2026-08-18 15:40:36 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:40:36 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:40:36 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:40:36 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:36 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:36 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:36 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:40:36 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:40:36 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:36 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:36 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:41 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:40:41 +05:30: MZ�
+2026-08-18 15:40:41 +05:30:   
+2026-08-18 15:40:41 +05:30: 
+2026-08-18 15:40:41 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:40:41 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:40:41 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:40:41 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:41 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:41 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:41 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:40:41 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:40:41 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:41 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:41 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:47 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:40:47 +05:30: MZ�
+2026-08-18 15:40:47 +05:30:   
+2026-08-18 15:40:47 +05:30: 
+2026-08-18 15:40:47 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:40:47 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:40:47 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:40:47 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:47 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:47 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:47 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:40:47 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:40:47 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:47 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:47 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:52 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:40:52 +05:30: MZ�
+2026-08-18 15:40:52 +05:30:   
+2026-08-18 15:40:52 +05:30: 
+2026-08-18 15:40:52 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:40:52 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:40:52 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:40:52 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:52 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:52 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:52 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:40:52 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:40:52 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:52 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:52 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:58 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:40:58 +05:30: MZ�
+2026-08-18 15:40:58 +05:30:   
+2026-08-18 15:40:58 +05:30: 
+2026-08-18 15:40:58 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:40:58 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:40:58 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:40:58 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:58 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:58 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:40:58 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:40:58 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:40:58 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:40:58 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:40:58 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:03 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:41:03 +05:30: MZ�
+2026-08-18 15:41:03 +05:30:   
+2026-08-18 15:41:03 +05:30: 
+2026-08-18 15:41:03 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:41:03 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:41:03 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:41:03 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:03 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:03 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:03 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:41:03 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:41:03 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:03 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:03 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:09 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:41:09 +05:30: MZ�
+2026-08-18 15:41:09 +05:30:   
+2026-08-18 15:41:09 +05:30: 
+2026-08-18 15:41:09 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:41:09 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:41:09 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:41:09 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:09 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:09 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:09 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:41:09 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:41:09 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:09 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:09 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:14 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:41:14 +05:30: MZ�
+2026-08-18 15:41:14 +05:30:   
+2026-08-18 15:41:14 +05:30: 
+2026-08-18 15:41:14 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:41:14 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:41:14 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:41:14 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:14 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:14 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:14 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:41:14 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:41:14 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:14 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:14 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:19 +05:30: C:\Windows\System32\cmd.exe:1
+2026-08-18 15:41:19 +05:30: MZ�
+2026-08-18 15:41:19 +05:30:   
+2026-08-18 15:41:19 +05:30: 
+2026-08-18 15:41:19 +05:30: SyntaxError: Invalid or unexpected token
+2026-08-18 15:41:19 +05:30:     at wrapSafe (node:internal/modules/cjs/loader:1637:18)
+2026-08-18 15:41:19 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1679:20)
+2026-08-18 15:41:19 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:19 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:19 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:19 +05:30:     at Object.<anonymous> (C:\Users\DELL\AppData\Roaming\npm\node_modules\pm2\lib\ProcessContainerFork.js:33:23)
+2026-08-18 15:41:19 +05:30:     at Module._compile (node:internal/modules/cjs/loader:1705:14)
+2026-08-18 15:41:19 +05:30:     at Object..js (node:internal/modules/cjs/loader:1838:10)
+2026-08-18 15:41:19 +05:30:     at Module.load (node:internal/modules/cjs/loader:1441:32)
+2026-08-18 15:41:19 +05:30:     at Function._load (node:internal/modules/cjs/loader:1263:12)
+2026-08-18 15:41:26 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m

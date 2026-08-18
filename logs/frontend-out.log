@@ -61,3 +61,8 @@
 2025-11-12 14:07 +05:30: [2m2:07:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/Layout/Layout.jsx[22m
 2026-05-24 12:15 +05:30: Terminate batch job (Y/N)? 
 2026-08-18 15:34:34 +05:30: Terminate batch job (Y/N)? 
+2026-08-18 15:41:26 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-18 15:41:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m

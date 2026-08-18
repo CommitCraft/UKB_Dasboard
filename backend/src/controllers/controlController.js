@@ -1,9 +1,10 @@
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, execFile } = require('child_process');
 const util = require('util');
 const execPromise = util.promisify(exec);
+const execFilePromise = util.promisify(execFile);
 const pm2 = require('pm2');
 const db = require('../config/db');
 const backendPackage = require('../../package.json');
@@ -21,6 +22,13 @@ const HEALTH_TASK_NAME = 'Aplos_Logix-PM2-HealthCheck';
 
 const BACKEND_APP_NAME = 'aplos_logix-backend';
 const FRONTEND_APP_NAME = 'aplos_logix-frontend-dev';
+
+// Task status cache (cache for 60s to prevent frequent cmd execution)
+const taskCache = {
+  data: {},
+  lastChecked: 0,
+  CACHE_TTL_MS: 60 * 1000
+};
 
 // Helper to format uptime into human readable string
 function formatDuration(seconds) {
@@ -63,22 +71,39 @@ function getPm2ProcessList() {
   });
 }
 
-// Query Scheduled Task status via schtasks
+// Query Scheduled Task status silently via execFile with windowsHide: true
 async function getScheduledTaskStatus(taskName) {
+  const now = Date.now();
+  if (taskCache.data[taskName] && (now - taskCache.lastChecked < taskCache.CACHE_TTL_MS)) {
+    return taskCache.data[taskName];
+  }
+
   try {
-    const { stdout } = await execPromise(`schtasks /query /tn "${taskName}" /fo CSV /nh 2>nul`);
+    const { stdout } = await execFilePromise(
+      'schtasks.exe',
+      ['/query', '/tn', taskName, '/fo', 'CSV', '/nh'],
+      { windowsHide: true, timeout: 3000 }
+    );
+
     if (stdout && stdout.trim()) {
       const parts = stdout.trim().split(',').map(s => s.replace(/"/g, '').trim());
       // format: "TaskName","Next Run Time","Status"
-      return {
+      const result = {
         configured: true,
         status: parts[2] || 'Ready',
         nextRun: parts[1] || 'N/A'
       };
+      taskCache.data[taskName] = result;
+      taskCache.lastChecked = now;
+      return result;
     }
-    return { configured: false, status: 'Not Configured', nextRun: 'N/A' };
+    const result = { configured: false, status: 'Not Configured', nextRun: 'N/A' };
+    taskCache.data[taskName] = result;
+    return result;
   } catch {
-    return { configured: false, status: 'Not Configured', nextRun: 'N/A' };
+    const result = { configured: false, status: 'Not Configured', nextRun: 'N/A' };
+    taskCache.data[taskName] = result;
+    return result;
   }
 }
 
@@ -149,7 +174,7 @@ class ControlController {
       });
       const cpuUsagePercent = totalTick > 0 ? Math.max(0, Math.min(100, Math.round(100 - (100 * totalIdle / totalTick)))) : 0;
 
-      // 5. Windows Scheduled Tasks Status
+      // 5. Windows Scheduled Tasks Status (cached & executed silently with windowsHide)
       const [autoStartTask, healthCheckTask] = await Promise.all([
         getScheduledTaskStatus(STARTUP_TASK_NAME),
         getScheduledTaskStatus(HEALTH_TASK_NAME)
@@ -260,6 +285,7 @@ class ControlController {
   /**
    * Execute predefined project actions: start, stop, restart, status
    * Strictly validates allowed actions — NO arbitrary commands.
+   * Runs hidden with windowsHide: true so no terminal flashes.
    */
   async executeControlAction(req, res) {
     const { action } = req.body;
@@ -274,6 +300,7 @@ class ControlController {
 
     const pm2Cmd = getPm2Command();
     const actionClean = action.toLowerCase();
+    const execOpts = { windowsHide: true };
 
     try {
       if (actionClean === 'status') {
@@ -287,8 +314,8 @@ class ControlController {
         }
         fs.writeFileSync(MAINTENANCE_FLAG, `MAINTENANCE SET AT ${new Date().toISOString()}`);
 
-        // 2. Stop PM2 processes safely
-        await execPromise(`${pm2Cmd} stop "${BACKEND_APP_NAME}" "${FRONTEND_APP_NAME}" 2>nul || ${pm2Cmd} stop all`);
+        // 2. Stop PM2 processes safely and silently
+        await execPromise(`${pm2Cmd} stop "${BACKEND_APP_NAME}" "${FRONTEND_APP_NAME}" 2>nul || ${pm2Cmd} stop all`, execOpts);
         
         return res.status(200).json({
           success: true,
@@ -303,9 +330,9 @@ class ControlController {
           try { fs.unlinkSync(MAINTENANCE_FLAG); } catch {}
         }
 
-        // 2. Start or reload applications idempotently from ecosystem config
+        // 2. Start or reload applications idempotently from ecosystem config silently
         const cmd = `cd /d "${PM2_SETUP_DIR}" && ${pm2Cmd} startOrReload "${ECOSYSTEM_FILE}" --update-env && ${pm2Cmd} save --force`;
-        await execPromise(cmd);
+        await execPromise(cmd, execOpts);
 
         return res.status(200).json({
           success: true,
@@ -320,9 +347,9 @@ class ControlController {
           try { fs.unlinkSync(MAINTENANCE_FLAG); } catch {}
         }
 
-        // 2. Restart both apps safely
+        // 2. Restart both apps safely and silently
         const cmd = `cd /d "${PM2_SETUP_DIR}" && ${pm2Cmd} restart "${BACKEND_APP_NAME}" "${FRONTEND_APP_NAME}" 2>nul || ${pm2Cmd} startOrReload "${ECOSYSTEM_FILE}" --update-env`;
-        await execPromise(cmd);
+        await execPromise(cmd, execOpts);
 
         return res.status(200).json({
           success: true,
