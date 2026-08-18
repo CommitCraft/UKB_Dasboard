@@ -11,6 +11,7 @@ const statsRoutes = require('./statsRoutes');
 const exportRoutes = require('./exportRoutes');
 const systemRoutes = require('./systemRoutes');
 const controlRoutes = require('./controlRoutes');
+const docRoutes = require('./docRoutes');
 const { auth, requireAdmin } = require('../middleware/auth');
 
 // API root — minimal info, no endpoint enumeration
@@ -42,13 +43,6 @@ router.use('/stats', statsRoutes);
 router.use('/exports', exportRoutes);
 router.use('/system', systemRoutes);
 router.use('/control', controlRoutes);
-
-// API docs — admin only
-router.get('/docs', auth, requireAdmin, (req, res) => {
-  res.json({
-    success: true,
-    message: 'API Documentation — restricted to administrators'
-  });
-});
+router.use('/docs', docRoutes);
 
 module.exports = router;

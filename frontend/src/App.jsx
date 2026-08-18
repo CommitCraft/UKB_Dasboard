@@ -16,6 +16,7 @@ import IframeTestPage from './pages/IframeTestPage';
 import ExternalPage from './pages/ExternalPage';
 import ActivityLogsPage from './pages/ActivityLogsPage';
 import MenuManagementPage from './pages/MenuManagementPage';
+import DocsPage from './pages/DocsPage';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Protected Route Component with role page assignment verification
@@ -157,6 +158,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredPath="/activity">
                     <ActivityLogsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/docs"
+                element={
+                  <ProtectedRoute>
+                    <DocsPage />
                   </ProtectedRoute>
                 }
               />

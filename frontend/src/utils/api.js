@@ -126,6 +126,11 @@ export const endpoints = {
   control: {
     status: '/control/status',
     action: '/control/action'
+  },
+
+  // Documentation (Super Admin)
+  docs: {
+    sections: '/docs/sections'
   }
 };
 

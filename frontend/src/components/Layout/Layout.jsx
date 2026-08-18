@@ -16,6 +16,7 @@ import {
   Activity,
   BarChart2,
   BarChart3,
+  BookOpen,
   ChevronDown,
   ChevronRight,
   Clock,
@@ -348,6 +349,7 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
         User,
         Monitor,
         Home,
+        BookOpen,
       };
       if (iconMap[page.icon]) {
         return iconMap[page.icon];
@@ -356,6 +358,14 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
 
     const path = formatUrl(page?.url).toLowerCase();
     const name = page?.name?.toLowerCase() || "";
+
+    if (
+      path.includes("doc") ||
+      name.includes("doc") ||
+      name.includes("manual")
+    ) {
+      return BookOpen;
+    }
 
     if (
       path.includes("dashboard") ||
@@ -474,7 +484,7 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
     }));
   }, [myPages, filteredMenuItems]);
 
-  const { logout } = useAuth();
+  const { logout, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -569,6 +579,27 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
           )}
         </nav>
 
+        {/* Super Admin Documentation Link (Only visible to super_admin) */}
+        {isSuperAdmin && isSuperAdmin() && (
+          <div className="shrink-0 px-3 py-2 border-t border-gray-200 dark:border-gray-700/60 bg-gray-50/60 dark:bg-gray-800/40">
+            <Link
+              to="/docs"
+              onClick={onClose}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                location.pathname.startsWith("/docs")
+                  ? "bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-sm shadow-primary-500/20"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/60"
+              }`}
+            >
+              <BookOpen className={`h-4 w-4 shrink-0 ${location.pathname.startsWith("/docs") ? "text-white" : "text-primary-500"}`} />
+              <span className="truncate flex-1">Documentation</span>
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 shrink-0">
+                Super Admin
+              </span>
+            </Link>
+          </div>
+        )}
+
         {/* User Profile Card & Dropdown at bottom of Sidebar */}
         <div className="shrink-0 p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/80 relative" ref={dropdownRef}>
           <button
@@ -610,6 +641,18 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
               </div>
 
               <div className="my-2 border-t border-gray-100 dark:border-gray-700" />
+
+              {/* Super Admin Documentation Direct Link */}
+              {isSuperAdmin && isSuperAdmin() && (
+                <Link
+                  to="/docs"
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                >
+                  <BookOpen className="h-4 w-4 text-primary-500" />
+                  <span>Documentation</span>
+                </Link>
+              )}
 
               {/* Profile Settings Item */}
               <button
