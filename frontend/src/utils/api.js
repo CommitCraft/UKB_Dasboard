@@ -23,9 +23,6 @@ api.interceptors.request.use(
     
     if (authToken) {
       config.headers.Authorization = `Bearer ${authToken}`;
-      console.log(`API Request to ${config.url} with token:`, authToken.substring(0, 20) + '...');
-    } else {
-      console.log(`API Request to ${config.url} without token`);
     }
     return config;
   },
