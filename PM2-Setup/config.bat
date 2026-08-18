@@ -36,6 +36,7 @@ set "HEALTH_TASK_NAME=Aplos_Logix-PM2-HealthCheck"
 
 :: ─── STARTUP SCRIPT (written to a stable, short path) ─────────
 set "STARTUP_DIR=C:\ProgramData\Aplos_Logix"
+set "SILENT_RUNNER=%STARTUP_DIR%\run_silent.vbs"
 set "BOOT_SCRIPT=%STARTUP_DIR%\startup.cmd"
 set "HEALTH_SCRIPT=%STARTUP_DIR%\health-check.cmd"
 set "STARTUP_LOG=%STARTUP_DIR%\startup.log"

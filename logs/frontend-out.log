@@ -74,3 +74,24 @@
 2026-08-18 15:48:33 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
 2026-08-18 15:48:33 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
 2026-08-18 15:48:33 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-18 17:20:42 +05:30: [2m5:20:42 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/context/AuthContext.jsx, /src/pages/DashboardPage.jsx, /src/pages/ActivityLogsPage.jsx, /src/pages/UsersPage.jsx, /src/pages/RolesPage.jsx, /src/pages/PagesPage.jsx, /src/pages/MenuManagementPage.jsx, /src/components/EnhancedSystemPerformance.jsx, /src/components/UserPagesModal.jsx, /src/components/Layout/Layout.jsx, /src/components/EnhancedSystemInformation.jsx, /src/components/ProjectControlPanel.jsx, /src/index.css[22m
+2026-08-18 17:20:44 +05:30: [2m5:20:44 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/context/AuthContext.jsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+2026-08-18 17:20:44 +05:30: [2m5:20:44 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/pages/DashboardPage.jsx, /src/pages/LoginPage.jsx, /src/pages/UsersPage.jsx, /src/pages/PagesPage.jsx, /src/components/Layout/Layout.jsx, /src/components/Layout/SidebarHeader.jsx[22m
+2026-08-18 17:21:13 +05:30: [2m5:21:13 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-18 17:21:19 +05:30: [2m5:21:19 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-18 17:21:27 +05:30: [2m5:21:27 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/Layout/Layout.jsx[22m
+2026-08-18 17:21:36 +05:30: [2m5:21:36 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/Layout/Layout.jsx[22m
+2026-08-18 17:21:54 +05:30: [2m5:21:54 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/Layout/Layout.jsx[22m
+2026-08-18 17:26:27 +05:30: [2m5:26:27 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-18 17:26:35 +05:30: [2m5:26:35 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-18 17:31:12 +05:30: [2m5:31:12 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/NotFoundPage.jsx[22m
+2026-08-18 17:59:26 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-18 17:59:26 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-18 17:59:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-18 17:59:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-18 17:59:26 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-18 18:00:29 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-18 18:00:29 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-18 18:00:29 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-18 18:00:29 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-18 18:00:29 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m

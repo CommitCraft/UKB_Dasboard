@@ -303,7 +303,27 @@ echo [OK] Health-check script created: %HEALTH_SCRIPT%
 echo.
 
 :: ──────────────────────────────────────────────────────────────
-:: STEP 10: Register Windows startup task (ONSTART, SYSTEM)
+:: STEP 9B: Create Silent VBScript Launcher (100% Invisible Background)
+:: ──────────────────────────────────────────────────────────────
+
+echo [STEP 9B] Writing silent VBScript background launcher...
+
+> "%SILENT_RUNNER%" (
+    echo Set WshShell = CreateObject^("WScript.Shell"^)
+    echo If WScript.Arguments.Count ^> 0 Then
+    echo     WshShell.Run Chr^(34^) ^& WScript.Arguments^(0^) ^& Chr^(34^), 0, False
+    echo End If
+)
+
+if not exist "%SILENT_RUNNER%" (
+    echo [ERROR] Silent runner could not be written: %SILENT_RUNNER%
+    pause & exit /b 1
+)
+echo [OK] Silent runner created: %SILENT_RUNNER%
+echo.
+
+:: ──────────────────────────────────────────────────────────────
+:: STEP 10: Register Windows startup task (ONSTART, SYSTEM, SILENT)
 :: ──────────────────────────────────────────────────────────────
 
 echo [STEP 10] Configuring Windows startup task...
@@ -312,7 +332,7 @@ schtasks /delete /tn "%TASK_NAME%" /f >nul 2>&1
 
 schtasks /create ^
     /tn "%TASK_NAME%" ^
-    /tr "cmd.exe /d /c \"%BOOT_SCRIPT%\"" ^
+    /tr "wscript.exe //B //Nologo \"%SILENT_RUNNER%\" \"%BOOT_SCRIPT%\"" ^
     /sc ONSTART ^
     /delay %STARTUP_DELAY% ^
     /ru SYSTEM ^
@@ -329,20 +349,20 @@ if errorlevel 1 (
     echo [ERROR] Startup task was created but cannot be verified.
     pause & exit /b 1
 )
-echo [OK] Startup task registered: %TASK_NAME%
+echo [OK] Startup task registered: %TASK_NAME% (Silent Background)
 echo.
 
 :: ──────────────────────────────────────────────────────────────
-:: STEP 11: Register health-check task (every 3 minutes)
+:: STEP 11: Register health-check task (every 3 minutes, SILENT)
 :: ──────────────────────────────────────────────────────────────
 
-echo [STEP 11] Configuring health-check task (every 3 minutes)...
+echo [STEP 11] Configuring health-check task (every 3 minutes, Silent)...
 
 schtasks /delete /tn "%HEALTH_TASK_NAME%" /f >nul 2>&1
 
 schtasks /create ^
     /tn "%HEALTH_TASK_NAME%" ^
-    /tr "cmd.exe /d /c \"%HEALTH_SCRIPT%\"" ^
+    /tr "wscript.exe //B //Nologo \"%SILENT_RUNNER%\" \"%HEALTH_SCRIPT%\"" ^
     /sc MINUTE ^
     /mo 3 ^
     /ru SYSTEM ^
@@ -359,7 +379,7 @@ if errorlevel 1 (
     echo [ERROR] Health-check task was created but cannot be verified.
     pause & exit /b 1
 )
-echo [OK] Health-check task registered: %HEALTH_TASK_NAME% (every 3 min)
+echo [OK] Health-check task registered: %HEALTH_TASK_NAME% (every 3 min, Silent Background)
 echo.
 
 :: ──────────────────────────────────────────────────────────────
