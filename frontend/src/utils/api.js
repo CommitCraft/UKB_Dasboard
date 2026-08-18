@@ -120,6 +120,12 @@ export const endpoints = {
     processes: '/system/processes',
     status: '/system/status',
     health: '/system/health'
+  },
+
+  // Project Control & PM2 Management (Super Admin)
+  control: {
+    status: '/control/status',
+    action: '/control/action'
   }
 };
 

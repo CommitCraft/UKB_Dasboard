@@ -146,6 +146,25 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
+// Super Admin ONLY middleware — admins are NOT granted access
+const requireSuperAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required.'
+    });
+  }
+
+  if (!req.user.roles.includes('super_admin')) {
+    return res.status(403).json({
+      success: false,
+      message: 'Super Admin access required.'
+    });
+  }
+
+  next();
+};
+
 // Check if user has access to a specific page or resource URL
 const requireAssignedPage = (targetUrl) => {
   return async (req, res, next) => {
@@ -265,6 +284,7 @@ module.exports = {
   auth,
   optionalAuth,
   requireAdmin,
+  requireSuperAdmin,
   requireAssignedPages,
   requireAssignedPage,
   generateToken,

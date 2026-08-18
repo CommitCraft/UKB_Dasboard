@@ -15,6 +15,7 @@ import { formatNumber } from '../utils/helpers';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EnhancedSystemPerformance from '../components/EnhancedSystemPerformance';
 import EnhancedSystemInformation from '../components/EnhancedSystemInformation';
+import ProjectControlPanel from '../components/ProjectControlPanel';
 
 const StatCard = ({ title, value, icon: Icon, trend, color = 'blue', suffix = '' }) => {
   const colorClasses = {
@@ -67,7 +68,7 @@ const StatCard = ({ title, value, icon: Icon, trend, color = 'blue', suffix = ''
 
 
 const DashboardPage = () => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalRoles: 0,
@@ -140,6 +141,11 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Super Admin Dedicated Project Status & PM2 Control Panel */}
+        {isSuperAdmin && isSuperAdmin() && (
+          <ProjectControlPanel />
+        )}
 
         {/* Stats Grid - Only visible to Admin and Super Admin */}
         {isAdmin() && (

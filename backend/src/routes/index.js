@@ -10,6 +10,7 @@ const menuRoutes = require('./menuRoutes');
 const statsRoutes = require('./statsRoutes');
 const exportRoutes = require('./exportRoutes');
 const systemRoutes = require('./systemRoutes');
+const controlRoutes = require('./controlRoutes');
 const { auth, requireAdmin } = require('../middleware/auth');
 
 // API root — minimal info, no endpoint enumeration
@@ -40,6 +41,7 @@ router.use('/menus', menuRoutes);
 router.use('/stats', statsRoutes);
 router.use('/exports', exportRoutes);
 router.use('/system', systemRoutes);
+router.use('/control', controlRoutes);
 
 // API docs — admin only
 router.get('/docs', auth, requireAdmin, (req, res) => {

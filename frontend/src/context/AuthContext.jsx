@@ -372,8 +372,12 @@ export const AuthProvider = ({ children }) => {
     return user?.accessiblePages?.some((page) => page.url === pageUrl) || false;
   };
 
+  const isSuperAdmin = () => {
+    return hasRole("Super Admin") || (Array.isArray(user?.roles) && user.roles.includes('super_admin'));
+  };
+
   const isAdmin = () => {
-    return hasRole("Super Admin") || hasRole("Admin");
+    return isSuperAdmin() || hasRole("Admin") || (Array.isArray(user?.roles) && user.roles.includes('admin'));
   };
 
   const isManager = () => hasRole("Manager");
@@ -405,6 +409,7 @@ export const AuthProvider = ({ children }) => {
     changePassword,
     hasRole,
     hasPermission,
+    isSuperAdmin,
     isAdmin,
     isManager,
     isUser,
