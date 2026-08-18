@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const os = require('os');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const db = require('./src/config/db');
 const routes = require('./src/routes');
@@ -30,15 +30,16 @@ for (const iface of Object.values(networkInterfaces)) {
 }
 
 // ─── CORS Whitelist ───────────────────────────────────────────────
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
+const defaultOrigins = 'http://localhost:5173,http://192.168.1.37:8800,http://localhost:8800,http://127.0.0.1:8800';
+const allowedOrigins = (process.env.CORS_ORIGIN || defaultOrigins)
   .split(',').map(o => o.trim()).filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
-    if (!isProd && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return callback(null, true);
-    return callback(new Error('CORS: origin not allowed'), false);
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+)(:\d+)?$/.test(origin)) return callback(null, true);
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],

@@ -12,15 +12,15 @@ const backendPackage = require('../../package.json');
 const PROJECT_ROOT = path.resolve(__dirname, '../../../');
 const PM2_SETUP_DIR = path.join(PROJECT_ROOT, 'PM2-Setup');
 const ECOSYSTEM_FILE = path.join(PM2_SETUP_DIR, 'ecosystem.config.cjs');
-const STARTUP_DIR = 'C:\\ProgramData\\CMSCRM';
+const STARTUP_DIR = 'C:\\ProgramData\\Aplos_Logix';
 const MAINTENANCE_FLAG = path.join(STARTUP_DIR, 'maintenance.flag');
 const STARTUP_LOG = path.join(STARTUP_DIR, 'startup.log');
 const HEALTH_LOG = path.join(STARTUP_DIR, 'health-check.log');
-const STARTUP_TASK_NAME = 'CMSCRM-PM2-Startup';
-const HEALTH_TASK_NAME = 'CMSCRM-PM2-HealthCheck';
+const STARTUP_TASK_NAME = 'Aplos_Logix-PM2-Startup';
+const HEALTH_TASK_NAME = 'Aplos_Logix-PM2-HealthCheck';
 
-const BACKEND_APP_NAME = 'cmscrm-backend';
-const FRONTEND_APP_NAME = 'cmscrm-frontend-dev';
+const BACKEND_APP_NAME = 'aplos_logix-backend';
+const FRONTEND_APP_NAME = 'aplos_logix-frontend-dev';
 
 // Helper to format uptime into human readable string
 function formatDuration(seconds) {
@@ -227,7 +227,7 @@ class ControlController {
             connected: dbConnected,
             latencyMs: dbLatencyMs,
             host: process.env.DB_HOST || '127.0.0.1',
-            database: process.env.DB_NAME || 'cmscrm'
+            database: process.env.DB_NAME || 'aplos_logix'
           },
           system: {
             platform: os.platform(),

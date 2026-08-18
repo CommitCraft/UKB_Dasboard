@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title CMSCRM — Health Check
+title Aplos_Logix — Health Check
 
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
@@ -8,7 +8,7 @@ call "%SCRIPT_DIR%\config.bat"
 
 echo.
 echo  ====================================================
-echo    CMSCRM — Manual Health Check
+echo    Aplos_Logix — Manual Health Check
 echo  ====================================================
 echo.
 

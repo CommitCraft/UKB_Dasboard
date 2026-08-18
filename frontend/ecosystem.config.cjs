@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "cmscrm-frontend",
+      name: "aplos_logix-frontend",
       cwd: "./",
       script: "npm",
       args: "run dev",

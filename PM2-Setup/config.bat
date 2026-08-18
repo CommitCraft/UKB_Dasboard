@@ -1,6 +1,6 @@
 @echo off
 :: ==============================================================
-:: CMSCRM Configuration — Edit this file ONLY when paths change
+:: Aplos_Logix Configuration — Edit this file ONLY when paths change
 :: ==============================================================
 ::
 :: If you move the project to a different folder, update PROJECT_PATH here.
@@ -11,8 +11,8 @@
 set "PROJECT_PATH=C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity"
 
 :: ─── APPLICATION NAMES (must match ecosystem.config.cjs) ──────
-set "BACKEND_NAME=cmscrm-backend"
-set "FRONTEND_NAME=cmscrm-frontend-dev"
+set "BACKEND_NAME=aplos_logix-backend"
+set "FRONTEND_NAME=aplos_logix-frontend-dev"
 
 :: ─── ECOSYSTEM CONFIG ─────────────────────────────────────────
 set "ECOSYSTEM=%PROJECT_PATH%\PM2-Setup\ecosystem.config.cjs"
@@ -27,15 +27,15 @@ set "PM2_DIR=C:\Users\DELL\AppData\Roaming\npm"
 
 :: ─── PM2 HOME (shared data store) ─────────────────────────────
 ::   Uses the current user's default .pm2 folder.
-::   Change to C:\ProgramData\CMSCRM\pm2 for SYSTEM-account usage.
+::   Change to C:\ProgramData\Aplos_Logix\pm2 for SYSTEM-account usage.
 set "PM2_HOME=%USERPROFILE%\.pm2"
 
 :: ─── WINDOWS STARTUP TASK ─────────────────────────────────────
-set "TASK_NAME=CMSCRM-PM2-Startup"
-set "HEALTH_TASK_NAME=CMSCRM-PM2-HealthCheck"
+set "TASK_NAME=Aplos_Logix-PM2-Startup"
+set "HEALTH_TASK_NAME=Aplos_Logix-PM2-HealthCheck"
 
 :: ─── STARTUP SCRIPT (written to a stable, short path) ─────────
-set "STARTUP_DIR=C:\ProgramData\CMSCRM"
+set "STARTUP_DIR=C:\ProgramData\Aplos_Logix"
 set "BOOT_SCRIPT=%STARTUP_DIR%\startup.cmd"
 set "HEALTH_SCRIPT=%STARTUP_DIR%\health-check.cmd"
 set "STARTUP_LOG=%STARTUP_DIR%\startup.log"

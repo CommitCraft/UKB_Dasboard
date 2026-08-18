@@ -1,4 +1,4 @@
-# CMSCRM Backend API
+# Aplos_Logix Backend API
 
 A comprehensive CRM system backend built with Node.js, Express, and MySQL.
 
@@ -45,7 +45,7 @@ A comprehensive CRM system backend built with Node.js, Express, and MySQL.
    DB_PORT=3306
    DB_USER=root
    DB_PASS=your_password
-   DB_NAME=cmscrm
+   DB_NAME=aplos_logix
    
    JWT_SECRET=your-super-secret-jwt-key
    JWT_EXPIRES_IN=2d
@@ -53,7 +53,7 @@ A comprehensive CRM system backend built with Node.js, Express, and MySQL.
 
 4. **Create MySQL database**
    ```sql
-   CREATE DATABASE cmscrm CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE aplos_logix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
 5. **Run database migrations and seed data**
@@ -133,19 +133,19 @@ A comprehensive CRM system backend built with Node.js, Express, and MySQL.
 After seeding the database, use these credentials:
 
 **Super Admin:**
-- Email: `superadmin@cmscrm.com`
+- Email: `superadmin@aplos_logix.com`
 - Password: `SuperAdmin123!`
 
 **Admin:**
-- Email: `admin@cmscrm.com`
+- Email: `admin@aplos_logix.com`
 - Password: `Admin123!`
 
 **Manager:**
-- Email: `manager@cmscrm.com`
+- Email: `manager@aplos_logix.com`
 - Password: `Manager123!`
 
 **User:**
-- Email: `user@cmscrm.com`
+- Email: `user@aplos_logix.com`
 - Password: `User123!`
 
 ## 📁 Project Structure
@@ -265,4 +265,4 @@ This project is licensed under the ISC License.
 
 ## 🆘 Support
 
-For support, email support@cmscrm.com or create an issue in the repository.
+For support, email support@aplos_logix.com or create an issue in the repository.

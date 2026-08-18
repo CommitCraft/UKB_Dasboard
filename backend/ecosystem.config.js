@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'cmscrm-backend',
+      name: 'aplos_logix-backend',
       script: 'server.js',
       instances: 1,
       exec_mode: 'fork',

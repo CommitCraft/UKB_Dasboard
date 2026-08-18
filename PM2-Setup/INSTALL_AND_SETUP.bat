@@ -1,11 +1,11 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title CMSCRM PM2 Setup — Run as Administrator
+title Aplos_Logix PM2 Setup — Run as Administrator
 
 color 0A
 echo.
 echo  ====================================================================
-echo    CMSCRM PM2 SETUP — Windows Auto-Start Configuration
+echo    Aplos_Logix PM2 SETUP — Windows Auto-Start Configuration
 echo  ====================================================================
 echo.
 echo  This script will:
@@ -207,7 +207,7 @@ echo [STEP 8] Writing startup boot script...
     echo set "LOG=%STARTUP_LOG%"
     echo.
     echo echo ==================================================  ^^^>^^^> "%%LOG%%"
-    echo echo [%%date%% %%time%%] CMSCRM startup initiated.       ^^^>^^^> "%%LOG%%"
+    echo echo [%%date%% %%time%%] Aplos_Logix startup initiated.       ^^^>^^^> "%%LOG%%"
     echo.
     echo if not exist "%%PROJECT_PATH%%\" (
     echo     echo [%%date%% %%time%%] ERROR: Project not found: %%PROJECT_PATH%% ^^^>^^^> "%%LOG%%"
@@ -229,7 +229,7 @@ echo [STEP 8] Writing startup boot script...
     echo.
     echo :SAVE
     echo call "%%PM2_CMD%%" save --force ^^^>^^^> "%%LOG%%" 2^^^>^^^>^^^&1
-    echo echo [%%date%% %%time%%] CMSCRM startup completed OK. ^^^>^^^> "%%LOG%%"
+    echo echo [%%date%% %%time%%] Aplos_Logix startup completed OK. ^^^>^^^> "%%LOG%%"
     echo exit /b 0
     echo.
     echo :FAILED

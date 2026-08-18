@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title CMSCRM — PM2 Status
+title Aplos_Logix — PM2 Status
 
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
@@ -8,7 +8,7 @@ call "%SCRIPT_DIR%\config.bat"
 
 echo.
 echo  ====================================================
-echo    CMSCRM — Current PM2 Status
+echo    Aplos_Logix — Current PM2 Status
 echo  ====================================================
 echo.
 

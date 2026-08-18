@@ -45,13 +45,13 @@ async function seedDatabase() {
 
     // Display default credentials
     console.log('\n🚀 Default Admin Credentials:');
-    console.log(`Email: ${process.env.DEFAULT_ADMIN_EMAIL || 'admin@cmscrm.com'}`);
+    console.log(`Email: ${process.env.DEFAULT_ADMIN_EMAIL || 'admin@aplos_logix.com'}`);
     console.log(`Password: ${process.env.DEFAULT_ADMIN_PASS || 'Admin123!'}`);
     console.log('\n🔧 Manager Credentials:');
-    console.log(`Email: ${process.env.DEFAULT_MANAGER_EMAIL || 'manager@cmscrm.com'}`);
+    console.log(`Email: ${process.env.DEFAULT_MANAGER_EMAIL || 'manager@aplos_logix.com'}`);
     console.log(`Password: ${process.env.DEFAULT_MANAGER_PASS || 'Manager123!'}`);
     console.log('\n👤 User Credentials:');
-    console.log(`Email: ${process.env.DEFAULT_USER_EMAIL || 'user@cmscrm.com'}`);
+    console.log(`Email: ${process.env.DEFAULT_USER_EMAIL || 'user@aplos_logix.com'}`);
     console.log(`Password: ${process.env.DEFAULT_USER_PASS || 'User123!'}`);
 
   } catch (error) {
@@ -183,31 +183,31 @@ async function createDefaultUsers() {
   const users = [
     {
       username: 'superadmin',
-      email: process.env.DEFAULT_SUPERADMIN_EMAIL || 'superadmin@cmscrm.com',
+      email: process.env.DEFAULT_SUPERADMIN_EMAIL || 'superadmin@aplos_logix.com',
       password: process.env.DEFAULT_SUPERADMIN_PASS || 'SuperAdmin123!',
       status: 'active'
     },
     {
       username: 'admin',
-      email: process.env.DEFAULT_ADMIN_EMAIL || 'admin@cmscrm.com',
+      email: process.env.DEFAULT_ADMIN_EMAIL || 'admin@aplos_logix.com',
       password: process.env.DEFAULT_ADMIN_PASS || 'Admin123!',
       status: 'active'
     },
     {
       username: 'manager',
-      email: process.env.DEFAULT_MANAGER_EMAIL || 'manager@cmscrm.com',
+      email: process.env.DEFAULT_MANAGER_EMAIL || 'manager@aplos_logix.com',
       password: process.env.DEFAULT_MANAGER_PASS || 'Manager123!',
       status: 'active'
     },
     {
       username: 'user',
-      email: process.env.DEFAULT_USER_EMAIL || 'user@cmscrm.com',
+      email: process.env.DEFAULT_USER_EMAIL || 'user@aplos_logix.com',
       password: process.env.DEFAULT_USER_PASS || 'User123!',
       status: 'active'
     },
     {
       username: 'testuser',
-      email: 'test@cmscrm.com',
+      email: 'test@aplos_logix.com',
       password: 'Test123!',
       status: 'inactive'
     }
@@ -346,7 +346,7 @@ async function createSampleActivityLogs() {
       resource: 'user',
       resource_id: 2,
       ip_address: '127.0.0.1',
-      details: JSON.stringify({ username: 'manager', email: 'manager@cmscrm.com' })
+      details: JSON.stringify({ username: 'manager', email: 'manager@aplos_logix.com' })
     },
     {
       user_id: adminUserId,
@@ -378,7 +378,7 @@ async function createSampleActivityLogs() {
         activity.resource,
         activity.resource_id || null,
         activity.ip_address,
-        'CMSCRM Seeder/1.0',
+        'Aplos_Logix Seeder/1.0',
         activity.details
       ]
     );
@@ -388,7 +388,7 @@ async function createSampleActivityLogs() {
   await db.executeQuery(
     `INSERT INTO login_activities (user_id, username, ip_address, user_agent, success, login_time) 
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [adminUserId, 'admin', '127.0.0.1', 'CMSCRM Seeder/1.0', true, new Date()]
+    [adminUserId, 'admin', '127.0.0.1', 'Aplos_Logix Seeder/1.0', true, new Date()]
   );
 
   console.log('✅ Created sample activity logs');

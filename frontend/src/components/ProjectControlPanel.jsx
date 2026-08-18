@@ -545,7 +545,7 @@ export const ProjectControlPanel = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                    Task: <code className="font-mono text-gray-700 dark:text-gray-300">CMSCRM-PM2-Startup</code> (90s boot delay)
+                    Task: <code className="font-mono text-gray-700 dark:text-gray-300">Aplos_Logix-PM2-Startup</code> (90s boot delay)
                   </p>
                 </div>
 
@@ -564,7 +564,7 @@ export const ProjectControlPanel = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                    Task: <code className="font-mono text-gray-700 dark:text-gray-300">CMSCRM-PM2-HealthCheck</code>
+                    Task: <code className="font-mono text-gray-700 dark:text-gray-300">Aplos_Logix-PM2-HealthCheck</code>
                   </p>
                   {windows.lastHealthCheckTime && (
                     <p className="text-[10px] text-gray-400 mt-1">
@@ -585,7 +585,7 @@ export const ProjectControlPanel = () => {
                   </div>
                   <div className="flex justify-between items-center text-[11px] text-gray-500 dark:text-gray-400 mt-1">
                     <span>Host: <strong className="text-gray-700 dark:text-gray-300">{database.host || '127.0.0.1'}</strong></span>
-                    <span>Database: <strong className="text-gray-700 dark:text-gray-300">{database.database || 'cmscrm'}</strong></span>
+                    <span>Database: <strong className="text-gray-700 dark:text-gray-300">{database.database || 'aplos_logix'}</strong></span>
                   </div>
                 </div>
               </div>

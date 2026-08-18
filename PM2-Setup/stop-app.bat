@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title CMSCRM — Stop Apps
+title Aplos_Logix — Stop Apps
 
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
@@ -8,7 +8,7 @@ call "%SCRIPT_DIR%\config.bat"
 
 echo.
 echo  ====================================================
-echo    CMSCRM — Stopping Applications
+echo    Aplos_Logix — Stopping Applications
 echo  ====================================================
 echo.
 echo  NOTE: This sets a maintenance flag so the health-check

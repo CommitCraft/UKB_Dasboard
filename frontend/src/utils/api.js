@@ -17,8 +17,8 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Try localStorage first, then cookies as fallback
-    const localToken = localStorage.getItem('cmscrm-token');
-    const cookieToken = Cookies.get('cmscrm-token');
+    const localToken = localStorage.getItem('aplos_logix-token') || localStorage.getItem('cmscrm-token');
+    const cookieToken = Cookies.get('aplos_logix-token') || Cookies.get('cmscrm-token');
     const authToken = localToken || cookieToken;
     
     if (authToken) {

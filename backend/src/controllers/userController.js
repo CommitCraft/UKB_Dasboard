@@ -649,7 +649,7 @@ class UserController {
       });
 
       const workbook = new ExcelJS.Workbook();
-      workbook.creator = 'CMSCRM System';
+      workbook.creator = 'Aplos_Logix System';
       workbook.created = new Date();
 
       const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E40AF' } };

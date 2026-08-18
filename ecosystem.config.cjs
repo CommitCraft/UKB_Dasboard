@@ -1,5 +1,5 @@
 // ==============================================================
-// CMSCRM Root Ecosystem Config
+// Aplos_Logix Root Ecosystem Config
 // ==============================================================
 // The canonical PM2 config has moved to PM2-Setup/ecosystem.config.cjs
 // This file forwards to it so that any existing pm2 commands

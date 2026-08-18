@@ -6,7 +6,7 @@ PM2 is a production-ready runtime and process manager for Node.js applications t
 
 ## Installation & Setup
 
-PM2 is already installed as a development dependency. The ecosystem configuration file (`ecosystem.config.js`) is pre-configured for the CMSCRM backend.
+PM2 is already installed as a development dependency. The ecosystem configuration file (`ecosystem.config.js`) is pre-configured for the Aplos_Logix backend.
 
 ## Available Commands
 
@@ -56,7 +56,7 @@ Completely removes the application from PM2.
 
 The `ecosystem.config.js` file contains the following configuration:
 
-- **Process Name**: `cmscrm-backend`
+- **Process Name**: `aplos_logix-backend`
 - **Script**: `server.js`
 - **Instances**: 1 (can be scaled as needed)
 - **Auto-restart**: Enabled
@@ -130,7 +130,7 @@ npm run pm2:restart
 
 3. **View Detailed Logs**
    ```bash
-   pm2 logs cmscrm-backend --lines 100
+   pm2 logs aplos_logix-backend --lines 100
    ```
 
 4. **Reset PM2**
@@ -141,7 +141,7 @@ npm run pm2:restart
 
 ## Integration with System Monitoring
 
-The CMSCRM dashboard now includes:
+The Aplos_Logix dashboard now includes:
 - Real-time system performance graphs (CPU, Memory, API calls)
 - PM2 process information and status
 - System health monitoring

@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // Try to restore user from localStorage
     try {
-      const storedUser = localStorage.getItem("cmscrm-user");
+      const storedUser = localStorage.getItem("aplos_logix-user") || localStorage.getItem("cmscrm-user");
       return storedUser ? JSON.parse(storedUser) : null;
     } catch {
       return null;
@@ -37,8 +37,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(() => {
     // Try localStorage first, then cookies as fallback
-    const localToken = localStorage.getItem("cmscrm-token");
-    const cookieToken = Cookies.get("cmscrm-token");
+    const localToken = localStorage.getItem("aplos_logix-token") || localStorage.getItem("cmscrm-token");
+    const cookieToken = Cookies.get("aplos_logix-token") || Cookies.get("cmscrm-token");
     const storedToken = localToken || cookieToken;
     // Only return token if it exists and looks valid (not empty)
     return storedToken && storedToken.length > 10 ? storedToken : null;
@@ -51,8 +51,11 @@ export const AuthProvider = ({ children }) => {
     setIsLoggingOut(true);
 
     // Cleanly remove tokens and user session data
+    localStorage.removeItem("aplos_logix-token");
+    localStorage.removeItem("aplos_logix-user");
     localStorage.removeItem("cmscrm-token");
     localStorage.removeItem("cmscrm-user");
+    Cookies.remove("aplos_logix-token");
     Cookies.remove("cmscrm-token");
     setToken(null);
     setUser(null);
@@ -88,12 +91,15 @@ export const AuthProvider = ({ children }) => {
       // Handle both response.data.user and response.data.data.user structures
       const userData = response.data.data?.user || response.data.user;
       setUser(userData);
-      localStorage.setItem("cmscrm-user", JSON.stringify(userData));
+      localStorage.setItem("aplos_logix-user", JSON.stringify(userData));
       setIsLoggingOut(false); // Reset logout flag on successful verification
     } catch (error) {
       console.error("Token verification failed:", error);
+      localStorage.removeItem("aplos_logix-token");
+      localStorage.removeItem("aplos_logix-user");
       localStorage.removeItem("cmscrm-token");
       localStorage.removeItem("cmscrm-user");
+      Cookies.remove("aplos_logix-token");
       Cookies.remove("cmscrm-token");
       setToken(null);
       setUser(null);
@@ -122,8 +128,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Clear local state
+      localStorage.removeItem("aplos_logix-token");
+      localStorage.removeItem("aplos_logix-user");
       localStorage.removeItem("cmscrm-token");
       localStorage.removeItem("cmscrm-user");
+      Cookies.remove("aplos_logix-token");
       Cookies.remove("cmscrm-token");
       setToken(null);
       setUser(null);
@@ -161,15 +170,15 @@ export const AuthProvider = ({ children }) => {
       const { token: authToken, user: userData } = response.data.data;
 
       // Store in both localStorage and cookies for redundancy
-      localStorage.setItem("cmscrm-token", authToken);
-      Cookies.set("cmscrm-token", authToken, {
+      localStorage.setItem("aplos_logix-token", authToken);
+      Cookies.set("aplos_logix-token", authToken, {
         expires: 2,
         secure: window.location.protocol === "https:",
         sameSite: "strict",
       });
 
       // Also store user data for faster loading
-      localStorage.setItem("cmscrm-user", JSON.stringify(userData));
+      localStorage.setItem("aplos_logix-user", JSON.stringify(userData));
 
       setToken(authToken);
       setUser(userData);
@@ -272,7 +281,7 @@ export const AuthProvider = ({ children }) => {
       const updatedUser = response.data?.data?.user || response.data?.user;
       if (updatedUser) {
         setUser(updatedUser);
-        localStorage.setItem("cmscrm-user", JSON.stringify(updatedUser));
+        localStorage.setItem("aplos_logix-user", JSON.stringify(updatedUser));
       }
       toast.success("Profile updated successfully", {
         style: {
@@ -389,7 +398,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
     setUser(null);
     setToken(null);
+    localStorage.removeItem("aplos_logix-token");
+    localStorage.removeItem("aplos_logix-user");
     localStorage.removeItem("cmscrm-token");
+    localStorage.removeItem("cmscrm-user");
+    Cookies.remove("aplos_logix-token");
     Cookies.remove("cmscrm-token");
 
     if (logoutTimeoutRef.current) {

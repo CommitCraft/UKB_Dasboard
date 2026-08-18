@@ -1,4 +1,4 @@
-# CMSCRM Frontend
+# Aplos_Logix Frontend
 
 A modern, responsive CRM system frontend built with React, Vite, and Tailwind CSS.
 
@@ -50,22 +50,22 @@ A modern, responsive CRM system frontend built with React, Vite, and Tailwind CS
 Use these credentials to test different user roles:
 
 **Super Admin:**
-- Email: `superadmin@cmscrm.com`
+- Email: `superadmin@aplos_logix.com`
 - Password: `SuperAdmin123!`
 - Access: Full system access including system settings
 
 **Admin:**
-- Email: `admin@cmscrm.com`
+- Email: `admin@aplos_logix.com`
 - Password: `Admin123!`
 - Access: User management, roles, pages, and reports
 
 **Manager:**
-- Email: `manager@cmscrm.com`
+- Email: `manager@aplos_logix.com`
 - Password: `Manager123!`
 - Access: Limited user management and reporting
 
 **User:**
-- Email: `user@cmscrm.com`
+- Email: `user@aplos_logix.com`
 - Password: `User123!`
 - Access: Basic dashboard and profile management
 
@@ -133,7 +133,7 @@ Create a `.env` file in the frontend root:
 
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
-VITE_APP_NAME=CMSCRM
+VITE_APP_NAME=Aplos_Logix
 VITE_APP_VERSION=1.0.0
 ```
 
@@ -221,6 +221,6 @@ This project is licensed under the ISC License.
 ## 🆘 Support
 
 For support and questions:
-- Email: support@cmscrm.com
+- Email: support@aplos_logix.com
 - Documentation: [Project Wiki]
 - Issues: [GitHub Issues]

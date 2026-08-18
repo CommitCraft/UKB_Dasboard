@@ -3,9 +3,9 @@ const { body, param, query } = require('express-validator');
 // Auth validation rules
 const loginValidation = [
   body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email'),
+    .notEmpty()
+    .trim()
+    .withMessage('Please provide a valid email or username'),
   body('password')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long')

@@ -1,5 +1,6 @@
+const path = require('path');
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // Database configuration
 const dbConfig = {
@@ -7,7 +8,7 @@ const dbConfig = {
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASS || '',
-  database: process.env.DB_NAME || 'cmscrm',
+  database: process.env.DB_NAME || 'aplos_logix',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -43,7 +44,7 @@ const initializeDatabase = async () => {
       charset: 'utf8mb4'
     });
 
-    await createDbConnection.execute(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME || 'cmscrm'}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await createDbConnection.execute(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME || 'aplos_logix'}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     await createDbConnection.end();
 
     // Create tables
@@ -68,10 +69,10 @@ const dropDatabase = async () => {
     });
 
     // Drop and recreate database
-    await connection.execute(`DROP DATABASE IF EXISTS \`${process.env.DB_NAME || 'cmscrm'}\``);
+    await connection.execute(`DROP DATABASE IF EXISTS \`${process.env.DB_NAME || 'aplos_logix'}\``);
     console.log('✅ Dropped database');
     
-    await connection.execute(`CREATE DATABASE \`${process.env.DB_NAME || 'cmscrm'}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await connection.execute(`CREATE DATABASE \`${process.env.DB_NAME || 'aplos_logix'}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     console.log('✅ Created database');
     
     await connection.end();

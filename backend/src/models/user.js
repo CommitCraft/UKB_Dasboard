@@ -37,16 +37,20 @@ class User {
   }
 
   static async findByEmail(email) {
+    const cleanIdentifier = (email || '').trim().toLowerCase();
     const query = `
       SELECT u.*, GROUP_CONCAT(r.name) as roles
       FROM users u
       LEFT JOIN user_roles ur ON u.id = ur.user_id
       LEFT JOIN roles r ON ur.role_id = r.id
-      WHERE u.email = ?
+      WHERE LOWER(u.email) = ? 
+         OR LOWER(u.username) = ?
+         OR LOWER(u.email) = REPLACE(?, 'aplos_logix.com', 'cmscrm.com')
+         OR LOWER(u.email) = REPLACE(?, 'aplos_logix.com', 'aploslogix.com')
       GROUP BY u.id
     `;
     
-    const users = await db.executeQuery(query, [email]);
+    const users = await db.executeQuery(query, [cleanIdentifier, cleanIdentifier, cleanIdentifier, cleanIdentifier]);
     if (users.length === 0) return null;
     
     const user = users[0];

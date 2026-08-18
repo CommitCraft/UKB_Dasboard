@@ -1,18 +1,20 @@
 // ================================================================
-// CMSCRM PM2 Ecosystem Configuration
+// Aplos_Logix PM2 Ecosystem Configuration
 // ================================================================
 // This file is the authoritative PM2 process definition.
-// Paths are relative to the PROJECT_PATH (parent of PM2-Setup/).
-// Run from: PM2-Setup/INSTALL_AND_SETUP.bat or pm2 commands.
+// Paths are resolved absolutely based on project location.
 // ================================================================
+
+const path = require('path');
+const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 module.exports = {
   apps: [
 
     // ─── BACKEND (Node.js / Express) ──────────────────────────
     {
-      name: "cmscrm-backend",
-      cwd: "../backend",
+      name: "aplos_logix-backend",
+      cwd: path.join(PROJECT_ROOT, "backend"),
       script: "server.js",
       interpreter: "node",
 
@@ -22,21 +24,22 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 5000,
+        HOST_IP: "0.0.0.0",
       },
 
       // ── Auto-restart on crash ───────────────────────────────
       autorestart: true,
       max_restarts: 15,
-      min_uptime: "15s",          // Must stay up 15s to count as successful start
-      restart_delay: 3000,        // Wait 3s between restart attempts
+      min_uptime: "15s",
+      restart_delay: 3000,
 
       // ── Memory guard ────────────────────────────────────────
       max_memory_restart: "512M",
 
       // ── Logging ─────────────────────────────────────────────
-      out_file:   "../logs/backend-out.log",
-      error_file: "../logs/backend-error.log",
-      log_file:   "../logs/backend-combined.log",
+      out_file:   path.join(PROJECT_ROOT, "logs", "backend-out.log"),
+      error_file: path.join(PROJECT_ROOT, "logs", "backend-error.log"),
+      log_file:   path.join(PROJECT_ROOT, "logs", "backend-combined.log"),
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,
 
@@ -46,16 +49,14 @@ module.exports = {
 
       // ── Kill timeout before force-kill ──────────────────────
       kill_timeout: 5000,
-
-      // ── Graceful shutdown signal ─────────────────────────────
       shutdown_with_message: false,
       listen_timeout: 8000,
     },
 
     // ─── FRONTEND (Vite dev server — LAN accessible) ──────────
     {
-      name: "cmscrm-frontend-dev",
-      cwd: "../frontend",
+      name: "aplos_logix-frontend-dev",
+      cwd: path.join(PROJECT_ROOT, "frontend"),
       script: "C:\\Windows\\System32\\cmd.exe",
       args: "/c npm run dev -- --host 0.0.0.0 --port 8800",
       interpreter: "none",
@@ -79,9 +80,9 @@ module.exports = {
       max_memory_restart: "512M",
 
       // ── Logging ─────────────────────────────────────────────
-      out_file:   "../logs/frontend-out.log",
-      error_file: "../logs/frontend-error.log",
-      log_file:   "../logs/frontend-combined.log",
+      out_file:   path.join(PROJECT_ROOT, "logs", "frontend-out.log"),
+      error_file: path.join(PROJECT_ROOT, "logs", "frontend-error.log"),
+      log_file:   path.join(PROJECT_ROOT, "logs", "frontend-combined.log"),
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,
 

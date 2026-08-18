@@ -13,7 +13,7 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     // Check localStorage first
-    const savedTheme = localStorage.getItem('cmscrm-theme');
+    const savedTheme = localStorage.getItem('aplos_logix-theme') || localStorage.getItem('cmscrm-theme');
     if (savedTheme) {
       return savedTheme;
     }
@@ -36,7 +36,7 @@ export const ThemeProvider = ({ children }) => {
     root.classList.add(theme);
     
     // Save to localStorage
-    localStorage.setItem('cmscrm-theme', theme);
+    localStorage.setItem('aplos_logix-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {

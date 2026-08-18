@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title CMSCRM — Restart Apps
+title Aplos_Logix — Restart Apps
 
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
@@ -8,7 +8,7 @@ call "%SCRIPT_DIR%\config.bat"
 
 echo.
 echo  ====================================================
-echo    CMSCRM — Restarting Applications
+echo    Aplos_Logix — Restarting Applications
 echo  ====================================================
 echo.
 

@@ -1,4 +1,4 @@
-# CMSCRM - Content Management System with Role-Based Access Control
+# Aplos_Logix - Content Management System with Role-Based Access Control
 
 A modern, comprehensive Content Management System built with Node.js, React 19, and MySQL. Features advanced role-based access control, real-time dashboard with pagination, user management, and extensive activity logging capabilities.
 
