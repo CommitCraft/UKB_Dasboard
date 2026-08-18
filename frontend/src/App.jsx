@@ -17,6 +17,7 @@ import ExternalPage from './pages/ExternalPage';
 import ActivityLogsPage from './pages/ActivityLogsPage';
 import MenuManagementPage from './pages/MenuManagementPage';
 import DocsPage from './pages/DocsPage';
+import NotFoundPage from './pages/NotFoundPage';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Protected Route Component with role page assignment verification
@@ -187,9 +188,9 @@ function App() {
                 }
               />
 
-              {/* Default Redirects */}
+              {/* Default Redirects & 404 */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <Toaster position="top-right" />
           </div>
