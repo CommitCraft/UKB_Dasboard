@@ -337,41 +337,68 @@ class EnhancedSystemMonitor {
     }
   }
 
-  // Enhanced PM2 process monitoring
+  // Enhanced PM2 process monitoring with strict timeout
   async getDetailedPM2Processes() {
-    if (!this.pm2Connected) {
-      return [];
-    }
-
     try {
-      const processes = await new Promise((resolve, reject) => {
-        pm2.list((err, list) => {
-          if (err) reject(err);
-          else resolve(list);
+      const rawProcesses = await new Promise((resolve) => {
+        let isResolved = false;
+        const timer = setTimeout(() => {
+          if (!isResolved) {
+            isResolved = true;
+            resolve([]);
+          }
+        }, 2000);
+
+        pm2.connect((err) => {
+          if (err) {
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timer);
+              resolve([]);
+            }
+            return;
+          }
+
+          pm2.list((listErr, list) => {
+            pm2.disconnect();
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timer);
+              if (listErr || !Array.isArray(list)) {
+                resolve([]);
+              } else {
+                resolve(list);
+              }
+            }
+          });
         });
       });
 
-      return processes.map(proc => ({
-        name: proc.name,
-        pid: proc.pid,
-        status: proc.pm2_env.status,
-        cpu: proc.monit.cpu,
-        memory: proc.monit.memory,
-        uptime: proc.pm2_env.pm_uptime,
-        restarts: proc.pm2_env.restart_time,
-        mode: proc.pm2_env.exec_mode,
-        instances: proc.pm2_env.instances || 1,
-        pmId: proc.pm2_env.pm_id,
-        version: proc.pm2_env.version,
-        node_args: proc.pm2_env.node_args,
-        args: proc.pm2_env.args,
-        exec_interpreter: proc.pm2_env.exec_interpreter,
-        unstable_restarts: proc.pm2_env.unstable_restarts,
-        created_at: proc.pm2_env.created_at,
-        pm_uptime: proc.pm2_env.pm_uptime,
-        axm_actions: proc.pm2_env.axm_actions?.length || 0,
-        axm_monitor: proc.pm2_env.axm_monitor || {}
-      }));
+      return (rawProcesses || []).map(proc => {
+        const pm2Env = proc.pm2_env || {};
+        const monit = proc.monit || {};
+        return {
+          name: proc.name,
+          pid: proc.pid,
+          status: pm2Env.status || 'stopped',
+          cpu: monit.cpu || 0,
+          memory: monit.memory || 0,
+          uptime: pm2Env.pm_uptime || 0,
+          restarts: pm2Env.restart_time || 0,
+          mode: pm2Env.exec_mode || 'fork',
+          instances: pm2Env.instances || 1,
+          pmId: pm2Env.pm_id ?? proc.pm_id,
+          version: pm2Env.version || '1.0.0',
+          node_args: pm2Env.node_args || [],
+          args: pm2Env.args || [],
+          exec_interpreter: pm2Env.exec_interpreter || 'node',
+          unstable_restarts: pm2Env.unstable_restarts || 0,
+          created_at: pm2Env.created_at || null,
+          pm_uptime: pm2Env.pm_uptime || 0,
+          axm_actions: pm2Env.axm_actions?.length || 0,
+          axm_monitor: pm2Env.axm_monitor || {}
+        };
+      });
     } catch (error) {
       console.error('Error getting detailed PM2 processes:', error);
       return [];

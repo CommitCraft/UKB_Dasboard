@@ -37,7 +37,13 @@ const EnhancedSystemInformation = () => {
     try {
       setError(null);
       
-      const [infoResponse, processesResponse, healthResponse, networkResponse, processStatsResponse] = await Promise.all([
+      const [
+        infoResult,
+        processesResult,
+        healthResult,
+        networkResult,
+        processStatsResult
+      ] = await Promise.allSettled([
         apiService.get(endpoints.system.info),
         apiService.get(endpoints.system.processes),
         apiService.get(endpoints.system.health),
@@ -45,11 +51,12 @@ const EnhancedSystemInformation = () => {
         apiService.get('/system/process-stats')
       ]);
       
-      setSystemInfo(infoResponse.data?.data);
-      setProcesses(processesResponse.data?.data || []);
-      setHealthData(healthResponse.data?.data);
-      setNetworkStats(networkResponse.data?.data || []);
-      setProcessStats(processStatsResponse.data?.data);
+      if (infoResult.status === 'fulfilled') setSystemInfo(infoResult.value.data?.data);
+      if (processesResult.status === 'fulfilled') setProcesses(processesResult.value.data?.data || []);
+      if (healthResult.status === 'fulfilled') setHealthData(healthResult.value.data?.data);
+      if (networkResult.status === 'fulfilled') setNetworkStats(networkResult.value.data?.data || []);
+      if (processStatsResult.status === 'fulfilled') setProcessStats(processStatsResult.value.data?.data);
+      
       setLastUpdate(new Date());
     } catch (err) {
       console.error('Error fetching enhanced system data:', err);
