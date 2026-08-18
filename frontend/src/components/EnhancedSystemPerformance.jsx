@@ -9,7 +9,8 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  Filler
 } from 'chart.js';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import { 
@@ -40,7 +41,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  Filler
 );
 
 const SystemPerformance = () => {

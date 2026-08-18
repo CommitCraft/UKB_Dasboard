@@ -97,7 +97,7 @@ const PublicRoute = ({ children }) => {
 function App() {
   return (
     <ThemeProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
             <Routes>
