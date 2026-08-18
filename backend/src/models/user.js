@@ -45,8 +45,8 @@ class User {
       LEFT JOIN roles r ON ur.role_id = r.id
       WHERE LOWER(u.email) = ? 
          OR LOWER(u.username) = ?
-         OR LOWER(u.email) = REPLACE(?, 'aplos_logix.com', 'cmscrm.com')
-         OR LOWER(u.email) = REPLACE(?, 'aplos_logix.com', 'aploslogix.com')
+         OR LOWER(u.email) = REPLACE(?, 'aploslogix.com', 'cmscrm.com')
+         OR LOWER(u.email) = REPLACE(?, 'aploslogix.com', 'aploslogix.com')
       GROUP BY u.id
     `;
     
