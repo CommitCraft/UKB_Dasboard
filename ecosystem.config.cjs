@@ -1,92 +1,16 @@
-// ecosystem.config.cjs
-module.exports = {
-  apps: [
-    {
-      name: "cmscrm-frontend-dev",
-      cwd: "./frontend",
-      script: "C:\\Windows\\System32\\cmd.exe",
-      // pass CLI flags picked from env (Windows %VAR% expands in cmd.exe)
-      args: "/c npm run dev -- --host %VITE_HOST% --port %VITE_PORT%",
-      interpreter: "none",
-      instances: 1,
-      exec_mode: "fork",
+// ==============================================================
+// CMSCRM Root Ecosystem Config
+// ==============================================================
+// The canonical PM2 config has moved to PM2-Setup/ecosystem.config.cjs
+// This file forwards to it so that any existing pm2 commands
+// that reference the root still work correctly.
+//
+// For all PM2 management, prefer using the scripts in PM2-Setup/:
+//   PM2-Setup\INSTALL_AND_SETUP.bat  — one-time setup
+//   PM2-Setup\start-app.bat          — start both apps
+//   PM2-Setup\stop-app.bat           — stop both apps
+//   PM2-Setup\restart-app.bat        — restart both apps
+//   PM2-Setup\status-app.bat         — show status
+// ==============================================================
 
-      // ⬇️ your env here
-      env: {
-        NODE_ENV: "development",
-        VITE_HOST: "192.168.1.37",
-        VITE_PORT: "8800",
-      },
-      env_production: {
-        NODE_ENV: "production",
-        VITE_HOST: "192.168.1.37",
-        VITE_PORT: "8800",
-      },
-
-      watch: false,
-      autorestart: true,
-      max_restarts: 10,
-      min_uptime: "10s",
-
-      log_file: "../logs/frontend-combined.log",
-      out_file: "../logs/frontend-out.log",
-      error_file: "../logs/frontend-error.log",
-      log_date_format: "YYYY-MM-DD HH:mm Z",
-
-      max_memory_restart: "500M",
-      ignore_watch: ["node_modules", "dist", "logs"],
-      merge_logs: true,
-    },
-
-    // (Optional) only start this when you build
-    // pm2 start ecosystem.config.cjs --only cmscrm-frontend-build
-    // {
-    //   name: 'cmscrm-frontend-build',
-    //   cwd: './frontend',
-    //   script: 'C:\\Windows\\System32\\cmd.exe',
-    //   args: '/c npm run build',
-    //   interpreter: 'none',
-
-    //   instances: 1,
-    //   exec_mode: 'fork',
-    //   env: { NODE_ENV: 'production' },
-
-    //   watch: false,
-    //   autorestart: false,
-
-    //   log_file: '../logs/build-combined.log',
-    //   out_file: '../logs/build-out.log',
-    //   error_file: '../logs/build-error.log',
-    //   log_date_format: 'YYYY-MM-DD HH:mm Z',
-
-    //   max_memory_restart: '500M',
-    //   ignore_watch: ['node_modules', 'dist', 'logs'],
-    //   merge_logs: true
-    // },
-
-    {
-      name: "cmscrm-backend",
-      cwd: "./backend",
-      script: "server.js",
-      instances: 1,
-      exec_mode: "fork",
-
-      env: { NODE_ENV: "development", PORT: 5000 },
-      env_production: { NODE_ENV: "production", PORT: 5000 },
-
-      watch: false,
-      autorestart: true,
-      max_restarts: 10,
-      min_uptime: "10s",
-
-      log_file: "../logs/backend-combined.log",
-      out_file: "../logs/backend-out.log",
-      error_file: "../logs/backend-error.log",
-      log_date_format: "YYYY-MM-DD HH:mm Z",
-
-      max_memory_restart: "500M",
-      ignore_watch: ["node_modules", "logs"],
-      merge_logs: true,
-    },
-  ],
-};
+module.exports = require('./PM2-Setup/ecosystem.config.cjs');
