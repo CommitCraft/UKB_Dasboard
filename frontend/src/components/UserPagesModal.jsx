@@ -215,10 +215,17 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
 
   const getPageIcon = (page, className = "h-4 w-4 shrink-0") => {
     if (!page) return <Globe className={className} />;
-    if (page.is_external || (typeof page.url === 'string' && (page.url.startsWith('http://') || page.url.startsWith('https://')))) {
+    const isExt = page.is_external || (typeof page.url === 'string' && (page.url.startsWith('http://') || page.url.startsWith('https://')));
+    if (page.icon) {
+      return renderAppIcon(page.icon, {
+        className: `${className} ${isExt ? 'text-primary-500' : ''}`,
+        defaultIcon: isExt ? ExternalLink : Globe
+      });
+    }
+    if (isExt) {
       return <ExternalLink className={`${className} text-primary-500`} />;
     }
-    return renderAppIcon(page.icon || page.name, { className, defaultIcon: Globe });
+    return renderAppIcon(page.name, { className, defaultIcon: Globe });
   };
 
   const formatUrl = (url) => {

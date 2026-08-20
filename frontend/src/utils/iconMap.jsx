@@ -76,7 +76,8 @@ export const APP_ICONS = [
   { name: 'Globe', icon: Globe, label: 'Website / Public', category: 'Navigation', keywords: 'web url internet portal global' },
   { name: 'Home', icon: Home, label: 'Home Page', category: 'Navigation', keywords: 'house start landing' },
   { name: 'Layers', icon: Layers, label: 'Modules / Layers', category: 'Navigation', keywords: 'components sections stacks' },
-  { name: 'ExternalLink', icon: ExternalLink, label: 'External Page', category: 'Navigation', keywords: 'link new tab url external' },
+  { name: 'ExternalLink', icon: ExternalLink, label: 'External Page', category: 'Navigation', keywords: 'link new tab url external website' },
+  { name: 'Link', icon: LinkIcon, label: 'Link / URL', category: 'Navigation', keywords: 'link url website connect external' },
   { name: 'Eye', icon: Eye, label: 'Viewer / Preview', category: 'Navigation', keywords: 'look inspect preview watch' },
 
   // User & Security
@@ -143,13 +144,31 @@ export const APP_ICONS = [
 export const ICON_MAP = APP_ICONS.reduce((acc, item) => {
   acc[item.name] = item.icon;
   acc[item.name.toLowerCase()] = item.icon;
+  acc[item.name.toLowerCase().replace(/[^a-z0-9]/g, '')] = item.icon;
   return acc;
 }, {
-  // Aliases
+  // Common aliases & variations
   Image: ImageIcon,
   image: ImageIcon,
   link: LinkIcon,
-  Link: LinkIcon
+  Link: LinkIcon,
+  LinkIcon: LinkIcon,
+  external: ExternalLink,
+  External: ExternalLink,
+  'external-link': ExternalLink,
+  'external_link': ExternalLink,
+  'external link': ExternalLink,
+  externallink: ExternalLink,
+  extlink: ExternalLink,
+  url: ExternalLink,
+  URL: ExternalLink,
+  web: Globe,
+  website: Globe,
+  portal: Globe,
+  flow: Workflow,
+  nodered: Workflow,
+  'node-red': Workflow,
+  iot: Network
 });
 
 export const ICON_CATEGORIES = [
@@ -204,6 +223,8 @@ export const getIconComponent = (iconNameOrUrl, defaultIcon = Globe) => {
     if (ICON_MAP[trimmed]) return ICON_MAP[trimmed];
     const lowerKey = trimmed.toLowerCase();
     if (ICON_MAP[lowerKey]) return ICON_MAP[lowerKey];
+    const normalizedKey = lowerKey.replace(/[^a-z0-9]/g, '');
+    if (ICON_MAP[normalizedKey]) return ICON_MAP[normalizedKey];
 
     // Heuristic keyword fallback
     if (lowerKey.includes('dash')) return LayoutDashboard;
@@ -213,13 +234,16 @@ export const getIconComponent = (iconNameOrUrl, defaultIcon = Globe) => {
     if (lowerKey.includes('page') || lowerKey.includes('doc') || lowerKey.includes('form')) return FileText;
     if (lowerKey.includes('act') || lowerKey.includes('log')) return Activity;
     if (lowerKey.includes('set') || lowerKey.includes('config')) return Settings;
-    if (lowerKey.includes('data') || lowerKey.includes('db')) return Database;
+    if (lowerKey.includes('data') || lowerKey.includes('db') || lowerKey.includes('sql')) return Database;
     if (lowerKey.includes('serv') || lowerKey.includes('host')) return Server;
     if (lowerKey.includes('cpu') || lowerKey.includes('proc')) return Cpu;
     if (lowerKey.includes('chart') || lowerKey.includes('report') || lowerKey.includes('stat')) return BarChart2;
     if (lowerKey.includes('order') || lowerKey.includes('shop') || lowerKey.includes('cart')) return ShoppingCart;
     if (lowerKey.includes('help') || lowerKey.includes('faq')) return HelpCircle;
     if (lowerKey.includes('mail') || lowerKey.includes('msg')) return Mail;
+    if (lowerKey.includes('link') || lowerKey.includes('external') || lowerKey.includes('ext') || lowerKey.includes('url')) return ExternalLink;
+    if (lowerKey.includes('globe') || lowerKey.includes('web') || lowerKey.includes('site') || lowerKey.includes('portal') || lowerKey.includes('world')) return Globe;
+    if (lowerKey.includes('node') || lowerKey.includes('flow') || lowerKey.includes('wire')) return Workflow;
   }
 
   return defaultIcon;

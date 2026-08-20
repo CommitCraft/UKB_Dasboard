@@ -4926,3 +4926,28 @@
 2026-08-20 14:07:02 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
 2026-08-20 14:07:02 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
 2026-08-20 14:08:40 +05:30: [2m2:08:40 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/NodeRedPage.jsx, /src/index.css[22m
+2026-08-20 14:15:17 +05:30: [2m2:15:17 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpublic/line-master.html[22m
+2026-08-20 14:16:38 +05:30: [2m2:16:38 pm[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+2026-08-20 14:16:38 +05:30: [2m2:16:38 pm[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+2026-08-20 14:16:38 +05:30: [2m2:16:38 pm[22m [36m[1m[vite][22m[39m server restarted.
+2026-08-20 14:17:12 +05:30: [2m2:17:12 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-20 14:17:19 +05:30: [2m2:17:19 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-20 14:17:19 +05:30: [2m2:17:19 pm[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+2026-08-20 14:17:20 +05:30: [2m2:17:20 pm[22m [36m[1m[vite][22m[39m server restarted.
+2026-08-20 14:17:36 +05:30: [2m2:17:36 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpublic/line-master.html[22m
+2026-08-20 14:18:46 +05:30: [2m2:18:46 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpublic/line-master.html[22m
+2026-08-20 14:18:46 +05:30: [2m2:18:46 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/LineMasterPage.jsx[22m
+2026-08-20 14:18:47 +05:30: [2m2:18:47 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /src/pages/LineMasterPage.jsx (resolved id: C:/Users/DELL/Desktop/MERN Project file/Master_Dashboard/CMSCRM_SriCity/frontend/src/pages/LineMasterPage.jsx) in C:/Users/DELL/Desktop/MERN Project file/Master_Dashboard/CMSCRM_SriCity/frontend/src/App.jsx. Does the file exist?
+2026-08-20 14:18:47 +05:30: [2m2:18:47 pm[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+2026-08-20 14:18:47 +05:30: [2m2:18:47 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-20 14:18:48 +05:30: [2m2:18:48 pm[22m [36m[1m[vite][22m[39m server restarted.
+2026-08-20 14:19:04 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 14:19:04 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 14:19:04 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 14:19:04 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 14:19:04 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 14:24:13 +05:30: [2m2:24:13 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/utils/iconMap.jsx[22m
+2026-08-20 14:24:13 +05:30: [2m2:24:13 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/utils/iconMap.jsx[22m Could not Fast Refresh ("APP_ICONS" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+2026-08-20 14:24:13 +05:30: [2m2:24:13 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/RolesPage.jsx, /src/pages/PagesPage.jsx, /src/pages/NodeRedPage.jsx, /src/components/Layout/Layout.jsx, /src/pages/MenuManagementPage.jsx, /src/components/IconPicker.jsx, /src/components/UserPagesModal.jsx[22m
+2026-08-20 14:24:23 +05:30: [2m2:24:23 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 14:24:36 +05:30: [2m2:24:36 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m

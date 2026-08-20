@@ -70,9 +70,7 @@ const NavItemTree = ({
         const PageIcon =
           page?.icon && (typeof page.icon === "function" || typeof page.icon === "object")
             ? page.icon
-            : external
-            ? ExternalLink
-            : getPageIcon(page) || Globe;
+            : getPageIcon(page);
 
         const targetUrl = external
           ? `/external?url=${encodeURIComponent(href)}&title=${encodeURIComponent(page?.name || "")}`
@@ -321,8 +319,11 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
 
   const getPageIcon = (page) => {
     if (!page) return Globe;
+    if (page.icon) {
+      return getIconComponent(page.icon, isExternalPage(page) ? ExternalLink : Globe);
+    }
     if (isExternalPage(page)) return ExternalLink;
-    return getIconComponent(page.icon || page.name, Globe);
+    return getIconComponent(page.name, Globe);
   };
 
   const fetchMyPages = useCallback(async () => {
