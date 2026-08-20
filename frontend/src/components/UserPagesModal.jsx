@@ -4,18 +4,123 @@ import {
   ExternalLink, 
   Globe, 
   Lock, 
-  Monitor,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  Maximize,
-  Minimize,
-  Move3D,
-  MousePointer
+  Monitor, 
+  ZoomIn, 
+  ZoomOut, 
+  RotateCcw, 
+  Maximize, 
+  Minimize, 
+  Move3D, 
+  MousePointer,
+  LayoutDashboard,
+  Users,
+  UserCheck,
+  Shield,
+  FileText,
+  Folder,
+  FolderOpen,
+  FolderTree,
+  Activity,
+  Settings,
+  Sliders,
+  Database,
+  Server,
+  Cpu,
+  BarChart2,
+  PieChart,
+  TrendingUp,
+  Clock,
+  Calendar,
+  User,
+  Smartphone,
+  Home,
+  ShoppingCart,
+  DollarSign,
+  CreditCard,
+  Mail,
+  MessageSquare,
+  Bell,
+  HelpCircle,
+  Package,
+  Truck,
+  MapPin,
+  FileSpreadsheet,
+  Image as ImageIcon,
+  Layers,
+  Briefcase,
+  ClipboardList,
+  CheckSquare,
+  BookOpen,
+  Crown,
+  Award,
+  Key,
+  Star,
+  Terminal,
+  Feather,
+  Target,
+  Eye,
+  CheckCircle2
 } from 'lucide-react';
 import { apiService, endpoints } from '../utils/api';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
+
+// Icon Map for Page Icons
+const ICON_MAP = {
+  LayoutDashboard,
+  Users,
+  UserCheck,
+  Shield,
+  Lock,
+  FileText,
+  Folder,
+  FolderOpen,
+  FolderTree,
+  Activity,
+  Settings,
+  Sliders,
+  Globe,
+  Database,
+  Server,
+  Cpu,
+  BarChart2,
+  PieChart,
+  TrendingUp,
+  Clock,
+  Calendar,
+  User,
+  Monitor,
+  Smartphone,
+  Home,
+  ShoppingCart,
+  DollarSign,
+  CreditCard,
+  Mail,
+  MessageSquare,
+  Bell,
+  HelpCircle,
+  Package,
+  Truck,
+  MapPin,
+  FileSpreadsheet,
+  ImageIcon,
+  Image: ImageIcon,
+  Layers,
+  Briefcase,
+  ClipboardList,
+  CheckSquare,
+  BookOpen,
+  Crown,
+  Award,
+  Key,
+  Star,
+  Terminal,
+  Feather,
+  Target,
+  Eye,
+  CheckCircle2,
+  ExternalLink
+};
 
 const UserPagesModal = ({ isOpen, onClose, user }) => {
   const [pages, setPages] = useState([]);
@@ -227,10 +332,73 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
     }
   };
 
-  const getPageIcon = (page) => {
-    if (page.is_external) return <ExternalLink className="h-4 w-4" />;
-    if (page.icon) return <span className="text-sm">{page.icon}</span>;
-    return <Globe className="h-4 w-4" />;
+  const getPageIcon = (page, className = "h-4 w-4 shrink-0") => {
+    if (!page) return <Globe className={className} />;
+
+    // 1. External page check
+    if (page.is_external || (typeof page.url === 'string' && (page.url.startsWith('http://') || page.url.startsWith('https://')))) {
+      return <ExternalLink className={`${className} text-primary-500`} />;
+    }
+
+    // 2. Direct component or object
+    if (page.icon && (typeof page.icon === 'function' || typeof page.icon === 'object')) {
+      const IconComponent = page.icon;
+      return <IconComponent className={className} />;
+    }
+
+    // 3. String icon name match
+    if (typeof page.icon === 'string' && page.icon.trim()) {
+      const trimmedIcon = page.icon.trim();
+
+      // Check if it's an image file / upload path
+      if (trimmedIcon.startsWith('/') || trimmedIcon.startsWith('http://') || trimmedIcon.startsWith('https://') || trimmedIcon.startsWith('data:')) {
+        return (
+          <img
+            src={trimmedIcon}
+            alt={page.name || 'Icon'}
+            className={`${className} object-contain rounded`}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        );
+      }
+
+      // Direct match or case-insensitive match in ICON_MAP
+      if (ICON_MAP[trimmedIcon]) {
+        const IconComponent = ICON_MAP[trimmedIcon];
+        return <IconComponent className={className} />;
+      }
+
+      const matchedKey = Object.keys(ICON_MAP).find(
+        (k) => k.toLowerCase() === trimmedIcon.toLowerCase()
+      );
+      if (matchedKey) {
+        const IconComponent = ICON_MAP[matchedKey];
+        return <IconComponent className={className} />;
+      }
+    }
+
+    // 4. Heuristic fallback based on name or URL
+    const name = (page.name || '').toLowerCase();
+    const url = (page.url || '').toLowerCase();
+
+    if (name.includes('doc') || url.includes('doc') || name.includes('manual')) return <BookOpen className={className} />;
+    if (name.includes('dashboard') || url.includes('dashboard')) return <LayoutDashboard className={className} />;
+    if (name.includes('user') || url.includes('user')) return <Users className={className} />;
+    if (name.includes('role') || url.includes('role')) return <Shield className={className} />;
+    if (name.includes('menu') || url.includes('menu') || name.includes('tree')) return <FolderTree className={className} />;
+    if (name.includes('page') || url.includes('page')) return <FileText className={className} />;
+    if (name.includes('activity') || url.includes('activity') || name.includes('log') || url.includes('log')) return <Activity className={className} />;
+    if (name.includes('setting') || url.includes('setting') || name.includes('config')) return <Settings className={className} />;
+    if (name.includes('database') || url.includes('database') || name.includes('db')) return <Database className={className} />;
+    if (name.includes('server') || url.includes('server')) return <Server className={className} />;
+    if (name.includes('cpu') || url.includes('cpu') || name.includes('system') || url.includes('system')) return <Cpu className={className} />;
+    if (name.includes('report') || url.includes('report') || name.includes('analytic') || name.includes('chart')) return <BarChart2 className={className} />;
+    if (name.includes('project') || name.includes('folder')) return <FolderOpen className={className} />;
+
+    // 5. Default fallback icon
+    return <Globe className={className} />;
   };
 
   const formatUrl = (url) => {
