@@ -14,32 +14,18 @@ import {
 } from "react-router-dom";
 
 import {
-  Activity,
-  BarChart2,
-  BarChart3,
-  BookOpen,
   ChevronDown,
   ChevronRight,
-  Clock,
-  Cpu,
-  Database,
   ExternalLink,
-  FileText,
-  FolderTree,
   Globe,
-  Home,
-  LayoutDashboard,
   LogOut,
   Menu,
-  Monitor,
   Moon,
-  Settings,
-  Shield,
   Sun,
   User,
-  Users,
   X,
 } from "lucide-react";
+import { getIconComponent, renderAppIcon } from "../../utils/iconMap";
 
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -228,37 +214,37 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
     {
       name: "Dashboard",
       path: "/dashboard",
-      icon: LayoutDashboard,
+      icon: "LayoutDashboard",
       roles: ["Super Admin", "Admin", "Manager", "User"],
     },
     {
       name: "Users",
       path: "/users",
-      icon: Users,
+      icon: "Users",
       roles: ["Super Admin", "Admin"],
     },
     {
       name: "Roles",
       path: "/roles",
-      icon: Shield,
+      icon: "Shield",
       roles: ["Super Admin", "Admin"],
     },
     {
       name: "Pages",
       path: "/pages",
-      icon: FileText,
+      icon: "FileText",
       roles: ["Super Admin", "Admin"],
     },
     {
       name: "Menu Management",
       path: "/menus",
-      icon: FolderTree,
+      icon: "FolderTree",
       roles: ["Super Admin", "Admin"],
     },
     {
       name: "Activity Logs",
       path: "/activity",
-      icon: Activity,
+      icon: "Activity",
       roles: ["Super Admin", "Admin", "Manager"],
     },
   ];
@@ -334,86 +320,9 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
   };
 
   const getPageIcon = (page) => {
-    if (page?.icon) {
-      const iconMap = {
-        LayoutDashboard,
-        Users,
-        Shield,
-        FileText,
-        Activity,
-        Settings,
-        Globe,
-        Database,
-        Cpu,
-        BarChart2,
-        Clock,
-        User,
-        Monitor,
-        Home,
-        BookOpen,
-      };
-      if (iconMap[page.icon]) {
-        return iconMap[page.icon];
-      }
-    }
-
-    const path = formatUrl(page?.url).toLowerCase();
-    const name = page?.name?.toLowerCase() || "";
-
-    if (
-      path.includes("doc") ||
-      name.includes("doc") ||
-      name.includes("manual")
-    ) {
-      return BookOpen;
-    }
-
-    if (
-      path.includes("dashboard") ||
-      name.includes("dashboard")
-    ) {
-      return LayoutDashboard;
-    }
-
-    if (
-      path.includes("users") ||
-      (
-        path.includes("user") &&
-        !path.includes("pages")
-      )
-    ) {
-      return Users;
-    }
-
-    if (
-      path.includes("roles") ||
-      path.includes("role")
-    ) {
-      return Shield;
-    }
-
-    if (
-      path.includes("pages") ||
-      name.includes("pages")
-    ) {
-      return FileText;
-    }
-
-    if (
-      path.includes("activity") ||
-      name.includes("activity")
-    ) {
-      return Activity;
-    }
-
-    if (
-      path.includes("settings") ||
-      name.includes("setting")
-    ) {
-      return Settings;
-    }
-
-    return Globe;
+    if (!page) return Globe;
+    if (isExternalPage(page)) return ExternalLink;
+    return getIconComponent(page.icon || page.name, Globe);
   };
 
   const fetchMyPages = useCallback(async () => {

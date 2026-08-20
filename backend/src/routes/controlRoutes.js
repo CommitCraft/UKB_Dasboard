@@ -11,7 +11,6 @@ router.use(requireSuperAdmin);
 // GET /api/control/status — Live project telemetry & PM2 status
 router.get(
   '/status',
-  activityLogger('view', 'control_status'),
   (req, res) => controlController.getProjectStatus(req, res)
 );
 

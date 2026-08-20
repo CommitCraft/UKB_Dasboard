@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useCallback } from 'react';
 import { 
   FileText, 
   Plus, 
@@ -14,106 +13,20 @@ import {
   Monitor,
   LayoutDashboard,
   Users,
-  UserCheck,
-  Lock,
-  Folder,
-  FolderOpen,
-  Activity,
-  Settings,
-  Sliders,
-  Database,
-  Server,
-  Cpu,
-  BarChart2,
-  PieChart,
-  TrendingUp,
-  Clock,
-  Calendar,
-  User,
-  Smartphone,
-  ShoppingCart,
-  DollarSign,
-  CreditCard,
-  Mail,
-  MessageSquare,
-  Bell,
-  HelpCircle,
-  Package,
-  Truck,
-  MapPin,
-  FileSpreadsheet,
-  Image as ImageIcon,
-  Layers,
-  Briefcase,
-  ClipboardList,
-  CheckSquare,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiService, endpoints } from '../utils/api';
 import { isValidUrl } from '../utils/helpers';
+import { renderAppIcon } from '../utils/iconMap';
+import IconPicker from '../components/IconPicker';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ZoomableIframeModal from '../components/ZoomableIframeModal';
 import toast from 'react-hot-toast';
 
-// Comprehensive Lucide Icon Dictionary for Page Management (40 Icons)
-const ICON_OPTIONS = [
-  { name: 'LayoutDashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { name: 'Users', icon: Users, label: 'Users' },
-  { name: 'UserCheck', icon: UserCheck, label: 'User Access' },
-  { name: 'Shield', icon: Shield, label: 'Roles / Security' },
-  { name: 'Lock', icon: Lock, label: 'Permissions' },
-  { name: 'FileText', icon: FileText, label: 'Pages / Doc' },
-  { name: 'Folder', icon: Folder, label: 'Folder' },
-  { name: 'FolderOpen', icon: FolderOpen, label: 'Projects' },
-  { name: 'Activity', icon: Activity, label: 'Activity Logs' },
-  { name: 'Settings', icon: Settings, label: 'Settings' },
-  { name: 'Sliders', icon: Sliders, label: 'Configuration' },
-  { name: 'Globe', icon: Globe, label: 'Website / Web' },
-  { name: 'Database', icon: Database, label: 'Database' },
-  { name: 'Server', icon: Server, label: 'Server' },
-  { name: 'Cpu', icon: Cpu, label: 'System / CPU' },
-  { name: 'BarChart2', icon: BarChart2, label: 'Analytics' },
-  { name: 'PieChart', icon: PieChart, label: 'Pie Reports' },
-  { name: 'TrendingUp', icon: TrendingUp, label: 'Trends / Growth' },
-  { name: 'Clock', icon: Clock, label: 'History / Logs' },
-  { name: 'Calendar', icon: Calendar, label: 'Calendar' },
-  { name: 'User', icon: User, label: 'User Profile' },
-  { name: 'Monitor', icon: Monitor, label: 'Display' },
-  { name: 'Smartphone', icon: Smartphone, label: 'Mobile App' },
-  { name: 'Home', icon: Home, label: 'Home' },
-  { name: 'ShoppingCart', icon: ShoppingCart, label: 'Sales / Orders' },
-  { name: 'DollarSign', icon: DollarSign, label: 'Finance' },
-  { name: 'CreditCard', icon: CreditCard, label: 'Billing' },
-  { name: 'Mail', icon: Mail, label: 'Email' },
-  { name: 'MessageSquare', icon: MessageSquare, label: 'Chat / Support' },
-  { name: 'Bell', icon: Bell, label: 'Alerts' },
-  { name: 'HelpCircle', icon: HelpCircle, label: 'Help / FAQ' },
-  { name: 'Package', icon: Package, label: 'Products' },
-  { name: 'Truck', icon: Truck, label: 'Logistics' },
-  { name: 'MapPin', icon: MapPin, label: 'Location' },
-  { name: 'FileSpreadsheet', icon: FileSpreadsheet, label: 'Spreadsheet' },
-  { name: 'ImageIcon', icon: ImageIcon, label: 'Media / Images' },
-  { name: 'Layers', icon: Layers, label: 'Modules' },
-  { name: 'Briefcase', icon: Briefcase, label: 'Jobs / Business' },
-  { name: 'ClipboardList', icon: ClipboardList, label: 'Tasks / Audit' },
-  { name: 'CheckSquare', icon: CheckSquare, label: 'Approvals' },
-];
-
-const renderPageIcon = (iconNameOrUrl) => {
-  if (!iconNameOrUrl) {
-    return <FileText className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
-  }
-  if (iconNameOrUrl.startsWith('http') || iconNameOrUrl.startsWith('/uploads')) {
-    return <img src={iconNameOrUrl} alt="icon" className="h-6 w-6 object-contain rounded" />;
-  }
-  const matched = ICON_OPTIONS.find(opt => opt.name === iconNameOrUrl);
-  if (matched) {
-    const IconComp = matched.icon;
-    return <IconComp className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
-  }
-  return <FileText className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
+const renderPageIcon = (iconNameOrUrl, className = "h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0") => {
+  return renderAppIcon(iconNameOrUrl, { className, defaultIcon: FileText });
 };
 
 const PageModal = ({ isOpen, onClose, page, onSave }) => {
@@ -257,47 +170,20 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
             )}
           </div>
 
-          {/* Icon Selector Grid */}
+          {/* Searchable Icon Picker & Custom Upload */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Select Page Icon ({ICON_OPTIONS.length} Available)
-              </label>
-              {formData.icon && (
-                <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1">
-                  Selected: {formData.icon}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 max-h-52 overflow-y-auto">
-              {ICON_OPTIONS.map((item) => {
-                const IconComponent = item.icon;
-                const isSelected = formData.icon === item.name && !iconFile;
-                return (
-                  <button
-                    key={item.name}
-                    type="button"
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, icon: item.name }));
-                      setIconFile(null);
-                    }}
-                    title={item.label}
-                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
-                      isSelected
-                        ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm ring-2 ring-indigo-500/20'
-                        : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <IconComponent className="h-5 w-5 mb-1" />
-                    <span className="text-[10px] truncate max-w-full text-center">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <IconPicker
+              value={formData.icon}
+              onChange={(iconName) => {
+                setFormData(prev => ({ ...prev, icon: iconName }));
+                setIconFile(null);
+              }}
+              label="Page Icon"
+            />
 
             {/* Custom Icon Image Upload */}
-            <div className="mt-3 flex items-center gap-3">
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Or upload custom icon:</span>
+            <div className="mt-3 flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Or upload custom image:</span>
               <input
                 type="file"
                 accept="image/*"
@@ -306,7 +192,7 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
                     setIconFile(e.target.files[0]);
                   }
                 }}
-                className="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/50 dark:file:text-indigo-300"
+                className="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/50 dark:file:text-indigo-300"
               />
               {iconFile && (
                 <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium truncate">

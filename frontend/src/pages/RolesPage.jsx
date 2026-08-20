@@ -10,63 +10,21 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Lock,
-  Crown,
-  Award,
-  UserCheck,
-  Key,
-  Star,
-  Sliders,
-  Database,
-  Activity,
-  Globe,
-  BarChart2,
-  Briefcase,
-  Terminal,
-  Feather,
-  Target,
-  Eye,
-  CheckCircle2
+  Globe
 } from "lucide-react";
 import { apiService, endpoints } from "../utils/api";
 import { formatDateTime } from "../utils/helpers";
+import { renderAppIcon } from "../utils/iconMap";
+import IconPicker from "../components/IconPicker";
 import LoadingSpinner from "../components/LoadingSpinner";
 import toast from "react-hot-toast";
 
-// Role Icons Dictionary
-const ROLE_ICON_OPTIONS = [
-  { name: 'Shield', icon: Shield, label: 'Shield' },
-  { name: 'Lock', icon: Lock, label: 'Security' },
-  { name: 'Crown', icon: Crown, label: 'Admin / Super' },
-  { name: 'Award', icon: Award, label: 'Manager' },
-  { name: 'UserCheck', icon: UserCheck, label: 'User Access' },
-  { name: 'Key', icon: Key, label: 'Permissions' },
-  { name: 'Users', icon: Users, label: 'Team' },
-  { name: 'Star', icon: Star, label: 'Special' },
-  { name: 'Settings', icon: Settings, label: 'Settings' },
-  { name: 'Sliders', icon: Sliders, label: 'Control' },
-  { name: 'FileText', icon: FileText, label: 'Content' },
-  { name: 'Database', icon: Database, label: 'Database' },
-  { name: 'Activity', icon: Activity, label: 'Audit' },
-  { name: 'Globe', icon: Globe, label: 'Public' },
-  { name: 'BarChart2', icon: BarChart2, label: 'Reports' },
-  { name: 'Briefcase', icon: Briefcase, label: 'Business' },
-  { name: 'Terminal', icon: Terminal, label: 'Developer' },
-  { name: 'Feather', icon: Feather, label: 'Editor' },
-  { name: 'Target', icon: Target, label: 'Supervisor' },
-  { name: 'Eye', icon: Eye, label: 'Viewer' },
-];
+const renderPermissionPageIcon = (iconName, className = "h-4 w-4 shrink-0") => {
+  return renderAppIcon(iconName, { className, defaultIcon: Globe });
+};
 
-const renderRoleIcon = (iconName) => {
-  if (!iconName) {
-    return <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
-  }
-  const matched = ROLE_ICON_OPTIONS.find((opt) => opt.name === iconName);
-  if (matched) {
-    const IconComp = matched.icon;
-    return <IconComp className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
-  }
-  return <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
+const renderRoleIcon = (iconName, className = "h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0") => {
+  return renderAppIcon(iconName, { className, defaultIcon: Shield });
 };
 
 const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
@@ -76,10 +34,12 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
     icon: "Shield",
     page_ids: [],
   });
+  const [pageSearch, setPageSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    setPageSearch("");
     if (role && role.id) {
       setFormData({
         name: role.name || "",
@@ -194,41 +154,12 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
             )}
           </div>
 
-          {/* Role Icon Picker */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Select Role Icon
-              </label>
-              {formData.icon && (
-                <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1">
-                  Selected: {formData.icon}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 max-h-36 overflow-y-auto">
-              {ROLE_ICON_OPTIONS.map((item) => {
-                const IconComponent = item.icon;
-                const isSelected = formData.icon === item.name;
-                return (
-                  <button
-                    key={item.name}
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, icon: item.name }))}
-                    title={item.label}
-                    className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
-                      isSelected
-                        ? "bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm ring-2 ring-indigo-500/20"
-                        : "border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    <IconComponent className="h-5 w-5 mb-1" />
-                    <span className="text-[10px] truncate max-w-full text-center">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          {/* Searchable Role Icon Picker */}
+          <IconPicker
+            value={formData.icon}
+            onChange={(iconName) => setFormData((prev) => ({ ...prev, icon: iconName }))}
+            label="Role Icon"
+          />
 
           {/* Description */}
           <div>
@@ -269,42 +200,75 @@ const RoleModal = ({ isOpen, onClose, role, pages, onSave }) => {
                     page_ids: prev.page_ids.length === pages.length ? [] : allIds,
                   }));
                 }}
-                className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+                className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline cursor-pointer"
               >
                 {formData.page_ids.length === pages.length ? "Deselect All" : "Select All"}
               </button>
             </div>
 
+            {/* Page Search Box in Role Modal */}
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+              <input
+                type="text"
+                value={pageSearch}
+                onChange={(e) => setPageSearch(e.target.value)}
+                placeholder="Filter pages by name, route..."
+                className="w-full pl-8 pr-7 py-1.5 text-xs bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900 dark:text-white placeholder-gray-400"
+              />
+              {pageSearch && (
+                <button
+                  type="button"
+                  onClick={() => setPageSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-52 overflow-y-auto p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700">
-              {pages.map((p) => {
-                const checked = formData.page_ids.includes(parseInt(p.id)) || formData.page_ids.includes(String(p.id));
-                return (
-                  <label
-                    key={p.id}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
-                      checked
-                        ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-300 dark:border-indigo-700 text-indigo-900 dark:text-indigo-200 font-medium"
-                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={(e) => {
-                        const pageIdNum = parseInt(p.id);
-                        setFormData((prev) => ({
-                          ...prev,
-                          page_ids: e.target.checked
-                            ? [...prev.page_ids, pageIdNum]
-                            : prev.page_ids.filter((id) => parseInt(id) !== pageIdNum),
-                        }));
-                      }}
-                      className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                    />
-                    <span className="text-xs truncate">{p.name}</span>
-                  </label>
-                );
-              })}
+              {pages
+                .filter((p) => {
+                  if (!pageSearch.trim()) return true;
+                  const term = pageSearch.trim().toLowerCase();
+                  return (
+                    (p.name && p.name.toLowerCase().includes(term)) ||
+                    (p.url && p.url.toLowerCase().includes(term))
+                  );
+                })
+                .map((p) => {
+                  const checked = formData.page_ids.includes(parseInt(p.id)) || formData.page_ids.includes(String(p.id));
+                  return (
+                    <label
+                      key={p.id}
+                      className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                        checked
+                          ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-300 dark:border-indigo-700 text-indigo-900 dark:text-indigo-200 font-medium"
+                          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          const pageIdNum = parseInt(p.id);
+                          setFormData((prev) => ({
+                            ...prev,
+                            page_ids: e.target.checked
+                              ? [...prev.page_ids, pageIdNum]
+                              : prev.page_ids.filter((id) => parseInt(id) !== pageIdNum),
+                          }));
+                        }}
+                        className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                      />
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        {renderPermissionPageIcon(p.icon, "h-3.5 w-3.5 text-indigo-500")}
+                        <span className="text-xs truncate">{p.name}</span>
+                      </div>
+                    </label>
+                  );
+                })}
             </div>
           </div>
 

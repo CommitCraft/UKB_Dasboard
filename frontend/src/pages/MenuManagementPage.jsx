@@ -22,7 +22,6 @@ import {
   Sliders,
   Settings,
   Database,
-  BarChart2,
   Briefcase,
   Terminal,
   Feather,
@@ -39,45 +38,14 @@ import {
   Tag
 } from 'lucide-react';
 import { apiService, endpoints } from '../utils/api';
+import { renderAppIcon } from '../utils/iconMap';
+import IconPicker from '../components/IconPicker';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ZoomableIframeModal from '../components/ZoomableIframeModal';
 import toast from 'react-hot-toast';
 
-// 24 Lucide Icons for selection
-const ICON_LIST = [
-  { name: 'FolderTree', icon: FolderTree, label: 'Tree' },
-  { name: 'LayoutDashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { name: 'Users', icon: Users, label: 'Users' },
-  { name: 'Shield', icon: Shield, label: 'Shield' },
-  { name: 'FileText', icon: FileText, label: 'File' },
-  { name: 'Activity', icon: Activity, label: 'Activity' },
-  { name: 'Settings', icon: Settings, label: 'Settings' },
-  { name: 'Database', icon: Database, label: 'Database' },
-  { name: 'Globe', icon: Globe, label: 'Globe' },
-  { name: 'BarChart2', icon: BarChart2, label: 'Analytics' },
-  { name: 'Briefcase', icon: Briefcase, label: 'Business' },
-  { name: 'Lock', icon: Lock, label: 'Security' },
-  { name: 'Crown', icon: Crown, label: 'Admin' },
-  { name: 'Award', icon: Award, label: 'Manager' },
-  { name: 'UserCheck', icon: UserCheck, label: 'Access' },
-  { name: 'Key', icon: Key, label: 'Key' },
-  { name: 'Star', icon: Star, label: 'Star' },
-  { name: 'Sliders', icon: Sliders, label: 'Control' },
-  { name: 'Terminal', icon: Terminal, label: 'Developer' },
-  { name: 'Feather', icon: Feather, label: 'Editor' },
-  { name: 'Target', icon: Target, label: 'Target' },
-  { name: 'Eye', icon: Eye, label: 'Viewer' },
-  { name: 'Layers', icon: Layers, label: 'Layers' },
-  { name: 'ExternalLink', icon: ExternalLink, label: 'Link' }
-];
-
-const renderMenuIcon = (iconName) => {
-  const match = ICON_LIST.find((i) => i.name === iconName);
-  if (match) {
-    const IconComp = match.icon;
-    return <IconComp className="h-4 w-4" />;
-  }
-  return <Globe className="h-4 w-4" />;
+const renderMenuIcon = (iconName, className = "h-4 w-4 shrink-0") => {
+  return renderAppIcon(iconName, { className, defaultIcon: Globe });
 };
 
 const TYPE_CONFIG = {
@@ -468,38 +436,12 @@ const MenuModal = ({ isOpen, onClose, item, parentItem, flatItems, availablePage
                 </select>
               </div>
 
-              {/* Icon Selector Grid */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Menu Icon
-                  </label>
-                  <span className="text-xs text-[#00629F] dark:text-indigo-400 font-semibold flex items-center gap-1">
-                    Selected: {formData.icon}
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 max-h-36 overflow-y-auto">
-                  {ICON_LIST.map((item) => {
-                    const IconComponent = item.icon;
-                    const isSelected = formData.icon === item.name;
-                    return (
-                      <button
-                        key={item.name}
-                        type="button"
-                        onClick={() => setFormData((prev) => ({ ...prev, icon: item.name }))}
-                        className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-all ${
-                          isSelected
-                            ? 'bg-indigo-100 dark:bg-indigo-900/40 border-[#00629F] text-[#00629F] dark:text-indigo-300 font-bold shadow-sm ring-2 ring-[#00629F]/20'
-                            : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800'
-                        }`}
-                      >
-                        <IconComponent className="h-4 w-4 mb-1" />
-                        <span className="text-[10px] truncate max-w-full text-center">{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              {/* Searchable Icon Picker */}
+              <IconPicker
+                value={formData.icon}
+                onChange={(iconName) => setFormData((prev) => ({ ...prev, icon: iconName }))}
+                label="Menu Icon"
+              />
 
               {/* External Link & Status Toggles */}
               <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">

@@ -55,20 +55,42 @@ function getPm2Command() {
   return 'pm2';
 }
 
-// Promisified PM2 list
-function getPm2ProcessList() {
-  return new Promise((resolve) => {
-    pm2.connect((err) => {
-      if (err) {
-        return resolve([]);
-      }
-      pm2.list((listErr, list) => {
-        pm2.disconnect();
-        if (listErr) return resolve([]);
-        resolve(list || []);
-      });
+// PM2 Process List with fast caching and non-blocking execution
+const pm2Cache = {
+  data: [],
+  lastChecked: 0,
+  CACHE_TTL_MS: 3000 // 3 seconds cache
+};
+
+// Promisified PM2 list via CLI
+async function getPm2ProcessList() {
+  const now = Date.now();
+  if (now - pm2Cache.lastChecked < pm2Cache.CACHE_TTL_MS && pm2Cache.data.length > 0) {
+    return pm2Cache.data;
+  }
+
+  try {
+    const pm2Cmd = getPm2Command();
+    const { stdout } = await execPromise(`${pm2Cmd} jlist`, {
+      shell: true,
+      windowsHide: true,
+      timeout: 2500,
+      encoding: 'utf8'
     });
-  });
+
+    if (stdout && stdout.trim()) {
+      const parsed = JSON.parse(stdout.trim());
+      if (Array.isArray(parsed)) {
+        pm2Cache.data = parsed;
+        pm2Cache.lastChecked = now;
+        return parsed;
+      }
+    }
+  } catch (err) {
+    // Return cached data if available or empty list on timeout
+  }
+
+  return pm2Cache.data || [];
 }
 
 // Query Scheduled Task status silently via execFile with windowsHide: true

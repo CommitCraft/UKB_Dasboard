@@ -40,14 +40,14 @@ export const ProjectControlPanel = () => {
   const fetchStatus = useCallback(async (isSilent = false) => {
     if (!isSilent) setLoading(true);
     try {
-      const response = await apiService.get(endpoints.control.status);
+      const response = await apiService.get(endpoints.control.status, { timeout: 12000 });
       if (response.data?.success) {
         setData(response.data.data);
         setLastRefreshed(new Date());
       }
     } catch (error) {
-      console.error('Failed to fetch project control status:', error);
       if (!isSilent) {
+        console.error('Failed to fetch project control status:', error);
         toast.error(error.response?.data?.message || 'Failed to fetch project status');
       }
     } finally {

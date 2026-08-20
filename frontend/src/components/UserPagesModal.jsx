@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   X, 
+  Search,
   ExternalLink, 
   Globe, 
   Lock, 
@@ -11,119 +11,16 @@ import {
   Maximize, 
   Minimize, 
   Move3D, 
-  MousePointer,
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  Shield,
-  FileText,
-  Folder,
-  FolderOpen,
-  FolderTree,
-  Activity,
-  Settings,
-  Sliders,
-  Database,
-  Server,
-  Cpu,
-  BarChart2,
-  PieChart,
-  TrendingUp,
-  Clock,
-  Calendar,
-  User,
-  Smartphone,
-  Home,
-  ShoppingCart,
-  DollarSign,
-  CreditCard,
-  Mail,
-  MessageSquare,
-  Bell,
-  HelpCircle,
-  Package,
-  Truck,
-  MapPin,
-  FileSpreadsheet,
-  Image as ImageIcon,
-  Layers,
-  Briefcase,
-  ClipboardList,
-  CheckSquare,
-  BookOpen,
-  Crown,
-  Award,
-  Key,
-  Star,
-  Terminal,
-  Feather,
-  Target,
-  Eye,
-  CheckCircle2
+  MousePointer
 } from 'lucide-react';
 import { apiService, endpoints } from '../utils/api';
+import { renderAppIcon } from '../utils/iconMap';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
 
-// Icon Map for Page Icons
-const ICON_MAP = {
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  Shield,
-  Lock,
-  FileText,
-  Folder,
-  FolderOpen,
-  FolderTree,
-  Activity,
-  Settings,
-  Sliders,
-  Globe,
-  Database,
-  Server,
-  Cpu,
-  BarChart2,
-  PieChart,
-  TrendingUp,
-  Clock,
-  Calendar,
-  User,
-  Monitor,
-  Smartphone,
-  Home,
-  ShoppingCart,
-  DollarSign,
-  CreditCard,
-  Mail,
-  MessageSquare,
-  Bell,
-  HelpCircle,
-  Package,
-  Truck,
-  MapPin,
-  FileSpreadsheet,
-  ImageIcon,
-  Image: ImageIcon,
-  Layers,
-  Briefcase,
-  ClipboardList,
-  CheckSquare,
-  BookOpen,
-  Crown,
-  Award,
-  Key,
-  Star,
-  Terminal,
-  Feather,
-  Target,
-  Eye,
-  CheckCircle2,
-  ExternalLink
-};
-
 const UserPagesModal = ({ isOpen, onClose, user }) => {
   const [pages, setPages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedPage, setSelectedPage] = useState(null);
   const [iframeError, setIframeError] = useState(false);
@@ -143,29 +40,11 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
     
     try {
       setLoading(true);
-      // Fetch with hierarchy parameter
+      // Fetch with hierarchy parameter directly from database
       const response = await apiService.get(`${endpoints.users.pages(user.id)}?hierarchy=true`);
       const allUserPages = response.data.data?.pages || [];
       
-      // Filter out unwanted pages (recursive function to handle hierarchy)
-      const unwantedPages = ['activity logs', 'company website', 'documentation', 'help center'];
-      
-      const filterPages = (pagesArray) => {
-        return pagesArray
-          .filter(page => 
-            !unwantedPages.some(unwanted => 
-              page.name?.toLowerCase().includes(unwanted.toLowerCase())
-            )
-          )
-          .map(page => ({
-            ...page,
-            children: page.children ? filterPages(page.children) : []
-          }));
-      };
-      
-      const filteredPages = filterPages(allUserPages);
-      
-      setPages(filteredPages);
+      setPages(allUserPages);
       
       // Auto-select first page if available (check both root and children)
       const selectFirstPage = (pagesArray) => {
@@ -181,23 +60,23 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
         return false;
       };
       
-      if (filteredPages.length > 0) {
-        selectFirstPage(filteredPages);
+      if (allUserPages.length > 0) {
+        selectFirstPage(allUserPages);
       }
     } catch (error) {
       console.error('Error fetching user pages:', error);
       toast.error('Failed to load user pages', {
-  style: {
-    background: '#1f2937', // dark gray
-    color: '#fca5a5',      // soft red text for contrast
-    border: '1px solid #4b5563',
-    borderRadius: '8px',
-  },
-  iconTheme: {
-    primary: '#ef4444',    // bright red icon
-    secondary: '#1f2937',  // matches dark bg
-  },
-});
+        style: {
+          background: '#1f2937',
+          color: '#fca5a5',
+          border: '1px solid #4b5563',
+          borderRadius: '8px',
+        },
+        iconTheme: {
+          primary: '#ef4444',
+          secondary: '#1f2937',
+        },
+      });
       setPages([]);
     } finally {
       setLoading(false);
@@ -206,11 +85,13 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
 
   useEffect(() => {
     if (isOpen && user?.id) {
+      setSearchTerm('');
       fetchUserPages();
     } else {
       setPages([]);
       setSelectedPage(null);
       setIframeError(false);
+      setSearchTerm('');
     }
   }, [isOpen, user?.id, fetchUserPages]);
 
@@ -334,71 +215,10 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
 
   const getPageIcon = (page, className = "h-4 w-4 shrink-0") => {
     if (!page) return <Globe className={className} />;
-
-    // 1. External page check
     if (page.is_external || (typeof page.url === 'string' && (page.url.startsWith('http://') || page.url.startsWith('https://')))) {
       return <ExternalLink className={`${className} text-primary-500`} />;
     }
-
-    // 2. Direct component or object
-    if (page.icon && (typeof page.icon === 'function' || typeof page.icon === 'object')) {
-      const IconComponent = page.icon;
-      return <IconComponent className={className} />;
-    }
-
-    // 3. String icon name match
-    if (typeof page.icon === 'string' && page.icon.trim()) {
-      const trimmedIcon = page.icon.trim();
-
-      // Check if it's an image file / upload path
-      if (trimmedIcon.startsWith('/') || trimmedIcon.startsWith('http://') || trimmedIcon.startsWith('https://') || trimmedIcon.startsWith('data:')) {
-        return (
-          <img
-            src={trimmedIcon}
-            alt={page.name || 'Icon'}
-            className={`${className} object-contain rounded`}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-        );
-      }
-
-      // Direct match or case-insensitive match in ICON_MAP
-      if (ICON_MAP[trimmedIcon]) {
-        const IconComponent = ICON_MAP[trimmedIcon];
-        return <IconComponent className={className} />;
-      }
-
-      const matchedKey = Object.keys(ICON_MAP).find(
-        (k) => k.toLowerCase() === trimmedIcon.toLowerCase()
-      );
-      if (matchedKey) {
-        const IconComponent = ICON_MAP[matchedKey];
-        return <IconComponent className={className} />;
-      }
-    }
-
-    // 4. Heuristic fallback based on name or URL
-    const name = (page.name || '').toLowerCase();
-    const url = (page.url || '').toLowerCase();
-
-    if (name.includes('doc') || url.includes('doc') || name.includes('manual')) return <BookOpen className={className} />;
-    if (name.includes('dashboard') || url.includes('dashboard')) return <LayoutDashboard className={className} />;
-    if (name.includes('user') || url.includes('user')) return <Users className={className} />;
-    if (name.includes('role') || url.includes('role')) return <Shield className={className} />;
-    if (name.includes('menu') || url.includes('menu') || name.includes('tree')) return <FolderTree className={className} />;
-    if (name.includes('page') || url.includes('page')) return <FileText className={className} />;
-    if (name.includes('activity') || url.includes('activity') || name.includes('log') || url.includes('log')) return <Activity className={className} />;
-    if (name.includes('setting') || url.includes('setting') || name.includes('config')) return <Settings className={className} />;
-    if (name.includes('database') || url.includes('database') || name.includes('db')) return <Database className={className} />;
-    if (name.includes('server') || url.includes('server')) return <Server className={className} />;
-    if (name.includes('cpu') || url.includes('cpu') || name.includes('system') || url.includes('system')) return <Cpu className={className} />;
-    if (name.includes('report') || url.includes('report') || name.includes('analytic') || name.includes('chart')) return <BarChart2 className={className} />;
-    if (name.includes('project') || name.includes('folder')) return <FolderOpen className={className} />;
-
-    // 5. Default fallback icon
-    return <Globe className={className} />;
+    return renderAppIcon(page.icon || page.name, { className, defaultIcon: Globe });
   };
 
   const formatUrl = (url) => {
@@ -541,58 +361,120 @@ const UserPagesModal = ({ isOpen, onClose, user }) => {
         ) : (
           <div className="flex-1 flex overflow-hidden">
             {/* Pages Sidebar */}
-            <div className="w-64 bg-gray-50 dark:bg-gray-700 border-r border-gray-200 dark:border-gray-600 overflow-y-auto">
-              <div className="p-4">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  Available Pages
-                </h4>
-                <div className="space-y-1">
-                  {(() => {
-                    const renderPageTree = (pageList, level = 1) => {
-                      return pageList.map((item) => {
-                        const isSelected = selectedPage?.id === item.id;
-                        const hasChildren = Array.isArray(item.children) && item.children.length > 0;
-                        const isLvl1 = level === 1;
+            <div className="w-72 bg-gray-50 dark:bg-gray-700 border-r border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden">
+              <div className="p-3 border-b border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    Available Pages
+                  </h4>
+                  <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
+                    {pages.length}
+                  </span>
+                </div>
 
-                        return (
-                          <div key={item.id}>
-                            <button
-                              onClick={() => handlePageSelect(item)}
-                              className={`w-full text-left rounded-lg transition-colors duration-150 ${
-                                isLvl1 ? 'p-3' : 'p-2'
-                              } ${
-                                isSelected
-                                  ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
-                                  : 'hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-                              }`}
-                            >
-                              <div className="flex items-center space-x-2">
-                                {!isLvl1 && <span className="text-gray-400">↳</span>}
-                                {getPageIcon(item)}
-                                <span className={`${isLvl1 ? 'text-sm font-medium' : 'text-xs font-medium'} truncate`}>
-                                  {item.name}
-                                </span>
-                              </div>
-                              {item.url && (
-                                <div className={`text-xs text-gray-500 dark:text-gray-400 mt-1 truncate ${!isLvl1 ? 'ml-6' : ''}`}>
-                                  {item.url}
-                                </div>
-                              )}
-                            </button>
+                {/* Search Box */}
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search menu, route..."
+                    className="w-full pl-8 pr-7 py-1.5 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-gray-900 dark:text-white placeholder-gray-400 shadow-xs"
+                  />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchTerm("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
 
-                            {hasChildren && (
-                              <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-300 dark:border-gray-600 pl-2">
-                                {renderPageTree(item.children, level + 1)}
+              <div className="flex-1 overflow-y-auto p-3 space-y-1">
+                {(() => {
+                  const filterTree = (nodes) => {
+                    if (!searchTerm.trim()) return nodes;
+                    const term = searchTerm.trim().toLowerCase();
+                    const result = [];
+
+                    for (const node of nodes) {
+                      const matchesSelf =
+                        (node.name && node.name.toLowerCase().includes(term)) ||
+                        (node.url && node.url.toLowerCase().includes(term)) ||
+                        (node.badge_label && node.badge_label.toLowerCase().includes(term)) ||
+                        (node.type && node.type.toLowerCase().includes(term));
+
+                      const filteredChildren =
+                        node.children && node.children.length > 0 ? filterTree(node.children) : [];
+
+                      if (matchesSelf || filteredChildren.length > 0) {
+                        result.push({
+                          ...node,
+                          children: filteredChildren,
+                        });
+                      }
+                    }
+                    return result;
+                  };
+
+                  const displayedPages = filterTree(pages);
+
+                  if (displayedPages.length === 0) {
+                    return (
+                      <div className="text-center py-8 text-xs text-gray-500 dark:text-gray-400">
+                        No pages match "{searchTerm}"
+                      </div>
+                    );
+                  }
+
+                  const renderPageTree = (pageList, level = 1) => {
+                    return pageList.map((item) => {
+                      const isSelected = selectedPage?.id === item.id;
+                      const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+                      const isLvl1 = level === 1;
+
+                      return (
+                        <div key={item.id}>
+                          <button
+                            onClick={() => handlePageSelect(item)}
+                            className={`w-full text-left rounded-lg transition-colors duration-150 ${
+                              isLvl1 ? 'p-2.5' : 'p-2'
+                            } ${
+                              isSelected
+                                ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
+                                : 'hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2">
+                              {!isLvl1 && <span className="text-gray-400">↳</span>}
+                              {getPageIcon(item)}
+                              <span className={`${isLvl1 ? 'text-xs font-semibold' : 'text-xs font-medium'} truncate`}>
+                                {item.name}
+                              </span>
+                            </div>
+                            {item.url && (
+                              <div className={`text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 truncate ${!isLvl1 ? 'ml-6' : 'ml-6'}`}>
+                                {item.url}
                               </div>
                             )}
-                          </div>
-                        );
-                      });
-                    };
+                          </button>
 
-                    return renderPageTree(pages);
-                  })()}
-                </div>
+                          {hasChildren && (
+                            <div className="ml-3 mt-1 space-y-1 border-l-2 border-gray-300 dark:border-gray-600 pl-2">
+                              {renderPageTree(item.children, level + 1)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  };
+
+                  return renderPageTree(displayedPages);
+                })()}
               </div>
             </div>
 

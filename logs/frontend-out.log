@@ -138,3 +138,49 @@
 2026-08-20 12:37:36 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
 2026-08-20 12:37:36 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
 2026-08-20 12:37:36 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:20:03 +05:30: [2m1:20:03 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 13:20:25 +05:30: [2m1:20:25 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m
+2026-08-20 13:20:36 +05:30: [2m1:20:36 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m
+2026-08-20 13:20:46 +05:30: [2m1:20:46 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m
+2026-08-20 13:21:01 +05:30: [2m1:21:01 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/MenuManagementPage.jsx, /src/index.css[22m
+2026-08-20 13:21:24 +05:30: [2m1:21:24 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/RolesPage.jsx, /src/index.css[22m
+2026-08-20 13:21:35 +05:30: [2m1:21:35 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PagesPage.jsx, /src/index.css[22m
+2026-08-20 13:22:14 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:22:14 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:22:14 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:22:14 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:22:14 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:24:37 +05:30: [2m1:24:37 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 13:24:37 +05:30: [2m1:24:37 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 13:24:54 +05:30: [2m1:24:54 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m
+2026-08-20 13:25:18 +05:30: [2m1:25:18 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/MenuManagementPage.jsx, /src/index.css[22m
+2026-08-20 13:25:49 +05:30: [2m1:25:49 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PagesPage.jsx, /src/index.css[22m
+2026-08-20 13:26:05 +05:30: [2m1:26:05 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/RolesPage.jsx, /src/index.css[22m
+2026-08-20 13:26:36 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:26:36 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:26:36 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:26:36 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:26:36 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:30:08 +05:30: [2m1:30:08 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/utils/iconMap.jsx[22m
+2026-08-20 13:30:38 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:30:38 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:30:38 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:30:38 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:30:38 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:32:08 +05:30: [2m1:32:08 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 13:33:13 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:33:13 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:33:13 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:33:13 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:33:13 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:35:29 +05:30: [2m1:35:29 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/ProjectControlPanel.jsx[22m
+2026-08-20 13:36:03 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:36:03 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:36:03 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:36:03 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:36:03 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:37:40 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
