@@ -20,7 +20,6 @@ import {
   SlidersHorizontal,
   X
 } from 'lucide-react';
-import Layout from '../components/Layout/Layout';
 import { apiService, endpoints } from '../utils/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { formatDate } from '../utils/helpers';
@@ -153,8 +152,7 @@ const ActivityLogsPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
@@ -364,72 +362,71 @@ const ActivityLogsPage = () => {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Log Details Modal */}
-      {selectedLog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700 space-y-6">
-            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Activity className="h-5 w-5 text-indigo-500" />
-                Log Entry Details
-              </h3>
-              <button
-                onClick={() => setSelectedLog(null)}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">User</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">{selectedLog.username || 'System'}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">Action</span>
-                  {getActionBadge(selectedLog.action)}
-                </div>
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">Resource</span>
-                  <span className="text-gray-800 dark:text-gray-200 capitalize">{selectedLog.resource || '—'}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">IP Address</span>
-                  <span className="font-mono text-gray-800 dark:text-gray-200">{selectedLog.ip_address || '127.0.0.1'}</span>
-                </div>
+        {/* Log Details Modal */}
+        {selectedLog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700 space-y-6">
+              <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-indigo-500" />
+                  Log Entry Details
+                </h3>
+                <button
+                  onClick={() => setSelectedLog(null)}
+                  className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
 
-              <div>
-                <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">Timestamp</span>
-                <span className="text-gray-800 dark:text-gray-200">{formatDate(selectedLog.created_at || new Date())}</span>
+              <div className="space-y-4 text-sm">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">User</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{selectedLog.username || 'System'}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">Action</span>
+                    {getActionBadge(selectedLog.action)}
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">Resource</span>
+                    <span className="text-gray-800 dark:text-gray-200 capitalize">{selectedLog.resource || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">IP Address</span>
+                    <span className="font-mono text-gray-800 dark:text-gray-200">{selectedLog.ip_address || '127.0.0.1'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-1">Timestamp</span>
+                  <span className="text-gray-800 dark:text-gray-200">{formatDate(selectedLog.created_at || new Date())}</span>
+                </div>
+
+                {selectedLog.details && (
+                  <div>
+                    <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-2">Raw Metadata</span>
+                    <pre className="p-3 bg-gray-900 text-emerald-400 rounded-xl text-xs overflow-x-auto font-mono max-h-48 border border-gray-800">
+                      {JSON.stringify(selectedLog.details, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </div>
 
-              {selectedLog.details && (
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-wider block font-semibold mb-2">Raw Metadata</span>
-                  <pre className="p-3 bg-gray-900 text-emerald-400 rounded-xl text-xs overflow-x-auto font-mono max-h-48 border border-gray-800">
-                    {JSON.stringify(selectedLog.details, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </div>
-
-            <div className="pt-2 text-right">
-              <button
-                onClick={() => setSelectedLog(null)}
-                className="px-5 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-              >
-                Close
-              </button>
+              <div className="pt-2 text-right">
+                <button
+                  onClick={() => setSelectedLog(null)}
+                  className="px-5 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </Layout>
+        )}
+      </div>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
   Search, 
@@ -27,7 +28,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiService, endpoints } from '../utils/api';
-import LayoutComponent from '../components/Layout/Layout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 
@@ -338,62 +338,55 @@ const DocsPage = () => {
   // Access check guard
   if (!isSuperAdmin()) {
     return (
-      <LayoutComponent>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-          <div className="h-16 w-16 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4 shadow-lg">
-            <Shield className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Super Admin Access Required</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mb-6">
-            System Documentation and Architecture Specifications are strictly restricted to Super Administrators.
-          </p>
-          <a
-            href="/dashboard"
-            className="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition-all"
-          >
-            Return to Dashboard
-          </a>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
+        <div className="h-16 w-16 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4 shadow-lg">
+          <Shield className="w-8 h-8" />
         </div>
-      </LayoutComponent>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Super Admin Access Required</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mb-6">
+          System Documentation and Architecture Specifications are strictly restricted to Super Administrators.
+        </p>
+        <Link
+          to="/dashboard"
+          className="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold shadow-sm transition-all"
+        >
+          Return to Dashboard
+        </Link>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <LayoutComponent>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <LoadingSpinner />
-        </div>
-      </LayoutComponent>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <LayoutComponent>
-        <div className="p-6 max-w-2xl mx-auto text-center">
-          <div className="p-6 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300">
-            <AlertTriangle className="w-8 h-8 mx-auto mb-3" />
-            <h3 className="font-bold text-base mb-1">Documentation Load Error</h3>
-            <p className="text-xs mb-4">{error}</p>
-            <button
-              type="button"
-              onClick={fetchDocs}
-              className="px-4 py-2 rounded-xl bg-rose-600 text-white font-semibold text-xs hover:bg-rose-700 transition-all cursor-pointer"
-            >
-              Retry Loading
-            </button>
-          </div>
+      <div className="p-6 max-w-2xl mx-auto text-center">
+        <div className="p-6 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300">
+          <AlertTriangle className="w-8 h-8 mx-auto mb-3" />
+          <h3 className="font-bold text-base mb-1">Documentation Load Error</h3>
+          <p className="text-xs mb-4">{error}</p>
+          <button
+            type="button"
+            onClick={fetchDocs}
+            className="px-4 py-2 rounded-xl bg-rose-600 text-white font-semibold text-xs hover:bg-rose-700 transition-all cursor-pointer"
+          >
+            Retry Loading
+          </button>
         </div>
-      </LayoutComponent>
+      </div>
     );
   }
 
   const ActiveIcon = currentSection?.icon && iconMap[currentSection.icon] ? iconMap[currentSection.icon] : BookOpen;
 
   return (
-    <LayoutComponent>
-      <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12">
         {/* Header Hero Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-gray-900 to-primary-950 p-6 sm:p-8 text-white shadow-xl border border-gray-800">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -587,7 +580,6 @@ const DocsPage = () => {
           </div>
         </div>
       </div>
-    </LayoutComponent>
   );
 };
 

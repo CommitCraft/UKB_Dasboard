@@ -121,7 +121,9 @@ export const ProjectControlPanel = () => {
 
     if (autoRefresh) {
       timerRef.current = setInterval(() => {
-        fetchStatus(true);
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          fetchStatus(true);
+        }
       }, refreshInterval * 1000);
     }
 

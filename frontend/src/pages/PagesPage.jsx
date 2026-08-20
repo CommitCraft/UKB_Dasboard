@@ -50,7 +50,6 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import Layout from '../components/Layout/Layout';
 import { useAuth } from '../context/AuthContext';
 import { apiService, endpoints } from '../utils/api';
 import { isValidUrl } from '../utils/helpers';
@@ -481,8 +480,7 @@ const PagesPage = () => {
   const paginatedPages = filteredPages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
           <div>
@@ -647,25 +645,24 @@ const PagesPage = () => {
             </div>
           )}
         </div>
-      </div>
 
-      <PageModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        page={selectedPage}
-        onSave={fetchPages}
-      />
-
-      {/* Live View / Preview Page Modal */}
-      {previewPage && (
-        <ZoomableIframeModal
-          isOpen={!!previewPage}
-          onClose={() => setPreviewPage(null)}
-          title={`Preview: ${previewPage.name}`}
-          url={previewPage.url}
+        <PageModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          page={selectedPage}
+          onSave={fetchPages}
         />
-      )}
-    </Layout>
+
+        {/* Live View / Preview Page Modal */}
+        {previewPage && (
+          <ZoomableIframeModal
+            isOpen={!!previewPage}
+            onClose={() => setPreviewPage(null)}
+            title={`Preview: ${previewPage.name}`}
+            url={previewPage.url}
+          />
+        )}
+      </div>
   );
 };
 

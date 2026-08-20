@@ -28,7 +28,6 @@ import {
   Eye,
   CheckCircle2
 } from "lucide-react";
-import Layout from "../components/Layout/Layout";
 import { apiService, endpoints } from "../utils/api";
 import { formatDateTime } from "../utils/helpers";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -348,10 +347,7 @@ const RolesPage = () => {
     try {
       setLoading(true);
 
-      const response = await apiService.get(endpoints.roles.list, {
-        params: { _t: Date.now() },
-        headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
-      });
+      const response = await apiService.get(endpoints.roles.list);
 
       const newRoles = response.data.data?.roles || [];
       setRoles(newRoles);
@@ -461,8 +457,7 @@ const RolesPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
           <div>
@@ -617,16 +612,15 @@ const RolesPage = () => {
             </div>
           )}
         </div>
-      </div>
 
-      <RoleModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        role={selectedRole}
-        pages={pages}
-        onSave={fetchRoles}
-      />
-    </Layout>
+        <RoleModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          role={selectedRole}
+          pages={pages}
+          onSave={fetchRoles}
+        />
+      </div>
   );
 };
 

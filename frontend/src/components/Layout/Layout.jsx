@@ -10,6 +10,7 @@ import {
   Link,
   useLocation,
   useNavigate,
+  Outlet,
 } from "react-router-dom";
 
 import {
@@ -424,11 +425,7 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
 
       setLoadingPages(true);
 
-      const response = await apiService.get("/menus/tree", {
-        params: {
-          _t: Date.now(),
-        },
-      });
+      const response = await apiService.get("/menus/tree");
 
       const items = response?.data?.data?.items || [];
       setMyPages(Array.isArray(items) ? items : []);
@@ -1002,7 +999,7 @@ const Layout = ({ children }) => {
   if (isIframe) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-4 overflow-y-auto">
-        {children}
+        {children || <Outlet />}
       </div>
     );
   }
@@ -1021,7 +1018,7 @@ const Layout = ({ children }) => {
         />
 
         <main className="min-h-0 flex-1 overflow-y-auto p-4 [scrollbar-width:thin] sm:p-6">
-          {children}
+          {children || <Outlet />}
         </main>
 
         <footer className="shrink-0 border-t border-gray-200 bg-white px-4 py-2 dark:border-gray-700 dark:bg-gray-800 sm:px-6">

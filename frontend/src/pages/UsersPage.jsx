@@ -15,7 +15,6 @@ import {
   ChevronRight,
   Monitor,
 } from "lucide-react";
-import Layout from "../components/Layout/Layout";
 import { useAuth } from "../context/AuthContext";
 import { apiService, endpoints } from "../utils/api";
 import { formatDateTime, isValidEmail } from "../utils/helpers";
@@ -478,8 +477,7 @@ const UsersPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
@@ -698,7 +696,6 @@ const UsersPage = () => {
           user={selectedUserForPages}
         />
       </div>
-    </Layout>
   );
 };
 

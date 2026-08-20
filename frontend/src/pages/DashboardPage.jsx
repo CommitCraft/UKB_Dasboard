@@ -8,7 +8,6 @@ import {
   Clock,
   Calendar
 } from 'lucide-react';
-import Layout from '../components/Layout/Layout';
 import { useAuth } from '../context/AuthContext';
 import { apiService, endpoints } from '../utils/api';
 import { formatNumber } from '../utils/helpers';
@@ -111,8 +110,7 @@ const DashboardPage = () => {
   const currentDate = new Date();
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
@@ -254,7 +252,6 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
-    </Layout>
   );
 };
 

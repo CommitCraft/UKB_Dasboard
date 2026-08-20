@@ -89,7 +89,11 @@ const SystemPerformance = () => {
     
     let interval;
     if (autoRefresh) {
-      interval = setInterval(fetchData, 15000); // 15 seconds
+      interval = setInterval(() => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          fetchData();
+        }
+      }, 15000); // 15 seconds
     }
     
     return () => {

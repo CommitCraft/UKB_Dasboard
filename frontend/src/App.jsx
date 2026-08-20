@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import toast from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { apiService } from './utils/api';
+
+// Import Layout & Loading
+import Layout from './components/Layout/Layout';
+import LoadingSpinner from './components/LoadingSpinner';
 
 // Import pages
 import LoginPage from './pages/LoginPage';
@@ -18,55 +20,12 @@ import ActivityLogsPage from './pages/ActivityLogsPage';
 import MenuManagementPage from './pages/MenuManagementPage';
 import DocsPage from './pages/DocsPage';
 import NotFoundPage from './pages/NotFoundPage';
-import LoadingSpinner from './components/LoadingSpinner';
 
-// Protected Route Component with role page assignment verification
-const ProtectedRoute = ({ requiredPath, children }) => {
-  const { user, isAuthenticated, loading } = useAuth();
-  const [allowed, setAllowed] = useState(true);
-  const [checking, setChecking] = useState(Boolean(requiredPath));
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
 
-  useEffect(() => {
-    if (!isAuthenticated || !requiredPath) {
-      setChecking(false);
-      return;
-    }
-
-    // Super Admin has full unrestricted access
-    if (Array.isArray(user?.roles) && user.roles.includes('super_admin')) {
-      setAllowed(true);
-      setChecking(false);
-      return;
-    }
-
-    // Check user's assigned pages tree
-    apiService
-      .get('/menus/tree')
-      .then((res) => {
-        const flatPages = res.data.data?.flat || [];
-        const normRequired = requiredPath.toLowerCase().trim().replace(/^\/+|\/+$/g, '');
-
-        const isAssigned = flatPages.some((p) => {
-          if (!p.url) return false;
-          const normUrl = p.url.toLowerCase().trim().replace(/^\/+|\/+$/g, '');
-          return normUrl === normRequired;
-        });
-
-        if (!isAssigned) {
-          toast.error('Access denied: Page not assigned to your role');
-        }
-
-        setAllowed(isAssigned);
-      })
-      .catch(() => {
-        setAllowed(false);
-      })
-      .finally(() => {
-        setChecking(false);
-      });
-  }, [user, isAuthenticated, requiredPath]);
-
-  if (loading || checking) {
+  if (loading) {
     return <LoadingSpinner />;
   }
 
@@ -74,11 +33,7 @@ const ProtectedRoute = ({ requiredPath, children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredPath && !allowed) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return children;
+  return children ? children : <Outlet />;
 };
 
 // Public Route Component (redirect if authenticated)
@@ -113,80 +68,24 @@ function App() {
                 }
               />
 
-              {/* Protected Routes */}
+              {/* Protected Routes with Persistent Layout Shell */}
               <Route
-                path="/dashboard"
                 element={
                   <ProtectedRoute>
-                    <DashboardPage />
+                    <Layout />
                   </ProtectedRoute>
                 }
-              />
-              <Route
-                path="/users"
-                element={
-                  <ProtectedRoute requiredPath="/users">
-                    <UsersPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/roles"
-                element={
-                  <ProtectedRoute requiredPath="/roles">
-                    <RolesPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pages"
-                element={
-                  <ProtectedRoute requiredPath="/pages">
-                    <PagesPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/menus"
-                element={
-                  <ProtectedRoute requiredPath="/menus">
-                    <MenuManagementPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/activity"
-                element={
-                  <ProtectedRoute requiredPath="/activity">
-                    <ActivityLogsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/docs"
-                element={
-                  <ProtectedRoute>
-                    <DocsPage />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/iframe-test"
-                element={
-                  <ProtectedRoute>
-                    <IframeTestPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/external"
-                element={
-                  <ProtectedRoute>
-                    <ExternalPage />
-                  </ProtectedRoute>
-                }
-              />
+              >
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/users" element={<UsersPage />} />
+                <Route path="/roles" element={<RolesPage />} />
+                <Route path="/pages" element={<PagesPage />} />
+                <Route path="/menus" element={<MenuManagementPage />} />
+                <Route path="/activity" element={<ActivityLogsPage />} />
+                <Route path="/docs" element={<DocsPage />} />
+                <Route path="/external" element={<ExternalPage />} />
+                <Route path="/iframe-test" element={<IframeTestPage />} />
+              </Route>
 
               {/* Default Redirects & 404 */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -201,3 +100,4 @@ function App() {
 }
 
 export default App;
+

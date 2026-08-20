@@ -38,7 +38,6 @@ import {
   ListPlus,
   Tag
 } from 'lucide-react';
-import Layout from '../components/Layout/Layout';
 import { apiService, endpoints } from '../utils/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ZoomableIframeModal from '../components/ZoomableIframeModal';
@@ -968,8 +967,7 @@ const MenuManagementPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
           <div>
@@ -1079,31 +1077,29 @@ const MenuManagementPage = () => {
             </div>
           )}
         </div>
-      </div>
-
-      <MenuModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedItem(null);
-          setParentForNewChild(null);
-        }}
-        item={selectedItem}
-        parentItem={parentForNewChild}
-        flatItems={flatItems}
-        availablePages={availablePages}
-        onSave={fetchMenuTree}
-      />
-
-      {previewUrl && (
-        <ZoomableIframeModal
-          isOpen={Boolean(previewUrl)}
-          onClose={() => setPreviewUrl('')}
-          url={previewUrl}
-          pageName="Menu Preview"
+        <MenuModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedItem(null);
+            setParentForNewChild(null);
+          }}
+          item={selectedItem}
+          parentItem={parentForNewChild}
+          flatItems={flatItems}
+          availablePages={availablePages}
+          onSave={fetchMenuTree}
         />
-      )}
-    </Layout>
+
+        {previewUrl && (
+          <ZoomableIframeModal
+            isOpen={Boolean(previewUrl)}
+            onClose={() => setPreviewUrl('')}
+            url={previewUrl}
+            pageName="Menu Preview"
+          />
+        )}
+      </div>
   );
 };
 

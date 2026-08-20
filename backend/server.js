@@ -59,7 +59,11 @@ app.disable('x-powered-by');
 const generalLimiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX) || 300,
-  skip: (req) => req.method === 'OPTIONS',
+  skip: (req) => {
+    if (req.method === 'OPTIONS') return true;
+    if (req.path === '/health' || req.path === '/' || req.path === '/api/health') return true;
+    return false;
+  },
   standardHeaders: true, legacyHeaders: false,
   message: { success: false, message: 'Too many requests. Please try again later.' }
 });

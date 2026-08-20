@@ -69,8 +69,12 @@ const EnhancedSystemInformation = () => {
   useEffect(() => {
     fetchEnhancedSystemData();
     
-    // Update every 30 seconds
-    const interval = setInterval(fetchEnhancedSystemData, 30000);
+    // Update every 30 seconds when tab is active
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        fetchEnhancedSystemData();
+      }
+    }, 30000);
     
     return () => clearInterval(interval);
   }, [fetchEnhancedSystemData]);

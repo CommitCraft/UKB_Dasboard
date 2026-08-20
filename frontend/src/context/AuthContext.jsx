@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
-  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(() => {
     // Try localStorage first, then cookies as fallback
     const localToken = localStorage.getItem("aplos_logix-token") || localStorage.getItem("cmscrm-token");
@@ -43,11 +42,21 @@ export const AuthProvider = ({ children }) => {
     // Only return token if it exists and looks valid (not empty)
     return storedToken && storedToken.length > 10 ? storedToken : null;
   });
+  const [loading, setLoading] = useState(() => {
+    const localToken = localStorage.getItem("aplos_logix-token") || localStorage.getItem("cmscrm-token");
+    const cookieToken = Cookies.get("aplos_logix-token") || Cookies.get("cmscrm-token");
+    const storedToken = localToken || cookieToken;
+    if (!storedToken) return false;
+    const storedUser = localStorage.getItem("aplos_logix-user") || localStorage.getItem("cmscrm-user");
+    return !storedUser;
+  });
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const isLoggingOutRef = useRef(false);
   const logoutTimeoutRef = useRef(null);
 
   const handleSessionExpired = useCallback(() => {
-    if (isLoggingOut) return;
+    if (isLoggingOutRef.current) return;
+    isLoggingOutRef.current = true;
     setIsLoggingOut(true);
 
     // Cleanly remove tokens and user session data
@@ -76,12 +85,13 @@ export const AuthProvider = ({ children }) => {
     });
 
     setTimeout(() => {
+      isLoggingOutRef.current = false;
       setIsLoggingOut(false);
     }, 1000);
-  }, [isLoggingOut]);
+  }, []);
 
   const verifyToken = useCallback(async () => {
-    if (isLoggingOut) {
+    if (isLoggingOutRef.current) {
       setLoading(false);
       return;
     }
@@ -92,7 +102,8 @@ export const AuthProvider = ({ children }) => {
       const userData = response.data.data?.user || response.data.user;
       setUser(userData);
       localStorage.setItem("aplos_logix-user", JSON.stringify(userData));
-      setIsLoggingOut(false); // Reset logout flag on successful verification
+      isLoggingOutRef.current = false;
+      setIsLoggingOut(false);
     } catch (error) {
       console.error("Token verification failed:", error);
       localStorage.removeItem("aplos_logix-token");
@@ -103,18 +114,20 @@ export const AuthProvider = ({ children }) => {
       Cookies.remove("cmscrm-token");
       setToken(null);
       setUser(null);
+      isLoggingOutRef.current = false;
       setIsLoggingOut(false);
     } finally {
       setLoading(false);
     }
-  }, [isLoggingOut]);
+  }, []);
 
   const logout = useCallback(
     async (showToast = true) => {
-      if (isLoggingOut) {
+      if (isLoggingOutRef.current) {
         return; // Prevent multiple logout calls
       }
 
+      isLoggingOutRef.current = true;
       setIsLoggingOut(true);
 
       try {
@@ -136,6 +149,7 @@ export const AuthProvider = ({ children }) => {
       Cookies.remove("cmscrm-token");
       setToken(null);
       setUser(null);
+      isLoggingOutRef.current = false;
       setIsLoggingOut(false);
 
       // Clear any pending logout timeouts
@@ -161,7 +175,7 @@ export const AuthProvider = ({ children }) => {
         });
       }
     },
-    [isLoggingOut, token]
+    [token]
   );
 
   const login = async (email, password) => {
@@ -182,6 +196,7 @@ export const AuthProvider = ({ children }) => {
 
       setToken(authToken);
       setUser(userData);
+      isLoggingOutRef.current = false;
       setIsLoggingOut(false);
 
       toast.success(`Welcome back, ${userData?.username || "User"}!`, {
@@ -226,53 +241,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     window.addEventListener("auth:unauthorized", handleUnauthorizedEvent);
-
-    const apiInterceptorId = api.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401 && !isLoggingOut) {
-          const isLogoutUrl = error.config?.url?.includes("/auth/logout");
-          if (!isLogoutUrl) {
-            handleSessionExpired();
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    const axiosInterceptorId = axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401 && !isLoggingOut) {
-          const isLogoutUrl = error.config?.url?.includes("/auth/logout");
-          if (!isLogoutUrl) {
-            handleSessionExpired();
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
-
     return () => {
       window.removeEventListener("auth:unauthorized", handleUnauthorizedEvent);
-      api.interceptors.response.eject(apiInterceptorId);
-      axios.interceptors.response.eject(axiosInterceptorId);
     };
-  }, [isLoggingOut, handleSessionExpired]);
+  }, [handleSessionExpired]);
 
   useEffect(() => {
-    const verifyTimer = setTimeout(() => {
-      if (token && !isLoggingOut && user === null) {
-        verifyToken();
-      } else if (!token) {
-        setLoading(false);
-        setUser(null);
-      } else if (token && user) {
-        setLoading(false);
-      }
-    }, 200);
-
-    return () => clearTimeout(verifyTimer);
+    if (token && !isLoggingOut && user === null) {
+      verifyToken();
+    } else if (!token) {
+      setLoading(false);
+      setUser(null);
+    } else if (token && user) {
+      setLoading(false);
+    }
   }, [token, user, isLoggingOut, verifyToken]);
 
   const updateProfile = async (profileData) => {
