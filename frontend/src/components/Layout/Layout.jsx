@@ -134,22 +134,44 @@ const NavItemTree = ({
           ? "ml-4 pl-3 border-l-2 border-indigo-100 dark:border-gray-700"
           : "ml-4 pl-3 border-l border-dashed border-gray-300 dark:border-gray-700";
 
+        const isActionable = page?.url && page.url !== '#' && page.url.trim() !== '';
+
         return (
           <li key={pageKey}>
             <div className="flex items-center gap-1">
-              <Link to={targetUrl} onClick={onClose} className={linkStyle}>
-                <PageIcon className={`${iconStyle} ${pageActive && isLvl1 ? "text-white" : ""}`} />
-                <span className="min-w-0 truncate">{page?.name}</span>
-                {page?.badge_label && (
-                  <span className={`ml-auto px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide shrink-0 ${
-                    pageActive && isLvl1
-                      ? "bg-white/20 text-white"
-                      : "bg-[#00629F]/15 text-[#00629F] dark:bg-indigo-900/50 dark:text-indigo-300"
-                  }`}>
-                    {page.badge_label}
-                  </span>
-                )}
-              </Link>
+              {isActionable ? (
+                <Link to={targetUrl} onClick={onClose} className={linkStyle}>
+                  <PageIcon className={`${iconStyle} ${pageActive && isLvl1 ? "text-white" : ""}`} />
+                  <span className="min-w-0 truncate">{page?.name}</span>
+                  {page?.badge_label && (
+                    <span className={`ml-auto px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide shrink-0 ${
+                      pageActive && isLvl1
+                        ? "bg-white/20 text-white"
+                        : "bg-[#00629F]/15 text-[#00629F] dark:bg-indigo-900/50 dark:text-indigo-300"
+                    }`}>
+                      {page.badge_label}
+                    </span>
+                  )}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => toggleMenu(pageKey)}
+                  className={`${linkStyle} text-left cursor-pointer`}
+                >
+                  <PageIcon className={`${iconStyle} ${pageActive && isLvl1 ? "text-white" : ""}`} />
+                  <span className="min-w-0 truncate">{page?.name}</span>
+                  {page?.badge_label && (
+                    <span className={`ml-auto px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide shrink-0 ${
+                      pageActive && isLvl1
+                        ? "bg-white/20 text-white"
+                        : "bg-[#00629F]/15 text-[#00629F] dark:bg-indigo-900/50 dark:text-indigo-300"
+                    }`}>
+                      {page.badge_label}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {hasChildren && (
                 <button
@@ -368,6 +390,44 @@ const Sidebar = ({ isOpen, onClose, onOpenProfileSettings }) => {
       );
     };
   }, [fetchMyPages]);
+
+  useEffect(() => {
+    if (!Array.isArray(myPages) || myPages.length === 0) return;
+
+    const findActiveKeys = (items) => {
+      const keys = {};
+      const traverse = (list) => {
+        for (const item of list) {
+          const itemKey = item.id;
+          if (Array.isArray(item.children) && item.children.length > 0) {
+            let hasActiveChild = false;
+            for (const child of item.children) {
+              const childExternal = isExternalPage(child);
+              const childHref = formatUrl(child.url);
+              const childActive = childExternal
+                ? location.pathname === "/external" && new URLSearchParams(location.search).get("url") === childHref
+                : isActive(childHref);
+              if (childActive) {
+                hasActiveChild = true;
+                break;
+              }
+            }
+            if (hasActiveChild) {
+              keys[itemKey] = true;
+            }
+            traverse(item.children);
+          }
+        }
+      };
+      traverse(items);
+      return keys;
+    };
+
+    const activeKeys = findActiveKeys(myPages);
+    if (Object.keys(activeKeys).length > 0) {
+      setExpandedMenus((prev) => ({ ...prev, ...activeKeys }));
+    }
+  }, [myPages, location.pathname, location.search]);
 
   const allMenuItems = useMemo(() => {
     if (Array.isArray(myPages) && myPages.length > 0) {
