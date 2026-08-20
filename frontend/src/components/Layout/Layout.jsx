@@ -14,6 +14,7 @@ import {
 } from "react-router-dom";
 
 import {
+  BookOpen,
   ChevronDown,
   ChevronRight,
   ExternalLink,
@@ -21,6 +22,7 @@ import {
   LogOut,
   Menu,
   Moon,
+  Settings,
   Sun,
   User,
   X,
