@@ -23,6 +23,7 @@ import { isValidUrl } from '../utils/helpers';
 import { renderAppIcon } from '../utils/iconMap';
 import IconPicker from '../components/IconPicker';
 import LoadingSpinner from '../components/LoadingSpinner';
+import PageHeader from '../components/PageHeader';
 import ZoomableIframeModal from '../components/ZoomableIframeModal';
 import toast from 'react-hot-toast';
 
@@ -150,10 +151,10 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 space-y-3">
           {/* Page Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
               Page Name
             </label>
             <input
@@ -161,13 +162,13 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
+              className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
                 errors.name ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter page name (e.g. Sales Reports)"
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
+              <p className="mt-0.5 text-xs text-red-600 dark:text-red-400">{errors.name}</p>
             )}
           </div>
 
@@ -183,8 +184,8 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
             />
 
             {/* Custom Icon Image Upload */}
-            <div className="mt-3 flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
-              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Or upload custom image:</span>
+            <div className="mt-2 flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium shrink-0">Or upload:</span>
               <input
                 type="file"
                 accept="image/*"
@@ -193,7 +194,7 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
                     setIconFile(e.target.files[0]);
                   }
                 }}
-                className="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/50 dark:file:text-indigo-300"
+                className="text-xs text-gray-500 file:mr-1.5 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/50 dark:file:text-indigo-300"
               />
               {iconFile && (
                 <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium truncate">
@@ -205,7 +206,7 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
 
           {/* URL Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
               URL Type
             </label>
             <div className="flex space-x-4">
@@ -216,9 +217,9 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
                   value="internal"
                   checked={formData.url_type === 'internal'}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  className="h-3.5 w-3.5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                 />
-                <span className="ml-2 text-sm text-gray-900 dark:text-white">Internal Route</span>
+                <span className="ml-1.5 text-xs text-gray-900 dark:text-white">Internal Route</span>
               </label>
               <label className="flex items-center">
                 <input
@@ -227,24 +228,24 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
                   value="external"
                   checked={formData.url_type === 'external'}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  className="h-3.5 w-3.5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                 />
-                <span className="ml-2 text-sm text-gray-900 dark:text-white">External URL</span>
+                <span className="ml-1.5 text-xs text-gray-900 dark:text-white">External URL</span>
               </label>
             </div>
           </div>
 
           {/* URL */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
               {formData.url_type === 'internal' ? 'Route Path' : 'External URL'}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {formData.url_type === 'internal' ? (
-                  <Home className="h-4 w-4 text-gray-400" />
+                  <Home className="h-3.5 w-3.5 text-gray-400" />
                 ) : (
-                  <ExternalLink className="h-4 w-4 text-gray-400" />
+                  <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
                 )}
               </div>
               <input
@@ -252,44 +253,44 @@ const PageModal = ({ isOpen, onClose, page, onSave }) => {
                 name="url"
                 value={formData.url}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
+                className={`w-full pl-9 pr-3 py-1.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white ${
                   errors.url ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder={formData.url_type === 'internal' ? '/dashboard' : 'https://example.com'}
               />
             </div>
             {errors.url && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.url}</p>
+              <p className="mt-0.5 text-xs text-red-600 dark:text-red-400">{errors.url}</p>
             )}
           </div>
 
           {/* Active Status */}
           <div>
-            <label className="flex items-center">
+            <label className="flex items-center gap-1.5">
               <input
                 type="checkbox"
                 name="is_active"
                 checked={formData.is_active}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-3.5 w-3.5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <span className="ml-2 text-sm text-gray-900 dark:text-white font-medium">Active</span>
+              <span className="text-xs text-gray-900 dark:text-white font-medium">Active</span>
             </label>
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex justify-end space-x-2 pt-3 border-t border-gray-100 dark:border-gray-700">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600"
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 flex items-center shadow-md shadow-indigo-600/20"
+              className="px-4 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center shadow-md shadow-indigo-600/20"
             >
               {loading && <LoadingSpinner size="sm" className="mr-2" />}
               {page ? 'Update Page' : 'Create Page'}
@@ -369,27 +370,20 @@ const PagesPage = () => {
   return (
     <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-gradient-to-tr from-[#00629F] to-[#004774] text-white shadow-md shadow-[#00629F]/20">
-                <FileText className="h-6 w-6" />
-              </div>
-              Pages Management
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Manage system pages, internal routes, icons, and live page previews.
-            </p>
-          </div>
-
-          <button
-            onClick={handleAddPage}
-            className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#00629F] hover:bg-[#00558c] text-white shadow-md shadow-[#00629F]/20 transition-all duration-200"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Page
-          </button>
-        </div>
+        <PageHeader
+          icon={<FileText className="h-6 w-6" />}
+          title="Pages Management"
+          subtitle="Manage system pages, internal routes, icons, and live page previews."
+          actions={
+            <button
+              onClick={handleAddPage}
+              className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#00629F] hover:bg-[#00558c] text-white shadow-md shadow-[#00629F]/20 transition-all duration-200"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Page
+            </button>
+          }
+        />
 
         {/* Toolbar */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">

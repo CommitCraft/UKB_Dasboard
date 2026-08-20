@@ -17,6 +17,7 @@ import { formatDateTime } from "../utils/helpers";
 import { renderAppIcon } from "../utils/iconMap";
 import IconPicker from "../components/IconPicker";
 import LoadingSpinner from "../components/LoadingSpinner";
+import PageHeader from "../components/PageHeader";
 import toast from "react-hot-toast";
 
 const renderPermissionPageIcon = (iconName, className = "h-4 w-4 shrink-0") => {
@@ -423,27 +424,20 @@ const RolesPage = () => {
   return (
     <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-gradient-to-tr from-[#00629F] to-[#004774] text-white shadow-md shadow-[#00629F]/20">
-                <Shield className="h-6 w-6" />
-              </div>
-              Roles Management
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Create roles, select role icons, and assign page permissions.
-            </p>
-          </div>
-
-          <button
-            onClick={handleAddRole}
-            className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#00629F] hover:bg-[#00558c] text-white shadow-md shadow-[#00629F]/20 transition-all duration-200"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Role
-          </button>
-        </div>
+        <PageHeader
+          icon={<Shield className="h-6 w-6" />}
+          title="Roles Management"
+          subtitle="Create roles, select role icons, and assign page permissions."
+          actions={
+            <button
+              onClick={handleAddRole}
+              className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#00629F] hover:bg-[#00558c] text-white shadow-md shadow-[#00629F]/20 transition-all duration-200"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Role
+            </button>
+          }
+        />
 
         {/* Toolbar */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { apiService, endpoints } from '../utils/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import PageHeader from '../components/PageHeader';
 import { formatDate } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
@@ -155,37 +156,30 @@ const ActivityLogsPage = () => {
     <div className="space-y-6">
         
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-gradient-to-tr from-[#00629F] to-[#004774] text-white shadow-md shadow-[#00629F]/20">
-                <Activity className="h-6 w-6" />
-              </div>
-              Activity Logs
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Audit trail and real-time user action monitoring across the system.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => fetchActivityLogs(true)}
-              disabled={refreshing}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 dark:bg-gray-700/60 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            <button
-              onClick={handleExportLogs}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#00629F] hover:bg-[#00558c] text-white shadow-md shadow-[#00629F]/20 transition-all duration-200"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export Logs
-            </button>
-          </div>
-        </div>
+        <PageHeader
+          icon={<Activity className="h-6 w-6" />}
+          title="Activity Logs"
+          subtitle="Audit trail and real-time user action monitoring across the system."
+          actions={
+            <>
+              <button
+                onClick={() => fetchActivityLogs(true)}
+                disabled={refreshing}
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 dark:bg-gray-700/60 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+              <button
+                onClick={handleExportLogs}
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#00629F] hover:bg-[#00558c] text-white shadow-md shadow-[#00629F]/20 transition-all duration-200"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export Logs
+              </button>
+            </>
+          }
+        />
 
         {/* Filter Toolbar */}
         <div className="bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:gap-4">

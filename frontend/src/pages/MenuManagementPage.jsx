@@ -41,6 +41,7 @@ import { apiService, endpoints } from '../utils/api';
 import { renderAppIcon } from '../utils/iconMap';
 import IconPicker from '../components/IconPicker';
 import LoadingSpinner from '../components/LoadingSpinner';
+import PageHeader from '../components/PageHeader';
 import ZoomableIframeModal from '../components/ZoomableIframeModal';
 import toast from 'react-hot-toast';
 
@@ -911,20 +912,11 @@ const MenuManagementPage = () => {
   return (
     <div className="space-y-6">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-gradient-to-tr from-[#00629F] to-[#004774] text-white shadow-md shadow-[#00629F]/20">
-                <FolderTree className="h-6 w-6" />
-              </div>
-              Menu Management
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Configure 4-Level Sidebar Hierarchy (**Section Label → Menu → Sub Menu → Child Menu**) with Custom Display Labels/Badges.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
+        <PageHeader
+          icon={<FolderTree className="h-6 w-6" />}
+          title="Menu Management"
+          subtitle="Configure 4-Level Sidebar Hierarchy (Section Label → Menu → Sub Menu → Child Menu) with Custom Display Labels/Badges."
+          actions={
             <button
               onClick={() => {
                 setSelectedItem(null);
@@ -936,8 +928,8 @@ const MenuManagementPage = () => {
               <Plus className="h-4 w-4 mr-1.5" />
               Add Menu Item
             </button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Toolbar & Filters */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60">
