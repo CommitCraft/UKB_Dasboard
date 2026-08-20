@@ -360,7 +360,7 @@ const PagesPage = () => {
 
   const filteredPages = pages.filter(page =>
     page.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    page.url.toLowerCase().includes(searchTerm.toLowerCase())
+    (page.url || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.max(1, Math.ceil(filteredPages.length / itemsPerPage));
@@ -448,8 +448,12 @@ const PagesPage = () => {
                           </div>
                         </td>
 
-                        <td className="py-4 px-6 font-mono text-xs text-indigo-600 dark:text-indigo-400">
-                          {page.url}
+                        <td className="py-4 px-6 font-mono text-xs">
+                          {page.url ? (
+                            <span className="text-indigo-600 dark:text-indigo-400">{page.url}</span>
+                          ) : (
+                            <span className="text-gray-400 dark:text-gray-500 italic">— no route —</span>
+                          )}
                         </td>
 
                         <td className="py-4 px-6">
