@@ -57,7 +57,10 @@ import {
   Truck,
   User,
   UserCheck,
-  Users
+  Users,
+  Workflow,
+  Network,
+  Boxes
 } from 'lucide-react';
 
 /**
@@ -89,6 +92,9 @@ export const APP_ICONS = [
   { name: 'Target', icon: Target, label: 'Audits / Targets', category: 'User & Security', keywords: 'goal focus bullseye mission' },
 
   // System & Tech
+  { name: 'Workflow', icon: Workflow, label: 'Node-RED / Workflow', category: 'System & Tech', keywords: 'nodered flows automation pipeline iot logic diagram' },
+  { name: 'Network', icon: Network, label: 'Network / IoT', category: 'System & Tech', keywords: 'ip lan wan connection mesh nodes' },
+  { name: 'Boxes', icon: Boxes, label: 'Services / Containers', category: 'System & Tech', keywords: 'docker modules microservices' },
   { name: 'Activity', icon: Activity, label: 'Activity Logs', category: 'System & Tech', keywords: 'audit pulse health monitoring telemetry history' },
   { name: 'Settings', icon: Settings, label: 'Settings', category: 'System & Tech', keywords: 'config gear preferences options setup' },
   { name: 'Sliders', icon: Sliders, label: 'Configuration', category: 'System & Tech', keywords: 'controls parameters adjustment filters' },

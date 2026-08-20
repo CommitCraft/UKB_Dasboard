@@ -1,20 +1,21 @@
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   FileText, 
   Plus, 
   Edit, 
   Trash2, 
-  ExternalLink,
-  Home,
-  Search,
-  Link as LinkIcon,
-  Eye,
-  Shield,
-  Globe,
-  Monitor,
-  LayoutDashboard,
-  Users,
-  ChevronLeft,
-  ChevronRight
+  ExternalLink, 
+  Home, 
+  Search, 
+  Link as LinkIcon, 
+  Eye, 
+  Shield, 
+  Globe, 
+  Monitor, 
+  LayoutDashboard, 
+  Users, 
+  ChevronLeft, 
+  ChevronRight 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiService, endpoints } from '../utils/api';

@@ -184,3 +184,26 @@
 2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
 2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
 2026-08-20 13:37:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:52:15 +05:30: [2m1:52:15 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/utils/iconMap.jsx[22m
+2026-08-20 13:52:16 +05:30: [2m1:52:16 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/utils/iconMap.jsx[22m
+2026-08-20 13:52:18 +05:30: [2m1:52:18 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/utils/iconMap.jsx[22m Could not Fast Refresh ("APP_ICONS" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+2026-08-20 13:52:18 +05:30: [2m1:52:18 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/pages/RolesPage.jsx, /src/pages/PagesPage.jsx, /src/pages/MenuManagementPage.jsx, /src/components/IconPicker.jsx, /src/components/UserPagesModal.jsx[22m
+2026-08-20 13:52:29 +05:30: [2m1:52:29 pm[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+2026-08-20 13:52:29 +05:30: [2m1:52:29 pm[22m [36m[1m[vite][22m[39m server restarted.
+2026-08-20 13:53:05 +05:30: [2m1:53:05 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-20 13:54:22 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 13:54:22 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 13:54:22 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 13:54:22 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 13:54:22 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-20 13:54:43 +05:30: [2m1:54:43 pm[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+2026-08-20 13:54:43 +05:30: [2m1:54:43 pm[22m [36m[1m[vite][22m[39m server restarted.
+2026-08-20 13:59:05 +05:30: [2m1:59:05 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/NodeRedPage.jsx[22m
+2026-08-20 13:59:36 +05:30: [2m1:59:36 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/NodeRedPage.jsx[22m
+2026-08-20 13:59:57 +05:30: [2m1:59:57 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/NodeRedPage.jsx[22m
+2026-08-20 14:01:39 +05:30: [2m2:01:39 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/PagesPage.jsx[22m
+2026-08-20 14:02:46 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-20 14:02:46 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-20 14:02:46 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://100.65.46.102:[1m8800[22m/[39m
+2026-08-20 14:02:46 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-20 14:02:46 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m

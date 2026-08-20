@@ -19,6 +19,7 @@ import ExternalPage from './pages/ExternalPage';
 import ActivityLogsPage from './pages/ActivityLogsPage';
 import MenuManagementPage from './pages/MenuManagementPage';
 import DocsPage from './pages/DocsPage';
+import NodeRedPage from './pages/NodeRedPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Protected Route Component
@@ -83,6 +84,8 @@ function App() {
                 <Route path="/menus" element={<MenuManagementPage />} />
                 <Route path="/activity" element={<ActivityLogsPage />} />
                 <Route path="/docs" element={<DocsPage />} />
+                <Route path="/nodered" element={<NodeRedPage />} />
+                <Route path="/node-red" element={<NodeRedPage />} />
                 <Route path="/external" element={<ExternalPage />} />
                 <Route path="/iframe-test" element={<IframeTestPage />} />
               </Route>
