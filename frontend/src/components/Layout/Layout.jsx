@@ -936,8 +936,11 @@ const Header = ({ onMenuClick }) => {
 /* -------------------------------------------------------------------------- */
 
 const Layout = ({ children }) => {
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const isFullCanvas = location.pathname === "/external" || location.pathname === "/nodered";
 
   // Check if rendered inside an iframe (like ZoomableIframeModal preview) or standalone mode
   const isIframe =
@@ -966,7 +969,7 @@ const Layout = ({ children }) => {
           onMenuClick={() => setSidebarOpen(true)}
         />
 
-        <main className="min-h-0 flex-1 overflow-y-auto p-4 [scrollbar-width:thin] sm:p-6">
+        <main className={`min-h-0 flex-1 overflow-y-auto [scrollbar-width:thin] ${isFullCanvas ? "p-2 sm:p-2.5 flex flex-col" : "p-4 sm:p-6"}`}>
           {children || <Outlet />}
         </main>
 
