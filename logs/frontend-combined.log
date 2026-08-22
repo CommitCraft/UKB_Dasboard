@@ -4951,3 +4951,31 @@
 2026-08-20 14:24:13 +05:30: [2m2:24:13 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/RolesPage.jsx, /src/pages/PagesPage.jsx, /src/pages/NodeRedPage.jsx, /src/components/Layout/Layout.jsx, /src/pages/MenuManagementPage.jsx, /src/components/IconPicker.jsx, /src/components/UserPagesModal.jsx[22m
 2026-08-20 14:24:23 +05:30: [2m2:24:23 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
 2026-08-20 14:24:36 +05:30: [2m2:24:36 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m
+2026-08-20 14:52:16 +05:30: [2m2:52:16 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 14:52:32 +05:30: [2m2:52:32 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 15:41:53 +05:30: [2m3:41:53 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/ExternalPage.jsx, /src/index.css[22m
+2026-08-20 15:42:03 +05:30: [2m3:42:03 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 15:45:25 +05:30: [2m3:45:25 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/ExternalPage.jsx, /src/index.css[22m
+2026-08-20 15:46:11 +05:30: [2m3:46:11 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/ExternalPage.jsx, /src/index.css[22m
+2026-08-20 16:23:29 +05:30: [2m4:23:29 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Layout/Layout.jsx, /src/index.css[22m
+2026-08-20 16:34:58 +05:30: [2m4:34:58 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/UserPagesModal.jsx[22m
+2026-08-20 16:39:41 +05:30: [2m4:39:41 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PagesPage.jsx, /src/index.css[22m
+2026-08-20 16:39:49 +05:30: [2m4:39:49 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PagesPage.jsx, /src/index.css[22m
+2026-08-20 16:47:28 +05:30: [2m4:47:28 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PagesPage.jsx, /src/index.css[22m
+2026-08-20 16:51:00 +05:30: [2m4:51:00 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/PagesPage.jsx, /src/index.css[22m
+2026-08-20 16:51:26 +05:30: [2m4:51:26 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/RolesPage.jsx, /src/index.css[22m
+2026-08-20 16:51:49 +05:30: [2m4:51:49 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/ActivityLogsPage.jsx, /src/index.css[22m
+2026-08-20 16:52:25 +05:30: [2m4:52:25 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/MenuManagementPage.jsx, /src/index.css[22m
+2026-08-20 16:54:19 +05:30: [2m4:54:19 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/components/PageHeader.jsx[22m
+2026-08-21 16:40:58 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-21 16:40:58 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-21 16:40:58 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://169.254.83.107:[1m8800[22m/[39m
+2026-08-21 16:40:58 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-22 10:23:40 +05:30: Aplos_Logix Frontend Vite server listening on http://0.0.0.0:8800
+2026-08-22 10:23:40 +05:30:   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8800[22m/[39m
+2026-08-22 10:23:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://169.254.83.107:[1m8800[22m/[39m
+2026-08-22 10:23:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.137.1:[1m8800[22m/[39m
+2026-08-22 10:23:40 +05:30:   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.37:[1m8800[22m/[39m
+2026-08-22 12:53:58 +05:30: [2m12:53:58 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+2026-08-22 12:54:46 +05:30: [2m12:54:46 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/NodeRedPage.jsx, /src/index.css[22m
+2026-08-22 12:55:16 +05:30: [2m12:55:16 pm[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m

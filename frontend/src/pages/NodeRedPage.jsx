@@ -14,20 +14,29 @@ import {
   ArrowRight,
   ShieldCheck,
   History,
-  Trash2
+  Trash2,
+  Settings2,
+  Link
 } from 'lucide-react';
 import { renderAppIcon } from '../utils/iconMap';
+import { useMachineConfig } from '../context/MachineConfigContext';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const STORAGE_KEY = 'nodered_connection_config';
 const RECENT_KEY = 'nodered_recent_connections';
 
 const NodeRedPage = () => {
-  // Environment defaults (if available)
-  const envHost = import.meta.env.VITE_NODE_RED_HOST || '';
-  const envPort = import.meta.env.VITE_NODE_RED_PORT || '';
+  const navigate = useNavigate();
+
+  // ── Machine Config (central IP/Port store) ──────────────────────
+  const { activeMachine, activeUrl: machineActiveUrl } = useMachineConfig();
+
+  // ── Environment defaults (fallback if no machine config) ────────
+  const envHost     = import.meta.env.VITE_NODE_RED_HOST     || '';
+  const envPort     = import.meta.env.VITE_NODE_RED_PORT     || '';
   const envProtocol = import.meta.env.VITE_NODE_RED_PROTOCOL || 'http';
-  const envPath = import.meta.env.VITE_NODE_RED_PATH || '';
+  const envPath     = import.meta.env.VITE_NODE_RED_PATH     || '';
 
   // State for connection configuration
   const [config, setConfig] = useState({
@@ -56,9 +65,24 @@ const NodeRedPage = () => {
   const [iframeKey, setIframeKey] = useState(Date.now());
   const iframeRef = useRef(null);
 
-  // Load saved connection settings on component mount
+  // ── Load saved connection settings on component mount ──────────
   useEffect(() => {
+    // Priority 1: Active machine from Machine Config (central store)
+    if (activeMachine && activeMachine.host) {
+      const machineConfig = {
+        host:     activeMachine.host,
+        port:     activeMachine.port     || '',
+        protocol: activeMachine.protocol || 'http',
+        path:     activeMachine.path     || ''
+      };
+      setConfig(machineConfig);
+      setFormInput(machineConfig);
+      setIsConnected(true);
+      return;
+    }
+
     try {
+      // Priority 2: Previously saved config in localStorage
       const savedConfig = localStorage.getItem(STORAGE_KEY);
       const savedRecents = localStorage.getItem(RECENT_KEY);
 
@@ -76,31 +100,25 @@ const NodeRedPage = () => {
         }
       }
 
-      // If no localStorage, fallback to env variables if defined
+      // Priority 3: .env fallback
       if (envHost) {
         const initialConfig = {
-          host: envHost,
-          port: envPort || '1881',
+          host:     envHost,
+          port:     envPort     || '1881',
           protocol: envProtocol || 'http',
-          path: envPath || ''
+          path:     envPath     || ''
         };
         setConfig(initialConfig);
         setFormInput(initialConfig);
         setIsConnected(true);
       } else {
-        // Default initial form input values for convenience
-        setFormInput({
-          host: '',
-          port: '1881',
-          protocol: 'http',
-          path: ''
-        });
+        setFormInput({ host: '', port: '1881', protocol: 'http', path: '' });
         setIsConnected(false);
       }
     } catch (e) {
       console.error('Failed to parse saved Node-RED config:', e);
     }
-  }, [envHost, envPort, envProtocol, envPath]);
+  }, [activeMachine, envHost, envPort, envProtocol, envPath]);
 
   // Construct active URL
   const activeUrl = useMemo(() => {
@@ -272,6 +290,13 @@ const NodeRedPage = () => {
               <h1 className="text-base font-bold text-gray-900 dark:text-white truncate">
                 Flow Editor
               </h1>
+              {/* Machine Config source badge */}
+              {activeMachine && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+                  <Settings2 className="h-2.5 w-2.5" />
+                  {activeMachine.name}
+                </span>
+              )}
               {isConnected && activeUrl ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -290,7 +315,7 @@ const NodeRedPage = () => {
                   {activeUrl}
                 </span>
                 <span className="text-[10px] text-gray-400 font-sans hidden md:inline">
-                  (Saved in local storage)
+                  {activeMachine ? `(Machine Config: ${activeMachine.name})` : '(Saved in local storage)'}
                 </span>
               </div>
             )}
@@ -299,7 +324,18 @@ const NodeRedPage = () => {
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* Change / Edit Connection Settings Button */}
+          {/* Machine Config quick link */}
+          <button
+            type="button"
+            onClick={() => navigate('/machine-config')}
+            title="Go to Machine Configuration"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-900/50 border border-violet-200 dark:border-violet-800 transition-colors cursor-pointer"
+          >
+            <Settings2 className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Machine Config</span>
+          </button>
+
+          {/* Change / Edit Connection Settings Button (manual override) */}
           <button
             type="button"
             onClick={() => {

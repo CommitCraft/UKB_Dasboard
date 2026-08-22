@@ -54,3 +54,14 @@
 2026-02-06 14:13 +05:30:     at Page.delete (C:\Users\MES WM\Dashborad_server-main\CMSCRM\backend\src\models\page.js:169:13)
 2026-02-06 14:13 +05:30:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
 2026-02-06 14:13 +05:30:     at async deletePage (C:\Users\MES WM\Dashborad_server-main\CMSCRM\backend\src\controllers\pageController.js:245:23)
+2026-08-20 16:24:00 +05:30: Logout error: TypeError: Cannot destructure property 'login_activity_id' of 'req.body' as it is undefined.
+2026-08-20 16:24:00 +05:30:     at logout (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\src\controllers\authController.js:94:15)
+2026-08-20 16:24:00 +05:30:     at Layer.handleRequest (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\layer.js:152:17)
+2026-08-20 16:24:00 +05:30:     at next (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\route.js:157:13)
+2026-08-20 16:24:00 +05:30:     at C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\src\middleware\activityLogger.js:52:5
+2026-08-20 16:24:00 +05:30:     at Layer.handleRequest (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\layer.js:152:17)
+2026-08-20 16:24:00 +05:30:     at next (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\route.js:157:13)
+2026-08-20 16:24:00 +05:30:     at logLogout (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\src\middleware\activityLogger.js:117:3)
+2026-08-20 16:24:00 +05:30:     at Layer.handleRequest (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\layer.js:152:17)
+2026-08-20 16:24:00 +05:30:     at next (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\route.js:157:13)
+2026-08-20 16:24:00 +05:30:     at Route.dispatch (C:\Users\DELL\Desktop\MERN Project file\Master_Dashboard\CMSCRM_SriCity\backend\node_modules\router\lib\route.js:117:3)
