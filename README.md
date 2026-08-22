@@ -10,7 +10,7 @@
 
 An enterprise-grade **Manufacturing Execution System (MES)** and **Master Operations Control Center** built on a high-performance MERN-style architecture (Node.js, Express, React 19, MySQL 8.0, and PM2). 
 
-Featuring full multi-role RBAC, real-time hardware telemetry, live PM2 process controls, dynamic menu & page builders, audit logging, a Super Admin Documentation Hub, and a production-grade Windows service automation suite with automatic boot recovery and a watchdog health-check.
+Featuring full multi-role RBAC, real-time hardware telemetry, live PM2 process controls, centralized machine/line management, embedded Node-RED flow editors with recent activity tracking, comprehensive audit logs with exact second-level timestamps, dynamic menu & page builders, a Super Admin Documentation Hub, and a production-grade Windows service automation suite with automatic boot recovery and health watchdog.
 
 ---
 
@@ -19,11 +19,12 @@ Featuring full multi-role RBAC, real-time hardware telemetry, live PM2 process c
 - [Key Architecture Highlights](#-key-architecture-highlights)
 - [System Features](#-system-features)
   - [1. Telemetry Dashboard & Live PM2 Controls](#1-telemetry-dashboard--live-pm2-controls)
-  - [2. Multi-Role RBAC & Granular Permissions](#2-multi-role-rbac--granular-permissions)
-  - [3. Dynamic Pages & Menu Hierarchy](#3-dynamic-pages--menu-hierarchy)
-  - [4. Audit Trail & Compliance Exports](#4-audit-trail--compliance-exports)
-  - [5. Super Admin Documentation Hub (`/docs`)](#5-super-admin-documentation-hub-docs)
-  - [6. Modern 404 Not Found Page](#6-modern-404-not-found-page)
+  - [2. Flow Editor & Centralized Machine/Line Hub](#2-flow-editor--centralized-machineline-hub)
+  - [3. Multi-Role RBAC & Granular Permissions](#3-multi-role-rbac--granular-permissions)
+  - [4. Dynamic Pages & Menu Hierarchy](#4-dynamic-pages--menu-hierarchy)
+  - [5. Enhanced Audit Trail & Exact Timestamps](#5-enhanced-audit-trail--exact-timestamps)
+  - [6. Super Admin Documentation Hub (`/docs`)](#6-super-admin-documentation-hub-docs)
+  - [7. Modern 404 Not Found Page](#7-modern-404-not-found-page)
 - [Technology Stack](#-technology-stack)
 - [Project Directory Structure](#-project-directory-structure)
 - [Windows PM2 Production Suite](#-windows-pm2-production-suite)
@@ -62,6 +63,7 @@ Featuring full multi-role RBAC, real-time hardware telemetry, live PM2 process c
 ```
 
 * **True Headless Frontend Runner**: Programmatic Node-based Vite dev server (`frontend/dev-server.js`) running under PM2 fork mode with no flashing terminal windows or interactive console dependencies.
+* **Centralized Machine Lines Store**: `MachineConfigContext` provides unified access to all configured industrial lines and stations with persistent localStorage state and environment defaults.
 * **Resilient Dual Storage Session**: Multi-key auth state persistence (`aplos_logix-token`, `aplos_logix-user`, `aplos_logix-theme` with backward-compatible fallbacks).
 * **Automated Self-Healing Watchdog**: 3-minute scheduled watchdog task (`Aplos_Logix-PM2-HealthCheck`) that monitors endpoint health and recovers services without interrupting active work.
 * **Silent VBScript Background Execution**: All Windows automation scripts leverage `run_silent.vbs` (`WScript.Shell.Run ..., 0, False`) to guarantee 100% invisible execution without intrusive command prompt popups.
@@ -80,176 +82,153 @@ Featuring full multi-role RBAC, real-time hardware telemetry, live PM2 process c
   * **`RESTART` Action**: Performs safe, zero-downtime service reload.
   * **`REFRESH STATUS` Action**: On-demand hardware telemetry fetch.
 
-### 2. Multi-Role RBAC & Granular Permissions
+---
+
+### 2. Flow Editor & Centralized Machine/Line Hub (`/nodered` & `/machine-config`)
+* **Interactive Table Format View**:
+  * Instead of opening a single hardcoded canvas, the Flow Editor opens a comprehensive table listing all configured industrial lines, machines, and test stations.
+  * Columns: **Status / Active indicator**, **Machine Name & Description**, **IP Address / Host**, **Port**, **Protocol (`http`/`https`)**, **Last Opened Timestamp**, and **Actions**.
+* **Top 4 Recent Activity Cards**:
+  * Top of the Flow Editor displays the **Top 4 most recently accessed machines** with relative time badges (e.g. *Just now*, *5m ago*, *Yesterday*) and 1-click **Launch Flow** buttons.
+* **1-Click Live Flow Launcher**:
+  * Clicking any machine row seamlessly embeds that machine's live Node-RED Flow Editor in a dedicated canvas.
+  * Canvas toolbar includes a prominent **`← Machine List`** return button, **Machine Switcher dropdown**, **Refresh**, **Open Direct in Tab**, and **Fullscreen** mode.
+* **Complete Machine Management**:
+  * Add, edit, test, and delete machine entries with live URL preview.
+  * Set active / default machine with immediate system-wide persistence.
+
+---
+
+### 3. Multi-Role RBAC & Granular Permissions
 * **Role Hierarchy**: `super_admin` (Unrestricted bypass), `admin` (System Administration), `manager` (Operational reports & review), `user` (Assigned pages access).
 * **Role-Page Matrix**: Assign internal routes or external URLs to roles or individual users with immediate, real-time permission sync.
 * **Backend Enforcers**: `auth`, `requireSuperAdmin`, `requireAdmin`, and `requireAssignedPages` middlewares.
 
-### 3. Dynamic Pages & Menu Hierarchy
+---
+
+### 4. Dynamic Pages & Menu Hierarchy
 * **Page Management**: Register internal components or external websites (`is_external: 1`) with an integrated zoomable and fullscreen iframe viewer.
 * **Visual Menu Hierarchy Tree**: Create parent categories, nested submenus, custom badge indicators (e.g. `NEW`, `PROD`, `V2`), and reorder items via drag-and-drop.
 
-### 4. Audit Trail & Compliance Exports
-* **Activity & Audit Logs**: Automatic tracking of logins, logouts, entity mutations (create/update/delete), client IPs, and browser User-Agents.
-* **Compliance Exports**: 1-click export of filtered audit logs into CSV spreadsheet and JSON formats.
+---
 
-### 5. Super Admin Documentation Hub (`/docs`)
+### 5. Enhanced Audit Trail & Exact Timestamps (`/activity`)
+* **Audit Trail with Exact Precision**:
+  * Records all user logins, logouts, entity creations, edits, and deletions.
+  * Displays **Exact Timestamp with second-level precision & AM/PM** (e.g. `01:23:45 PM (22 Aug 2026)`) alongside relative time badges (*2 minutes ago*).
+* **Comprehensive "View Details" Modal**:
+  * **Action Overview**: Human-readable narrative explanation of the operation performed.
+  * **Execution Timestamp**: Full date, time with seconds, and relative age.
+  * **Triggered By**: Actor username, email address, and user ID.
+  * **Target Resource**: Entity type (`User`, `Role`, `Page`, `System`, `Machine`) and entity ID.
+  * **Client Information**: Client IP address and browser User-Agent string.
+  * **Detailed Parameters**: Syntax-highlighted JSON viewer with 1-click **"Copy JSON"** and **"Copy Full Log Record"** actions.
+* **Compliance Exports**: 1-click export of filtered audit logs into CSV spreadsheet format.
+
+---
+
+### 6. Super Admin Documentation Hub (`/docs`)
 * **Auto-Generated Technical Specifications**: 11 documentation sections generated directly from verified codebase logic (Overview, User Manual for all modules, RBAC Matrix, Frontend & Backend Architecture, API Reference, MySQL Schema, PM2 & Deployment, Project Controls, Troubleshooting, and Developer Guide).
 * **Interactive UI**: Real-time search filter, 1-click **Copy Code / Copy Command** buttons with toast confirmation, and PDF/print-friendly formatting.
 * **Restricted Access**: Strictly protected on both frontend and backend by `super_admin` authorization.
 
-### 6. Modern 404 Not Found Page
-* **Responsive Visual 404 Screen**: Displays dynamic path reporting (`location.pathname`), animated typography, smooth theme adaptation, **Go Back**, and smart **Go to Dashboard / Go to Login** navigation.
+---
+
+### 7. Modern 404 Not Found Page
+* **User-Friendly Error Experience**: Clean illustration, clear explanation of missing or inaccessible resources, and quick links to return to Dashboard or contact administrators.
 
 ---
 
-## 🛠️ Technology Stack
+## 💻 Technology Stack
 
 | Layer | Technology | Version | Purpose |
 |---|---|---|---|
-| **Frontend Framework** | React | `19.1.1` | Modern declarative component architecture |
-| **Build & Dev Tool** | Vite | `7.1.9` | High-speed dev server and optimized production bundler |
-| **UI Styling** | Tailwind CSS | `3.3.6` | Utility-first responsive design with dark/light themes |
-| **Icons & Charts** | Lucide React & Chart.js | Latest | Intuitive iconography and live telemetry visualizations |
-| **Backend Runtime** | Node.js | `v22.x` | High-performance asynchronous JavaScript engine |
-| **API Framework** | Express.js | `4.18.2` | Robust REST API routing, rate limiting, and middlewares |
-| **Database Engine** | MySQL Server | `8.0.x` | Relational data store with `mysql2/promise` connection pooling |
-| **Process Supervisor** | PM2 | `Latest` | Enterprise process clustering, restart policies, and logging |
-| **Automation** | Windows Task Scheduler & VBS | Native | Auto-start on boot (90s delay) & 3-min silent health watchdog |
+| **Frontend Framework** | React | 19.1.1 | Reactive component architecture & state hooks |
+| **Build & Dev Tool** | Vite | 7.1.9 | Fast development server & production builder |
+| **Styling & Theme** | Tailwind CSS | 3.3.6 | Modern responsive utility classes & Dark/Light modes |
+| **State & Context** | React Context API | — | Auth, Theme, and Centralized Machine Configuration |
+| **Icons & Visuals** | Lucide React & Chart.js | Latest | Intuitive iconography and live telemetry charts |
+| **Backend Runtime** | Node.js | v22.x | High-performance asynchronous JavaScript engine |
+| **Backend Framework** | Express.js | 4.18.2 | RESTful routing, security middlewares, and business logic |
+| **Database** | MySQL Server | 8.0.x | Relational relational database with InnoDB pooling |
+| **Process Daemon** | PM2 | Latest | Windows background service manager & process monitoring |
+| **Service Supervisor** | Windows Task Scheduler | — | 3-minute self-healing watchdog & boot resurrection |
 
 ---
 
-## 📁 Project Directory Structure
+## 📂 Project Directory Structure
 
 ```text
 CMSCRM_SriCity/
 ├── backend/
-│   ├── server.js                      # Express server entry point & middleware stack
-│   ├── package.json                   # Backend dependencies & scripts
 │   ├── src/
-│   │   ├── config/
-│   │   │   └── db.js                  # MySQL pool & schema initialization
-│   │   ├── controllers/
-│   │   │   ├── authController.js      # Auth, profile, and password handlers
-│   │   │   ├── controlController.js   # PM2 status & START/STOP/RESTART actions
-│   │   │   ├── docController.js       # Super Admin documentation provider
-│   │   │   └── systemController.js    # Hardware metrics & process statistics
-│   │   ├── middleware/
-│   │   │   ├── auth.js                # JWT validation & requireSuperAdmin/requireAdmin
-│   │   │   ├── activityLogger.js      # Audit trail database logging
-│   │   │   ├── errorHandler.js        # Centralized error response formatter
-│   │   │   └── validation.js          # Express-validator input schemas
-│   │   ├── models/
-│   │   │   ├── user.js                # User entity & credential queries
-│   │   │   ├── role.js                # Role entity & page mappings
-│   │   │   ├── page.js                # Page registry & hierarchy builder
-│   │   │   └── activityLog.js         # Audit log records & filters
-│   │   ├── routes/
-│   │   │   ├── index.js               # Master API route aggregator
-│   │   │   ├── authRoutes.js          # /api/auth endpoints
-│   │   │   ├── controlRoutes.js       # /api/control endpoints (Super Admin)
-│   │   │   ├── docRoutes.js           # /api/docs endpoints (Super Admin)
-│   │   │   └── systemRoutes.js        # /api/system endpoints
-│   │   └── utils/
-│   │       └── enhancedSystemMonitor.js # OS & PM2 hardware telemetry
+│   │   ├── config/             # Database connection pool & environment setup
+│   │   ├── controllers/        # Business logic & API request handlers
+│   │   ├── middleware/         # Auth, RBAC, Activity Logger, Rate Limiter
+│   │   ├── models/             # MySQL query models (User, Role, Page, ActivityLog)
+│   │   ├── routes/             # Express route declarations (auth, control, doc, system)
+│   │   └── utils/              # Hardware telemetry & system metrics monitors
+│   ├── server.js               # Backend initialization entrypoint
+│   └── package.json
+│
 ├── frontend/
-│   ├── dev-server.js                  # Headless Vite runner for PM2
-│   ├── vite.config.js                 # Vite bundler configuration
-│   ├── package.json                   # Frontend dependencies
 │   ├── src/
-│   │   ├── main.jsx                   # React root entry point
-│   │   ├── App.jsx                    # Route hierarchy & ProtectedRoute guards
-│   │   ├── context/
-│   │   │   ├── AuthContext.jsx        # JWT session state & role helpers
-│   │   │   └── ThemeContext.jsx       # Dark / Light theme provider
-│   │   ├── pages/
-│   │   │   ├── DashboardPage.jsx      # System telemetry & ProjectControlPanel
-│   │   │   ├── UsersPage.jsx          # User management table & CRUD modals
-│   │   │   ├── RolesPage.jsx          # Role management & permissions matrix
-│   │   │   ├── PagesPage.jsx          # Dynamic page registry & iframe preview
-│   │   │   ├── MenuManagementPage.jsx # Navigation tree & badge editor
-│   │   │   ├── ActivityLogsPage.jsx   # Audit logs & export center
-│   │   │   ├── DocsPage.jsx           # Super Admin Documentation Hub
-│   │   │   ├── NotFoundPage.jsx       # 404 Page Not Found
-│   │   │   └── LoginPage.jsx          # Login portal
-│   │   ├── components/
-│   │   │   ├── Layout/                # Responsive Sidebar, NavItemTree, Header, Footer
-│   │   │   ├── ProjectControlPanel.jsx # Live PM2 control interface
-│   │   │   ├── EnhancedSystemInformation.jsx # Hardware & RAM stats
-│   │   │   └── EnhancedSystemPerformance.jsx # Chart.js performance graphs
-│   │   └── utils/
-│   │       └── api.js                 # Axios instance with interceptors & endpoint registry
+│   │   ├── components/         # Reusable UI components (Layout, ProjectControlPanel, Modals)
+│   │   ├── context/            # AuthContext, ThemeContext, MachineConfigContext
+│   │   ├── pages/              # Dashboard, Flow Editor, ActivityLogs, Users, Roles, Pages, Docs
+│   │   ├── utils/              # Axios API service, date formatting helpers, icon maps
+│   │   ├── App.jsx             # Route definitions & protected layout wrappers
+│   │   └── main.jsx            # React root mount
+│   ├── dev-server.js           # Headless Node runner for Vite dev server under PM2
+│   ├── vite.config.js          # Vite build & network host configuration
+│   └── package.json
+│
 ├── PM2-Setup/
-│   ├── config.bat                     # Single editable configuration file
-│   ├── ecosystem.config.cjs           # Master PM2 process ecosystem
-│   ├── INSTALL_AND_SETUP.bat          # One-click Windows installer & task registrar
-│   ├── start-app.bat                  # Safe application starter & state saver
-│   ├── stop-app.bat                   # Safe stopper (activates maintenance flag)
-│   ├── restart-app.bat                # Zero-downtime service reloader
-│   ├── status-app.bat                 # Terminal PM2 status monitor
-│   └── health-check.bat               # Watchdog recovery script
-└── logs/                              # PM2 stdout and stderr log files
+│   ├── config.bat              # Central editable configuration (IPs, Ports, Paths)
+│   ├── ecosystem.config.cjs    # PM2 master process definitions
+│   ├── INSTALL_AND_SETUP.bat   # 1-Click Windows PM2 & Watchdog setup
+│   ├── start-app.bat           # Idempotent application launcher
+│   ├── stop-app.bat            # Graceful shutdown with maintenance mode flag
+│   ├── restart-app.bat         # Zero-downtime service reload
+│   ├── status-app.bat          # Real-time console status monitor
+│   └── health-check.bat        # 3-minute scheduled watchdog script
+│
+├── logs/                       # PM2 application runtime stdout & stderr logs
+├── ecosystem.config.cjs        # Root-level PM2 configuration
+└── README.md                   # Project documentation master
 ```
 
 ---
 
-## ⚙️ Windows PM2 Production Suite
-
-The project includes an enterprise automation suite located in `PM2-Setup/`:
-
-| Script / Config | Purpose |
-|---|---|
-| [`PM2-Setup/config.bat`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/config.bat) | **Single Editable Config**: Defines project root path, ports, and process names in one place. |
-| [`PM2-Setup/ecosystem.config.cjs`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/ecosystem.config.cjs) | PM2 cluster configuration for headless backend and frontend runners. |
-| [`PM2-Setup/INSTALL_AND_SETUP.bat`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/INSTALL_AND_SETUP.bat) | **One-Click Setup**: Installs PM2 globally, registers startup boot task (`Aplos_Logix-PM2-Startup`) and silent watchdog task (`Aplos_Logix-PM2-HealthCheck`) in Windows Task Scheduler. |
-| [`PM2-Setup/start-app.bat`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/start-app.bat) | Starts all services and removes the maintenance flag. |
-| [`PM2-Setup/stop-app.bat`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/stop-app.bat) | Shuts down services and sets `maintenance.flag` so the watchdog does not auto-restart them. |
-| [`PM2-Setup/restart-app.bat`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/restart-app.bat) | Performs zero-downtime application restart. |
-| [`PM2-Setup/status-app.bat`](file:///c:/Users/DELL/Desktop/MERN%20Project%20file/Master_Dashboard/CMSCRM_SriCity/PM2-Setup/status-app.bat) | Displays live terminal process table, memory, CPU, and recent log outputs. |
-
----
-
-## 🚀 Installation & Quick Start
+## 🛠️ Installation & Quick Start
 
 ### 1. Prerequisites
-- **Node.js**: `v20.x` or `v22.x` ([Download Node.js](https://nodejs.org/))
-- **MySQL Server**: `8.0.x` ([Download MySQL](https://dev.mysql.com/downloads/installer/))
-- **PM2**: Installed automatically by setup script, or run `npm install -g pm2`
+- **Node.js**: v18.x or v22.x LTS installed
+- **MySQL Server**: 8.0.x running on port `3306`
+- **PM2** (optional for production daemon): `npm install -g pm2`
 
-### 2. Initial Setup
-1. Clone or extract the project repository to your desired directory.
-2. Verify that `PROJECT_PATH` in `PM2-Setup/config.bat` matches your project path.
-3. Configure your database credentials in `backend/.env`.
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+# Create/verify .env configuration
+cp .env.example .env   # Configure DB_HOST, DB_USER, DB_PASS, DB_NAME
+npm run start:dev      # Starts backend on http://0.0.0.0:5000
+```
 
-### 3. One-Click Automated Deployment
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev            # Starts frontend on http://0.0.0.0:8800
+```
+
+### 4. Windows PM2 Automated Deployment
+To install as a background Windows service with automatic startup and a 3-minute self-healing watchdog:
 1. Open the `PM2-Setup/` folder.
-2. Right-click on **`INSTALL_AND_SETUP.bat`** and select **Run as administrator**.
-3. The script will automatically:
-   - Verify Node.js and PM2 prerequisites.
-   - Start the backend API on port `5000` and frontend on port `8800`.
-   - Save the PM2 state (`pm2 save --force`).
-   - Register the silent Windows boot auto-start and 3-minute watchdog tasks.
-
-### 4. Access the Application
-* **Frontend Web App**: `http://localhost:8800` (or `http://192.168.1.37:8800`)
-* **Backend REST API**: `http://localhost:5000/api`
-* **Default Super Admin Login**:
-  * **Email / Username**: `superadmin` (or `superadmin@aplos_logix.com`)
-  * **Password**: `SuperAdmin123!`
-
----
-
-## 🗄️ Database Schema & Architecture
-
-The database is built on **MySQL 8.0 (InnoDB)** using `utf8mb4_unicode_ci` character encoding.
-
-### Core Tables
-1. **`users`**: Account credentials, usernames, email addresses, and active/inactive statuses.
-2. **`roles`**: System roles (`super_admin`, `admin`, `manager`, `user`).
-3. **`pages`**: Registry of internal routes, external embedded URLs, icons, display order, and badges.
-4. **`user_roles`**: Junction table mapping users to assigned roles.
-5. **`role_pages`**: Junction table granting page-level permissions to specific roles.
-6. **`activity_logs` & `login_activities`**: Immutable audit logs capturing actions, IP addresses, and User-Agents.
+2. Edit `config.bat` if your host IP, ports, or project paths differ.
+3. Right-click `INSTALL_AND_SETUP.bat` and select **Run as Administrator**.
+4. The system will register startup tasks, initialize PM2 daemon processes, and activate background monitoring.
 
 ---
 
@@ -257,87 +236,36 @@ The database is built on **MySQL 8.0 (InnoDB)** using `utf8mb4_unicode_ci` chara
 
 Base URL: `http://192.168.1.37:5000/api`
 
-### Authentication (`/api/auth`)
-- `POST /api/auth/login`: Authenticate via username/email and password. Returns JWT token.
-- `POST /api/auth/logout`: Invalidate session and record audit trail.
-- `GET /api/auth/verify`: Verify active JWT token validity and return user details.
-- `GET /api/auth/profile`: Fetch authenticated user profile.
-- `PUT /api/auth/profile`: Update account username and email.
-- `POST /api/auth/change-password`: Change user password with current credential validation.
-
-### Project Control (`/api/control` — Super Admin Only)
-- `GET /api/control/status`: Real-time PM2 process list, CPU/RAM stats, DB latency, and scheduled tasks.
-- `POST /api/control/action`: Execute operational control (`{ "action": "start" | "stop" | "restart" }`).
-
-### Documentation Hub (`/api/docs` — Super Admin Only)
-- `GET /api/docs/sections`: Delivers all 11 verified documentation modules and specifications.
-
-### System Telemetry (`/api/system`)
-- `GET /api/system/info`: OS, platform, arch, and Node.js process specifications.
-- `GET /api/system/performance`: 50-point historical telemetry series for real-time charts.
-- `GET /api/system/health`: Automated health status and memory pressure evaluation.
-
-### Management Modules
-- `GET /api/users`, `POST /api/users`, `PUT /api/users/:id`, `DELETE /api/users/:id`
-- `GET /api/roles`, `POST /api/roles`, `GET /api/roles/:id/pages`, `POST /api/roles/:id/pages`
-- `GET /api/pages`, `POST /api/pages`, `GET /api/pages/my-pages`
-- `GET /api/menus/tree`, `POST /api/menus/reorder`
-- `GET /api/activity/logs`, `GET /api/exports/activity/csv`
+| Endpoint | Method | Access | Description |
+|---|---|---|---|
+| `/auth/login` | `POST` | Public | Login with email/username and password. |
+| `/auth/logout` | `POST` | Authenticated | Terminate session and record logout activity. |
+| `/auth/verify` | `GET` | Authenticated | Verify active JWT token validity. |
+| `/auth/profile` | `GET` | Authenticated | Retrieve current user profile and roles. |
+| `/control/status` | `GET` | Super Admin | Live PM2 status, CPU, RAM, DB ping, uptime. |
+| `/control/action` | `POST` | Super Admin | Execute control action (`start`, `stop`, `restart`). |
+| `/docs/sections` | `GET` | Super Admin | Complete documentation tree and technical manuals. |
+| `/stats/recent-activity` | `GET` | Admin | Fetch user activity audit logs with full details. |
+| `/exports/activity-logs` | `GET` | Admin | Export activity logs in CSV spreadsheet format. |
+| `/users` | `GET`, `POST` | Admin | Manage system user accounts and role assignments. |
+| `/roles` | `GET`, `POST` | Admin | Manage system security roles and page permissions. |
+| `/pages` | `GET`, `POST` | Admin | Manage internal routes and external iframe tools. |
+| `/menus/tree` | `GET` | Authenticated | Retrieve personalized navigation hierarchy. |
+| `/system/performance` | `GET` | Admin | 50-point historical telemetry series for Chart.js. |
 
 ---
 
-## 🔐 Environment Configuration
+## 🔐 Default Demo Credentials
 
-### Backend Configuration (`backend/.env`)
-```ini
-# Server Configuration
-PORT=5000
-NODE_ENV=production
-FRONTEND_URL=http://localhost:8800
-
-# Database Credentials
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASS=your_secure_password
-DB_NAME=aplos_logix
-
-# Security & Tokens
-JWT_SECRET=your_super_secret_jwt_key_here
-JWT_EXPIRES_IN=24h
-JWT_ISSUER=aploslogix-mes-backend
-JWT_AUDIENCE=aploslogix-mes-frontend
-```
-
-### Frontend Configuration (`frontend/.env`)
-```ini
-VITE_API_URL=http://192.168.1.37:5000/api
-```
+| Role | Email | Password | Access Level |
+|---|---|---|---|
+| **Super Admin** | `superadmin@aploslogix.com` | `SuperAdmin123!` | Unrestricted Master Access + PM2 Controls + Docs |
+| **Admin** | `admin@aploslogix.com` | `Admin123!` | User Management, Roles, Pages, Activity Logs |
+| **Manager** | `manager@aploslogix.com` | `Manager123!` | Operational Reports & Telemetry Views |
+| **User** | `user@aploslogix.com` | `User123!` | Assigned Pages & Workflows Only |
 
 ---
 
-## 🔧 Troubleshooting & FAQs
+## 📄 License
 
-#### 1. `ERR_CONNECTION_REFUSED` on Login
-* **Solution**: Ensure PM2 processes are running by typing `pm2 status`. If backend is stopped, run `PM2-Setup\start-app.bat` or `pm2 startOrReload "PM2-Setup\ecosystem.config.cjs" --update-env`.
-
-#### 2. Port Conflict (`EADDRINUSE: 5000` or `8800`)
-* **Solution**: Identify and kill the rogue process:
-  ```powershell
-  netstat -ano | findstr :5000
-  taskkill /F /PID <PID>
-  pm2 restart all
-  ```
-
-#### 3. Scheduled Tasks showing "Unregistered"
-* **Solution**: Right-click `PM2-Setup\INSTALL_AND_SETUP.bat` and select **"Run as administrator"**. Windows requires Administrator rights to register boot-level startup tasks (`/sc ONSTART`).
-
-#### 4. Terminal Flashing / CMD Popups
-* **Solution**: Built-in `run_silent.vbs` executes all watchdog tasks with `WScript.Shell.Run ..., 0, False`, ensuring 100% invisible background execution.
-
----
-
-## 📄 License & Intellectual Property
-
-Copyright © 2026 **Aplos Logix**. All rights reserved.  
-Proprietary software for internal enterprise operations and manufacturing execution management.
+Proprietary — All rights reserved © Aplos Logix.

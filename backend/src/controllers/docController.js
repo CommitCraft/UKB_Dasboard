@@ -146,12 +146,34 @@ The system provides complete multi-role user management, granular page-level RBA
 
 ---
 
-#### 6. Activity & Audit Logs (\`/activity\`)
-* **Audit Trail**: Every significant administrative and user action is logged automatically:
-  * User Logins / Logouts with client IP and browser User-Agent.
-  * Create, Update, and Delete actions across users, roles, pages, and system configs.
-* **Search & Filters**: Filter logs by User, Action Type (\`create\`, \`update\`, \`delete\`, \`login\`), Entity, or Date range.
-* **Exporting Audit Records**: Click **Export CSV** or **Export JSON** to download timestamped audit logs for compliance audits.
+#### 6. Flow Editor & Centralized Machine Lines (`/nodered` & `/machine-config`)
+* **Interactive Machine Table**:
+  * Displays all configured industrial lines, test stations, and Node-RED servers in a clean table format.
+  * Shows real-time Active/Standby status, Line Name, IP Address, Port, Protocol (`http`/`https`), and Last Opened timestamp.
+* **Top 4 Recent Activity Cards**:
+  * Highlights the **Top 4 most recently accessed machines** at the top of the page.
+  * Displays relative time badges (*Just now*, *5m ago*, *Yesterday*) and 1-click **Launch Flow** buttons to resume sessions instantly.
+* **1-Click Live Flow Launcher**:
+  * Clicking any machine row or the **Open Flow** button seamlessly launches the live embedded Node-RED Flow Editor for that specific machine.
+  * The canvas view features a **`← Machine List`** return button, an instant **Machine Switcher dropdown**, **Refresh**, **Open Direct in Tab**, and **Fullscreen Canvas** controls.
+* **Machine Configuration Hub**:
+  * Add, edit, test, and delete machine entries with live URL preview.
+  * Setting a machine as **Active** automatically propagates to all flow pages without requiring manual IP or port re-entry.
+
+---
+
+#### 7. Activity & Audit Logs with Exact Timestamps (`/activity`)
+* **Precision Audit Trail**:
+  * Records user logins, logouts, entity creations, updates, and deletions.
+  * Displays **Exact Timestamps with hour:minute:second precision & AM/PM** alongside relative time indicators (*2 minutes ago*).
+* **Comprehensive "View Details" Modal**:
+  * **Action Overview**: Plain human-readable narrative explaining what operation occurred.
+  * **Execution Timestamp**: Full date and time with second-level accuracy.
+  * **Triggered By**: Actor username, email, and user ID.
+  * **Target Resource**: Resource type (`User`, `Role`, `Page`, `System`, `Machine`) and target entity ID.
+  * **Client Information**: Client IP address and full browser User-Agent string.
+  * **Detailed Parameters**: Formatted syntax-highlighted JSON viewer with 1-click **"Copy JSON"** and **"Copy Full Log Record"** actions.
+* **Compliance Exports**: 1-click export of filtered audit logs into CSV spreadsheet format.
 `
           },
           {
